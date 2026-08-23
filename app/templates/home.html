@@ -1,0 +1,179 @@
+{% extends 'base.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section text-center position-relative overflow-hidden">
+    <div class="container position-relative z-1">
+        <div class="row justify-content-center">
+            <div class="col-lg-10 col-xl-8">
+                <div class="d-inline-flex align-items-center gap-2 px-3 py-2 rounded-pill bg-white border shadow-sm mb-4 fade-in">
+                    <span class="badge bg-primary rounded-pill">New</span>
+                    <span class="text-secondary small fw-medium">Phase 6: AI Mock Interviews are now live!</span>
+                </div>
+                <h1 class="hero-title mb-4 fade-in" style="animation-delay: 0.1s;">
+                    Your AI-Powered <br>
+                    <span class="text-gradient">Engineering Career Platform</span>
+                </h1>
+                <p class="hero-subtitle mb-5 fade-in" style="animation-delay: 0.2s;">
+                    Profile → Skill Gap → Roadmap → Progress → Interview.<br>
+                    EngineerOS guides you through every step of your career journey.
+                </p>
+                <div class="d-flex flex-column flex-sm-row justify-content-center gap-3 fade-in" style="animation-delay: 0.3s;">
+                    <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-lg px-5 py-3 shadow-md rounded-pill fw-semibold">
+                        Get Started Free <i class="bi bi-arrow-right ms-2"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Decorative background element -->
+    <div class="position-absolute top-50 start-50 translate-middle w-100 h-100 z-0 pointer-events-none" style="opacity: 0.03;">
+        <i class="bi bi-hexagon-fill position-absolute" style="font-size: 30rem; top: -10%; left: -5%; color: var(--primary); transform: rotate(15deg);"></i>
+        <i class="bi bi-heptagon-fill position-absolute" style="font-size: 25rem; bottom: -10%; right: -5%; color: var(--primary); transform: rotate(-15deg);"></i>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section id="features" class="section-padding bg-white">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-title">Everything You Need to Succeed</h2>
+            <p class="section-subtitle">A complete toolkit designed specifically for engineering students.</p>
+        </div>
+        
+        <div class="row g-4">
+            <!-- Feature 1 -->
+            <div class="col-md-6 col-lg-4">
+                <div class="feature-card h-100">
+                    <div class="feature-icon mb-4 d-flex align-items-center justify-content-center">
+                        <i class="bi bi-person-badge"></i>
+                    </div>
+                    <h3 class="h5 fw-bold mb-3">Smart Profile</h3>
+                    <p class="text-secondary mb-0">Build a comprehensive profile with your skills, interests, and career goals.</p>
+                </div>
+            </div>
+            
+            <!-- Feature 2 -->
+            <div class="col-md-6 col-lg-4">
+                <div class="feature-card h-100">
+                    <div class="feature-icon mb-4 d-flex align-items-center justify-content-center">
+                        <i class="bi bi-graph-up-arrow"></i>
+                    </div>
+                    <h3 class="h5 fw-bold mb-3">Skill-Gap Analysis</h3>
+                    <p class="text-secondary mb-0">AI identifies your strengths and the gaps between you and your dream role.</p>
+                </div>
+            </div>
+            
+            <!-- Feature 3 -->
+            <div class="col-md-6 col-lg-4">
+                <div class="feature-card h-100">
+                    <div class="feature-icon mb-4 d-flex align-items-center justify-content-center">
+                        <i class="bi bi-map"></i>
+                    </div>
+                    <h3 class="h5 fw-bold mb-3">Personalized Roadmap</h3>
+                    <p class="text-secondary mb-0">Get a step-by-step career roadmap tailored to your unique profile.</p>
+                </div>
+            </div>
+            
+            <!-- Feature 4 -->
+            <div class="col-md-6 col-lg-4">
+                <div class="feature-card h-100">
+                    <div class="feature-icon mb-4 d-flex align-items-center justify-content-center">
+                        <i class="bi bi-journal-check"></i>
+                    </div>
+                    <h3 class="h5 fw-bold mb-3">Progress Tracking</h3>
+                    <p class="text-secondary mb-0">Track every milestone, course, and project you complete.</p>
+                </div>
+            </div>
+            
+            <!-- Feature 5 -->
+            <div class="col-md-6 col-lg-4">
+                <div class="feature-card h-100">
+                    <div class="feature-icon mb-4 d-flex align-items-center justify-content-center">
+                        <i class="bi bi-speedometer2"></i>
+                    </div>
+                    <h3 class="h5 fw-bold mb-3">Readiness Dashboard</h3>
+                    <p class="text-secondary mb-0">See your career readiness score and how it improves over time.</p>
+                </div>
+            </div>
+            
+            <!-- Feature 6 -->
+            <div class="col-md-6 col-lg-4">
+                <div class="feature-card h-100">
+                    <div class="feature-icon mb-4 d-flex align-items-center justify-content-center">
+                        <i class="bi bi-mic"></i>
+                    </div>
+                    <h3 class="h5 fw-bold mb-3">AI Mock Interviews</h3>
+                    <p class="text-secondary mb-0">Practice technical and behavioral questions with instant AI feedback.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works Section -->
+<section class="section-padding">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-title">How It Works</h2>
+            <p class="section-subtitle">Your journey to career readiness in three simple steps.</p>
+        </div>
+        
+        <div class="row position-relative">
+            <!-- Connecting line (desktop only) -->
+            <div class="d-none d-lg-block position-absolute top-25 start-0 w-100 border-top border-2 border-primary" style="margin-top: 2rem; z-index: 0; opacity: 0.2;"></div>
+            
+            <!-- Step 1 -->
+            <div class="col-lg-4 text-center mb-4 mb-lg-0 position-relative z-1">
+                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-4 shadow" style="width: 64px; height: 64px; font-size: 1.5rem; font-weight: bold;">
+                    1
+                </div>
+                <h3 class="h5 fw-bold mb-3">Create Your Profile</h3>
+                <p class="text-secondary px-xl-4">Tell us about your skills, interests, and career goals.</p>
+            </div>
+            
+            <!-- Step 2 -->
+            <div class="col-lg-4 text-center mb-4 mb-lg-0 position-relative z-1">
+                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-4 shadow" style="width: 64px; height: 64px; font-size: 1.5rem; font-weight: bold;">
+                    2
+                </div>
+                <h3 class="h5 fw-bold mb-3">Get Your Roadmap</h3>
+                <p class="text-secondary px-xl-4">Our AI analyzes your profile and creates a personalized career plan.</p>
+            </div>
+            
+            <!-- Step 3 -->
+            <div class="col-lg-4 text-center position-relative z-1">
+                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-4 shadow" style="width: 64px; height: 64px; font-size: 1.5rem; font-weight: bold;">
+                    3
+                </div>
+                <h3 class="h5 fw-bold mb-3">Track & Grow</h3>
+                <p class="text-secondary px-xl-4">Follow your roadmap, track progress, and watch your readiness score climb.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="cta-section rounded-4 shadow-lg text-center p-5 position-relative overflow-hidden">
+            <div class="position-relative z-1">
+                <h2 class="text-white fw-bold mb-4">Ready to Start Your Journey?</h2>
+                <p class="text-white-50 mb-4 fs-5 mx-auto" style="max-width: 600px;">Join EngineerOS today and take the first step towards your dream engineering career.</p>
+                <a href="{{ url_for('auth.register') }}" class="btn btn-light btn-lg px-5 py-3 rounded-pill fw-bold text-primary shadow">Create Free Account</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block footer %}
+<footer class="mt-auto py-4 bg-white text-center text-muted border-top small">
+    <div class="container">
+        <p class="mb-0">&copy; 2026 EngineerOS. An AI-Powered Engineering Career Platform.</p>
+    </div>
+</footer>
+{% endblock %}

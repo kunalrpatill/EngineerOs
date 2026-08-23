@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% block title %}Interview Evaluation{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div class="d-flex align-items-center gap-3">
+            <div class="d-flex align-items-center justify-content-center bg-success-subtle text-success rounded-circle shadow-sm" style="width: 48px; height: 48px;">
+                <i class="bi bi-clipboard-check-fill fs-5"></i>
+            </div>
+            <div>
+                <h1 class="h4 fw-bold mb-0">Interview Evaluation</h1>
+                <p class="text-muted small mb-0">Review your AI-generated feedback and scoring.</p>
+            </div>
+        </div>
+        <div>
+            <a href="{{ url_for('dashboard.index') }}" class="btn btn-outline-secondary btn-sm rounded-3">Return to Dashboard</a>
+        </div>
+    </div>
+
+    <!-- AI Analysis Complete Header -->
+    <div class="card shadow-sm border-0 rounded-4 p-4 mb-4 text-center ai-glow fade-in">
+        <h2 class="h5 fw-bold mb-1"><span class="ai-text-gradient">✦ AI Analysis Complete</span></h2>
+        <p class="text-muted small mb-0">Your responses have been evaluated against industry standards for {{ profile.target_role }}.</p>
+    </div>
+
+    <div class="row g-4">
+        {% for item in feedback %}
+        <div class="col-12 stagger-{{ loop.index if loop.index <= 5 else 5 }}">
+            <div class="card shadow-sm border-0 rounded-4 overflow-hidden card-hover-elevate">
+                <div class="card-header bg-light border-0 py-3 d-flex justify-content-between align-items-center">
+                    <h2 class="h6 fw-bold mb-0 text-dark">
+                        <span class="badge bg-primary rounded-pill me-2">Q{{ loop.index }}</span>
+                        {{ item.question }}
+                    </h2>
+                    
+                    <div class="position-relative d-inline-flex flex-column align-items-center me-2">
+                        <div class="position-relative animate-pop-in" style="width: 45px; height: 45px;">
+                            <svg class="w-100 h-100" viewBox="0 0 100 100">
+                                <circle cx="50" cy="50" r="45" fill="none" stroke="#e2e8f0" stroke-width="10"/>
+                                <circle cx="50" cy="50" r="45" fill="none" stroke="{% if item.score >= 8 %}#10b981{% elif item.score >= 5 %}#f59e0b{% else %}#ef4444{% endif %}" stroke-width="10" stroke-dasharray="283" stroke-dashoffset="{{ 283 - (283 * (item.score*10) / 100) }}" transform="rotate(-90 50 50)" stroke-linecap="round" style="transition: stroke-dashoffset 1.5s ease-out;"/>
+                            </svg>
+                            <div class="position-absolute top-50 start-50 translate-middle text-center" style="line-height: 1;">
+                                <span class="fw-bold small" style="font-size: 0.85rem;"><span class="animate-counter" data-target="{{ item.score }}">0</span><span class="text-muted" style="font-size: 0.65rem">/10</span></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    <div class="mb-4">
+                        <h3 class="h6 fw-bold text-muted mb-2">Your Answer:</h3>
+                        <div class="bg-white border rounded-3 p-3 text-secondary" style="white-space: pre-wrap;">{{ item.answer }}</div>
+                    </div>
+                    
+                    <div class="row g-4 mb-4">
+                        <div class="col-md-6 stagger-1">
+                            <h3 class="h6 fw-bold text-success mb-2"><i class="bi bi-check-circle-fill me-1"></i> Strengths</h3>
+                            <ul class="list-unstyled mb-0">
+                                {% for str_item in item.strengths %}
+                                <li class="d-flex gap-2 text-sm text-secondary mb-1">
+                                    <i class="bi bi-check text-success fs-5" style="margin-top: -3px;"></i> <span>{{ str_item }}</span>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <div class="col-md-6 stagger-2">
+                            <h3 class="h6 fw-bold text-warning mb-2" style="color: #d97706 !important;"><i class="bi bi-arrow-up-circle-fill me-1"></i> Areas for Improvement</h3>
+                            <ul class="list-unstyled mb-0">
+                                {% for imp_item in item.improvements %}
+                                <li class="d-flex gap-2 text-sm text-secondary mb-1">
+                                    <i class="bi bi-arrow-right-short text-warning fs-5" style="color: #d97706 !important; margin-top: -3px;"></i> <span>{{ imp_item }}</span>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="bg-primary-subtle border border-primary-subtle rounded-3 p-3 stagger-3 position-relative overflow-hidden">
+                        <div class="position-absolute top-0 end-0 opacity-10 m-2">
+                            <i class="bi bi-robot fs-1"></i>
+                        </div>
+                        <h3 class="h6 fw-bold text-primary mb-1"><span class="ai-text-gradient">✦ AI Evaluation</span></h3>
+                        <p class="mb-0 text-dark small position-relative z-1">{{ item.feedback }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <div class="text-center mt-5">
+        <a href="{{ url_for('interview.index') }}" class="btn btn-primary px-4 py-2 rounded-3 shadow-sm">
+            <i class="bi bi-arrow-clockwise me-1"></i> Try Another Mock Interview
+        </a>
+    </div>
+</div>
+{% endblock %}

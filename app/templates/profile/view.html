@@ -1,0 +1,338 @@
+{% extends 'base.html' %}
+
+{% block title %}My Profile{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    
+    <!-- Profile Header Card -->
+    <div class="card shadow-sm border-0 rounded-4 mb-4 overflow-hidden">
+        <div class="bg-primary text-white p-4 p-md-5 position-relative">
+            <div class="row align-items-center g-4">
+                
+                <!-- Avatar & Basic Info -->
+                <div class="col-auto">
+                    <div class="d-flex align-items-center justify-content-center bg-white text-primary rounded-circle shadow fw-bold fs-2" style="width: 84px; height: 84px; border: 3px solid rgba(255,255,255,0.8);">
+                        {{ current_user.name[:1] | upper }}
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
+                        <h1 class="h3 fw-bold mb-0 text-white">{{ current_user.name }}</h1>
+                        {% if profile.target_role %}
+                            <span class="badge bg-white text-primary rounded-pill px-3 py-1 fw-semibold">
+                                <i class="bi bi-briefcase me-1"></i> {{ profile.target_role }}
+                            </span>
+                        {% endif %}
+                    </div>
+                    <p class="text-white-50 mb-2">
+                        <i class="bi bi-envelope me-1"></i> {{ current_user.email }}
+                        {% if profile.college %}
+                            <span class="mx-2">•</span>
+                            <i class="bi bi-building me-1"></i> {{ profile.college }}
+                        {% endif %}
+                    </p>
+                </div>
+
+                <!-- Action Button -->
+                <div class="col-12 col-md-auto text-md-end">
+                    <a href="{{ url_for('profile.edit') }}" class="btn btn-light btn-lg text-primary fw-semibold px-4 rounded-3 shadow-sm">
+                        <i class="bi bi-pencil-square me-1"></i> Edit Profile
+                    </a>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Completion Progress Bar -->
+        <div class="card-body bg-light p-4 border-top">
+            <div class="row align-items-center g-3">
+                <div class="col-12 col-md-4">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="fw-bold text-dark fs-5">{{ completion }}%</span>
+                        <span class="text-muted small">Profile Completion</span>
+                        {% if completion >= 80 %}
+                            <span class="badge bg-success-subtle text-success rounded-pill px-2 py-1 small">Profile Ready</span>
+                        {% elif completion >= 40 %}
+                            <span class="badge bg-primary-subtle text-primary rounded-pill px-2 py-1 small">In Progress</span>
+                        {% else %}
+                            <span class="badge bg-warning-subtle text-warning rounded-pill px-2 py-1 small">Getting Started</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-12 col-md-8">
+                    <div class="progress rounded-pill shadow-inner" style="height: 12px;">
+                        <div class="progress-bar bg-primary progress-bar-striped progress-bar-animated" role="progressbar" style="width: {{ completion }}%;" aria-valuenow="{{ completion }}" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="row g-4">
+        
+        <!-- Left Column: Academics & Career Goals -->
+        <div class="col-12 col-lg-7">
+            
+            <!-- Academic Information Card -->
+            <div class="card shadow-sm border-0 rounded-4 mb-4">
+                <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
+                    <h2 class="h5 fw-bold mb-0 text-dark">
+                        <i class="bi bi-mortarboard text-primary me-2"></i> Academic Background
+                    </h2>
+                    <a href="{{ url_for('profile.edit') }}" class="text-muted small text-decoration-none">
+                        <i class="bi bi-pencil"></i>
+                    </a>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row g-3">
+                        <div class="col-sm-6">
+                            <div class="text-muted small">College / University</div>
+                            <div class="fw-semibold text-dark">{{ profile.college or 'Not specified' }}</div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="text-muted small">Branch / Department</div>
+                            <div class="fw-semibold text-dark">{{ profile.branch or 'Not specified' }}</div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="text-muted small">Year of Study</div>
+                            <div class="fw-semibold text-dark">
+                                {% if profile.year %}
+                                    {{ profile.year }}{% if profile.year == 1 %}st{% elif profile.year == 2 %}nd{% elif profile.year == 3 %}rd{% else %}th{% endif %} Year
+                                {% else %}
+                                    Not specified
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="text-muted small">Current Semester</div>
+                            <div class="fw-semibold text-dark">
+                                {% if profile.semester %}Semester {{ profile.semester }}{% else %}Not specified{% endif %}
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="text-muted small">CGPA</div>
+                            <div class="fw-semibold text-dark">
+                                {% if profile.cgpa %}<span class="badge bg-primary-subtle text-primary fs-6">{{ profile.cgpa }} / 10</span>{% else %}Not specified{% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Career Goals Card -->
+            <div class="card shadow-sm border-0 rounded-4 mb-4">
+                <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
+                    <h2 class="h5 fw-bold mb-0 text-dark">
+                        <i class="bi bi-crosshair text-primary me-2"></i> Career Goals & Aspirations
+                    </h2>
+                    <a href="{{ url_for('profile.edit') }}" class="text-muted small text-decoration-none">
+                        <i class="bi bi-pencil"></i>
+                    </a>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row g-3">
+                        <div class="col-sm-6">
+                            <div class="text-muted small">Target Role</div>
+                            <div class="fw-semibold text-dark">{{ profile.target_role or 'Not set' }}</div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="text-muted small">Preferred Domain</div>
+                            <div class="fw-semibold text-dark">{{ profile.preferred_domain or 'Not set' }}</div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="text-muted small">Preparation Timeline</div>
+                            <div class="fw-semibold text-dark">{{ profile.career_timeline or 'Not set' }}</div>
+                        </div>
+                        <div class="col-12">
+                            <div class="text-muted small mb-2">Target Companies</div>
+                            {% if companies_list %}
+                                <div class="d-flex flex-wrap gap-2">
+                                    {% for company in companies_list %}
+                                        <span class="badge bg-light text-dark border px-3 py-2 rounded-pill fw-medium">
+                                            <i class="bi bi-building me-1 text-secondary"></i> {{ company }}
+                                        </span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <div class="text-muted fst-italic small">No target companies specified yet.</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Right Column: Skills, Interests & Links -->
+        <div class="col-12 col-lg-5">
+            
+            <!-- Technical Skills Card -->
+            <div class="card shadow-sm border-0 rounded-4 mb-4">
+                <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
+                    <h2 class="h5 fw-bold mb-0 text-dark">
+                        <i class="bi bi-code-slash text-primary me-2"></i> Technical Skills
+                        <span class="badge bg-primary-subtle text-primary ms-1 small rounded-pill">{{ skills|length }}</span>
+                    </h2>
+                    <a href="{{ url_for('profile.edit') }}" class="btn btn-sm btn-outline-primary rounded-pill">
+                        <i class="bi bi-plus-lg me-1"></i> Add
+                    </a>
+                </div>
+                <div class="card-body p-4">
+                    {% if skills %}
+                        <!-- Advanced Skills -->
+                        {% if grouped_skills.advanced %}
+                            <div class="mb-3">
+                                <div class="text-success small fw-semibold text-uppercase tracking-wider mb-2">
+                                    <i class="bi bi-star-fill me-1"></i> Advanced
+                                </div>
+                                <div class="d-flex flex-wrap gap-2">
+                                    {% for skill in grouped_skills.advanced %}
+                                        <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 rounded-pill fw-medium">
+                                            {{ skill.name }}
+                                        </span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        <!-- Intermediate Skills -->
+                        {% if grouped_skills.intermediate %}
+                            <div class="mb-3">
+                                <div class="text-primary small fw-semibold text-uppercase tracking-wider mb-2">
+                                    <i class="bi bi-star-half me-1"></i> Intermediate
+                                </div>
+                                <div class="d-flex flex-wrap gap-2">
+                                    {% for skill in grouped_skills.intermediate %}
+                                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2 rounded-pill fw-medium">
+                                            {{ skill.name }}
+                                        </span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        <!-- Beginner Skills -->
+                        {% if grouped_skills.beginner %}
+                            <div>
+                                <div class="text-secondary small fw-semibold text-uppercase tracking-wider mb-2">
+                                    <i class="bi bi-star me-1"></i> Beginner
+                                </div>
+                                <div class="d-flex flex-wrap gap-2">
+                                    {% for skill in grouped_skills.beginner %}
+                                        <span class="badge bg-light text-secondary border px-3 py-2 rounded-pill fw-medium">
+                                            {{ skill.name }}
+                                        </span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        <div class="text-center py-4 text-muted">
+                            <i class="bi bi-tools fs-2 text-secondary d-block mb-2"></i>
+                            <p class="small mb-2">No skills added yet.</p>
+                            <a href="{{ url_for('profile.edit') }}" class="btn btn-sm btn-outline-primary rounded-pill">
+                                Add Technical Skills
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Areas of Interest Card -->
+            <div class="card shadow-sm border-0 rounded-4 mb-4">
+                <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
+                    <h2 class="h5 fw-bold mb-0 text-dark">
+                        <i class="bi bi-heart text-danger me-2"></i> Areas of Interest
+                    </h2>
+                    <a href="{{ url_for('profile.edit') }}" class="text-muted small text-decoration-none">
+                        <i class="bi bi-pencil"></i>
+                    </a>
+                </div>
+                <div class="card-body p-4">
+                    {% if interests %}
+                        <div class="d-flex flex-wrap gap-2">
+                            {% for interest in interests %}
+                                <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-3 py-2 rounded-pill fw-medium">
+                                    <i class="bi bi-tag-fill me-1 small"></i> {{ interest.name }}
+                                </span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-3 text-muted">
+                            <p class="small mb-2">No interests listed yet.</p>
+                            <a href="{{ url_for('profile.edit') }}" class="btn btn-sm btn-outline-danger rounded-pill">
+                                Add Interests
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Portfolio & Profiles Card -->
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-header bg-white border-bottom py-3">
+                    <h2 class="h5 fw-bold mb-0 text-dark">
+                        <i class="bi bi-link-45deg text-primary me-2"></i> Coding & Social Profiles
+                    </h2>
+                </div>
+                <div class="card-body p-4">
+                    <ul class="list-unstyled mb-0 d-flex flex-column gap-3">
+                        
+                        <!-- GitHub -->
+                        <li class="d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center gap-2">
+                                <i class="bi bi-github fs-5 text-dark"></i>
+                                <span class="fw-medium small">GitHub</span>
+                            </div>
+                            {% if profile.github_url %}
+                                <a href="{{ profile.github_url }}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-secondary rounded-pill px-3">
+                                    Visit <i class="bi bi-box-arrow-up-right ms-1 small"></i>
+                                </a>
+                            {% else %}
+                                <span class="text-muted small">Not linked</span>
+                            {% endif %}
+                        </li>
+
+                        <!-- LinkedIn -->
+                        <li class="d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center gap-2">
+                                <i class="bi bi-linkedin fs-5 text-primary"></i>
+                                <span class="fw-medium small">LinkedIn</span>
+                            </div>
+                            {% if profile.linkedin_url %}
+                                <a href="{{ profile.linkedin_url }}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-primary rounded-pill px-3">
+                                    Visit <i class="bi bi-box-arrow-up-right ms-1 small"></i>
+                                </a>
+                            {% else %}
+                                <span class="text-muted small">Not linked</span>
+                            {% endif %}
+                        </li>
+
+                        <!-- LeetCode -->
+                        <li class="d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center gap-2">
+                                <i class="bi bi-code-square fs-5 text-warning"></i>
+                                <span class="fw-medium small">Coding Profile</span>
+                            </div>
+                            {% if profile.leetcode_url %}
+                                <a href="{{ profile.leetcode_url }}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-warning rounded-pill px-3">
+                                    Visit <i class="bi bi-box-arrow-up-right ms-1 small"></i>
+                                </a>
+                            {% else %}
+                                <span class="text-muted small">Not linked</span>
+                            {% endif %}
+                        </li>
+
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}

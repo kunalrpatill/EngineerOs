@@ -1,0 +1,274 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ roadmap.title }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+    <!-- Roadmap Header Banner -->
+    <div class="card shadow-sm border-0 rounded-4 mb-4 bg-primary text-white p-4 p-md-5 overflow-hidden position-relative">
+        <div class="row align-items-center position-relative z-1">
+            <div class="col-lg-8">
+                <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+                    <span class="badge bg-white bg-opacity-25 text-white rounded-pill px-3 py-1 fw-medium">
+                        <i class="bi bi-map-fill me-1"></i> Career Roadmap
+                    </span>
+                    {% if roadmap.is_active %}
+                        <span class="badge bg-success rounded-pill px-3 py-1 fw-medium">
+                            <i class="bi bi-check-circle me-1"></i> Active Plan
+                        </span>
+                    {% endif %}
+                </div>
+                
+                <h1 class="h2 fw-bold mb-2">{{ roadmap.title }}</h1>
+                <p class="text-white-50 mb-3 fs-6">
+                    Target Role: <strong class="text-white">{{ roadmap.target_role }}</strong>
+                    {% if roadmap.estimated_duration %}
+                        <span class="mx-2">•</span>
+                        Timeline: <strong class="text-white">{{ roadmap.estimated_duration }}</strong>
+                    {% endif %}
+                    <span class="mx-2">•</span>
+                    {{ phases|length }} Phases • {{ total_milestones }} Milestones
+                </p>
+
+                <div class="d-flex flex-wrap gap-2 pt-2">
+                    <a href="{{ url_for('roadmap.index') }}" class="btn btn-outline-light px-3 rounded-3">
+                        <i class="bi bi-arrow-left me-1"></i> All Roadmaps
+                    </a>
+                    <a href="{{ url_for('progress.index') }}" class="btn btn-light text-primary fw-semibold px-4 rounded-3 shadow-sm">
+                        <i class="bi bi-journal-check me-1"></i> Progress Tracker
+                    </a>
+                    <form method="POST" action="{{ url_for('roadmap.generate') }}" class="d-inline" onsubmit="return confirm('Regenerating will create a new roadmap with your latest profile and skill updates. Proceed?');">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() if csrf_token else '' }}">
+                        <button type="submit" class="btn btn-outline-light px-3 rounded-3">
+                            <i class="bi bi-arrow-clockwise me-1"></i> Regenerate
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="col-lg-4 text-center text-lg-end mt-4 mt-lg-0">
+                <div class="bg-white bg-opacity-10 border border-white border-opacity-25 rounded-4 p-4 d-inline-block text-center shadow-sm" style="min-width: 220px;">
+                    <div class="display-5 fw-bold text-white mb-0">{{ roadmap.overall_readiness }}%</div>
+                    <div class="text-white-50 small mb-2">Target Readiness Match</div>
+                    <div class="progress bg-white bg-opacity-25 rounded-pill mb-2" style="height: 8px;">
+                        <div class="progress-bar bg-white rounded-pill" style="width: {{ roadmap.overall_readiness }}%;"></div>
+                    </div>
+                    <div class="text-white-50 small">
+                        <i class="bi bi-check2-circle"></i> {{ completed_milestones }}/{{ total_milestones }} Milestones Done ({{ progress_pct }}%)
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="position-absolute end-0 bottom-0 opacity-10 pe-4 pb-2 d-none d-md-block" style="pointer-events: none;">
+            <i class="bi bi-diagram-3" style="font-size: 14rem; line-height: 1;"></i>
+        </div>
+    </div>
+
+    <!-- Skill-Gap Analysis Card -->
+    <div class="card shadow-sm border-0 rounded-4 mb-4 stagger-1">
+        <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
+            <h2 class="h5 fw-bold mb-0 text-dark">
+                <i class="bi bi-bar-chart-steps text-primary me-2"></i> AI Skill-Gap Analysis
+            </h2>
+            <span class="badge bg-primary-subtle text-primary rounded-pill px-3 py-1">AI Evaluated</span>
+        </div>
+        <div class="card-body p-4">
+            <div class="row g-4">
+                
+                <!-- Strong Areas -->
+                <div class="col-12 col-md-6">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <i class="bi bi-check-circle-fill text-success fs-5"></i>
+                        <h3 class="h6 fw-bold mb-0 text-dark">Existing Strengths</h3>
+                    </div>
+                    <p class="text-muted small mb-3">Skills in your profile that directly match industry expectations for {{ roadmap.target_role }}:</p>
+                    <div class="d-flex flex-wrap gap-2">
+                        {% if strong_areas %}
+                            {% for skill in strong_areas %}
+                                <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 rounded-pill fw-medium">
+                                    <i class="bi bi-check2 me-1"></i> {{ skill }}
+                                </span>
+                            {% endfor %}
+                        {% else %}
+                            <span class="text-muted fst-italic small">No direct skill matches detected yet.</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Skill Gaps -->
+                <div class="col-12 col-md-6">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <i class="bi bi-exclamation-triangle-fill text-danger fs-5"></i>
+                        <h3 class="h6 fw-bold mb-0 text-dark">Skill Gaps to Bridge</h3>
+                    </div>
+                    <p class="text-muted small mb-3">Critical skills recommended to learn through this roadmap:</p>
+                    <div class="d-flex flex-wrap gap-2">
+                        {% if gaps_identified %}
+                            {% for gap in gaps_identified %}
+                                <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-3 py-2 rounded-pill fw-medium">
+                                    <i class="bi bi-arrow-up-right me-1"></i> {{ gap }}
+                                </span>
+                            {% endfor %}
+                        {% else %}
+                            <span class="text-muted fst-italic small">No significant skill gaps identified!</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Phased Roadmap Timeline -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="h4 fw-bold text-dark mb-0">
+            <i class="bi bi-signpost-split text-primary me-2"></i> Phased Learning Path
+        </h2>
+        <span class="text-muted small">{{ phases|length }} Sequential Phases</span>
+    </div>
+
+    {% if phases %}
+        <div class="timeline mt-4 stagger-2">
+            {% for phase in phases %}
+                <div class="timeline-item {% if phase.status == 'completed' %}completed{% elif phase.status == 'in_progress' %}in-progress{% endif %}">
+                    <div class="card shadow-sm border-0 rounded-4 overflow-hidden mb-4">
+                        
+                        <!-- Phase Header -->
+                        <div class="card-header bg-light border-bottom p-3 p-md-4 d-flex flex-wrap justify-content-between align-items-center gap-2">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="d-flex align-items-center justify-content-center bg-primary text-white rounded-circle fw-bold shadow-sm" style="width: 36px; height: 36px;">
+                                    {{ phase.phase_number }}
+                                </div>
+                                <div>
+                                    <h3 class="h5 fw-bold text-dark mb-0">{{ phase.title }}</h3>
+                                    {% if phase.duration %}
+                                        <span class="text-muted small">
+                                            <i class="bi bi-clock me-1"></i> Estimated Duration: {{ phase.duration }}
+                                        </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div>
+                                {% if phase.status == 'completed' %}
+                                    <span class="badge bg-success-subtle text-success rounded-pill px-3 py-1 fw-semibold">
+                                        <i class="bi bi-check2-all me-1"></i> Completed
+                                    </span>
+                                {% elif phase.status == 'in_progress' %}
+                                    <span class="badge bg-primary-subtle text-primary rounded-pill px-3 py-1 fw-semibold">
+                                        <i class="bi bi-play-circle me-1"></i> In Progress
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-secondary-subtle text-secondary rounded-pill px-3 py-1 fw-semibold">
+                                        <i class="bi bi-hourglass me-1"></i> Not Started
+                                    </span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Milestones List -->
+                        <div class="card-body p-3 p-md-4">
+                            {% if phase.milestones %}
+                                <div class="d-flex flex-column gap-3">
+                                    {% for milestone in phase.milestones %}
+                                        <div class="p-3 rounded-3 border transition-base {% if milestone.status == 'completed' %}bg-success-subtle border-success-subtle{% else %}bg-body{% endif %}">
+                                            <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-2">
+                                                
+                                                <!-- Milestone Title & Type Badge -->
+                                                <div class="d-flex align-items-center gap-2">
+                                                    {% if milestone.milestone_type == 'learning' %}
+                                                        <span class="badge bg-primary-subtle text-primary rounded-pill px-2 py-1 small">
+                                                            <i class="bi bi-book me-1"></i> Learning
+                                                        </span>
+                                                    {% elif milestone.milestone_type == 'project' %}
+                                                        <span class="badge bg-success-subtle text-success rounded-pill px-2 py-1 small">
+                                                            <i class="bi bi-tools me-1"></i> Project
+                                                        </span>
+                                                    {% elif milestone.milestone_type == 'practice' %}
+                                                        <span class="badge bg-warning-subtle text-warning rounded-pill px-2 py-1 small">
+                                                            <i class="bi bi-code-slash me-1"></i> Practice
+                                                        </span>
+                                                    {% elif milestone.milestone_type == 'assessment' %}
+                                                        <span class="badge bg-danger-subtle text-danger rounded-pill px-2 py-1 small">
+                                                            <i class="bi bi-person-check me-1"></i> Career / Interview
+                                                        </span>
+                                                    {% else %}
+                                                        <span class="badge bg-light text-secondary rounded-pill px-2 py-1 small">
+                                                            <i class="bi bi-check-circle me-1"></i> Milestone
+                                                        </span>
+                                                    {% endif %}
+
+                                                    <h4 class="h6 fw-bold mb-0 text-dark {% if milestone.status == 'completed' %}text-decoration-line-through text-muted{% endif %}">
+                                                        {{ milestone.title }}
+                                                    </h4>
+                                                </div>
+
+                                                <!-- Toggle Completion Action -->
+                                                <div>
+                                                    <form method="POST" action="{{ url_for('progress.toggle_milestone', milestone_id=milestone.id) }}" class="d-inline">
+                                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() if csrf_token else '' }}">
+                                                        {% if milestone.status == 'completed' %}
+                                                            <button type="submit" class="btn btn-success btn-sm rounded-pill px-3 fw-medium shadow-sm animate-pop-in" title="Click to unmark as completed">
+                                                                <i class="bi bi-check-circle-fill me-1"></i> Completed
+                                                            </button>
+                                                            <span class="badge bg-success text-white ms-2 animate-pop-in rounded-pill"><i class="bi bi-graph-up-arrow me-1"></i>+Readiness</span>
+                                                        {% else %}
+                                                            <button type="submit" class="btn btn-outline-primary btn-sm rounded-pill px-3 bg-white" title="Click to mark as completed">
+                                                                <i class="bi bi-circle me-1"></i> Mark Done
+                                                            </button>
+                                                        {% endif %}
+                                                    </form>
+                                                </div>
+                                            </div>
+
+                                            <!-- Description -->
+                                            {% if milestone.description %}
+                                                <p class="text-secondary small mb-2 {% if milestone.status == 'completed' %}text-muted{% endif %}">{{ milestone.description }}</p>
+                                            {% endif %}
+
+                                            <!-- Curated Resource Links -->
+                                            {% if milestone.resources %}
+                                                <div class="d-flex flex-wrap align-items-center gap-2 mt-2 pt-2 border-top">
+                                                    <span class="text-muted small fw-medium">
+                                                        <i class="bi bi-link-45deg"></i> Resources:
+                                                    </span>
+                                                    {% for res in milestone.resources %}
+                                                        <a href="{{ res }}" target="_blank" rel="noopener noreferrer" class="badge bg-white text-primary border rounded-pill px-3 py-1 text-decoration-none small shadow-sm">
+                                                            <i class="bi bi-box-arrow-up-right me-1 small"></i>
+                                                            {{ res | replace('https://', '') | replace('http://', '') | replace('www.', '') | truncate(35) }}
+                                                        </a>
+                                                    {% endfor %}
+                                                </div>
+                                            {% endif %}
+
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <p class="text-muted small mb-0">No milestones registered for this phase.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="card shadow-sm border-0 rounded-4 p-4 text-center text-muted">
+            <p class="mb-0">No phases available in this roadmap.</p>
+        </div>
+    {% endif %}
+
+    <!-- Back to Dashboard / Actions -->
+    <div class="d-flex justify-content-between align-items-center pt-2">
+        <a href="{{ url_for('dashboard.index') }}" class="btn btn-outline-secondary rounded-3 px-4">
+            <i class="bi bi-speedometer2 me-1"></i> Back to Dashboard
+        </a>
+        <a href="{{ url_for('progress.index') }}" class="btn btn-primary rounded-3 px-4 shadow-sm">
+            <i class="bi bi-journal-check me-1"></i> View Progress Dashboard
+        </a>
+    </div>
+
+</div>
+{% endblock %}

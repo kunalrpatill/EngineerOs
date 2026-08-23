@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+
+{% block title %}Create Student Account{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center align-items-center min-vh-75">
+        <div class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-5">
+            
+            <!-- Auth Card -->
+            <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+                <div class="card-body p-4 p-md-5">
+                    
+                    <!-- Header -->
+                    <div class="text-center mb-4">
+                        <div class="d-inline-flex align-items-center justify-content-center bg-primary-subtle text-primary rounded-circle mb-3" style="width: 56px; height: 56px;">
+                            <i class="bi bi-person-plus-fill fs-3"></i>
+                        </div>
+                        <h1 class="h4 fw-bold text-dark mb-1">Create Student Account</h1>
+                        <p class="text-muted small mb-0">Start building your placement-ready engineering career</p>
+                    </div>
+
+                    <!-- Register Form -->
+                    <form method="POST" action="{{ url_for('auth.register') }}" novalidate>
+                        {{ form.hidden_tag() }}
+
+                        <!-- Full Name -->
+                        <div class="mb-3">
+                            <label for="{{ form.name.id }}" class="form-label fw-medium small text-secondary">
+                                <i class="bi bi-person me-1"></i> {{ form.name.label.text }}
+                            </label>
+                            {{ form.name(class="form-control form-control-lg fs-6" + (" is-invalid" if form.name.errors else "")) }}
+                            {% for error in form.name.errors %}
+                                <div class="invalid-feedback d-block small">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Email Field -->
+                        <div class="mb-3">
+                            <label for="{{ form.email.id }}" class="form-label fw-medium small text-secondary">
+                                <i class="bi bi-envelope me-1"></i> {{ form.email.label.text }}
+                            </label>
+                            {{ form.email(class="form-control form-control-lg fs-6" + (" is-invalid" if form.email.errors else "")) }}
+                            {% for error in form.email.errors %}
+                                <div class="invalid-feedback d-block small">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Password Field -->
+                        <div class="mb-3">
+                            <label for="{{ form.password.id }}" class="form-label fw-medium small text-secondary">
+                                <i class="bi bi-shield-lock me-1"></i> {{ form.password.label.text }}
+                            </label>
+                            {{ form.password(class="form-control form-control-lg fs-6" + (" is-invalid" if form.password.errors else "")) }}
+                            {% for error in form.password.errors %}
+                                <div class="invalid-feedback d-block small">{{ error }}</div>
+                            {% endfor %}
+                            <div class="form-text text-muted small">Must be at least 6 characters long.</div>
+                        </div>
+
+                        <!-- Confirm Password Field -->
+                        <div class="mb-4">
+                            <label for="{{ form.confirm_password.id }}" class="form-label fw-medium small text-secondary">
+                                <i class="bi bi-check2-circle me-1"></i> {{ form.confirm_password.label.text }}
+                            </label>
+                            {{ form.confirm_password(class="form-control form-control-lg fs-6" + (" is-invalid" if form.confirm_password.errors else "")) }}
+                            {% for error in form.confirm_password.errors %}
+                                <div class="invalid-feedback d-block small">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="d-grid mb-3">
+                            <button type="submit" class="btn btn-primary btn-lg fs-6 fw-semibold py-2 rounded-3 shadow-sm">
+                                <i class="bi bi-person-check me-1"></i> Create Account
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Footer Link -->
+                    <div class="text-center pt-3 border-top mt-4">
+                        <p class="text-muted small mb-0">
+                            Already have an account? 
+                            <a href="{{ url_for('auth.login') }}" class="text-primary fw-semibold text-decoration-none">
+                                Sign In
+                            </a>
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Back to Home -->
+            <div class="text-center mt-3">
+                <a href="{{ url_for('main.home') }}" class="text-secondary small text-decoration-none">
+                    <i class="bi bi-arrow-left me-1"></i> Back to Homepage
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

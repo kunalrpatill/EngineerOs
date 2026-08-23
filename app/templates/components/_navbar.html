@@ -1,0 +1,68 @@
+<!-- app/templates/components/_navbar.html -->
+<nav class="navbar navbar-expand-lg navbar-light fixed-top">
+    <div class="container">
+        <!-- Brand -->
+        <a class="navbar-brand d-flex align-items-center gap-2" href="{{ url_for('main.home') }}">
+            <i class="bi bi-heptagon-fill fs-3"></i>
+            <span class="text-dark">EngineerOS</span>
+        </a>
+        
+        <!-- Mobile Toggle Button -->
+        <button class="navbar-toggler border-0 shadow-none p-2" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="bi bi-list fs-1 text-primary"></i>
+        </button>
+        
+        <!-- Navbar Links -->
+        <div class="collapse navbar-collapse" id="navbarContent">
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center gap-lg-2">
+                {% if current_user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link px-3 {% if request.endpoint and request.endpoint.startswith('dashboard') %}active{% endif %}" href="{{ url_for('dashboard.index') }}">
+                            <i class="bi bi-grid me-1 d-none d-lg-inline"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link px-3 {% if request.endpoint and request.endpoint.startswith('profile') %}active{% endif %}" href="{{ url_for('profile.view') }}">
+                            <i class="bi bi-person me-1 d-none d-lg-inline"></i> Profile
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link px-3 {% if request.endpoint and request.endpoint.startswith('roadmap') %}active{% endif %}" href="{{ url_for('roadmap.index') }}">
+                            <i class="bi bi-map me-1 d-none d-lg-inline"></i> Roadmap
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link px-3 {% if request.endpoint and request.endpoint.startswith('progress') %}active{% endif %}" href="{{ url_for('progress.index') }}">
+                            <i class="bi bi-journal-check me-1 d-none d-lg-inline"></i> Progress
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link px-3 {% if request.endpoint and request.endpoint.startswith('interview') %}active{% endif %}" href="{{ url_for('interview.index') }}">
+                            <i class="bi bi-mic me-1 d-none d-lg-inline"></i> Interview
+                        </a>
+                    </li>
+                    <li class="nav-item ms-lg-3 mt-3 mt-lg-0 d-flex align-items-center gap-3 border-start-lg ps-lg-3">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="d-flex align-items-center justify-content-center bg-primary text-white rounded-circle fw-bold shadow-sm" style="width: 36px; height: 36px;" title="{{ current_user.name }}">
+                                {{ current_user.name[:1] | upper }}
+                            </div>
+                            <span class="d-lg-none fw-semibold text-dark">{{ current_user.name }}</span>
+                        </div>
+                        <a class="btn btn-light btn-sm rounded-pill px-3 fw-semibold text-danger border shadow-sm" href="{{ url_for('auth.logout') }}">
+                            Logout
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link px-4 fw-semibold" href="{{ url_for('auth.login') }}">Log in</a>
+                    </li>
+                    <li class="nav-item ms-lg-2 mt-2 mt-lg-0">
+                        <a class="btn btn-primary rounded-pill px-4 shadow-sm fw-semibold" href="{{ url_for('auth.register') }}">
+                            Get Started Free
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>

@@ -1,0 +1,23 @@
+<!-- app/templates/components/_flash_messages.html -->
+<div class="flash-messages-container" style="position: fixed; top: 80px; left: 50%; transform: translateX(-50%); z-index: 1050; width: 100%; max-width: 600px; padding: 0 15px;">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <!-- Map categories to Bootstrap alert classes -->
+                {% set alert_class = 'alert-info' %}
+                {% if category == 'success' %}
+                    {% set alert_class = 'alert-success' %}
+                {% elif category == 'danger' or category == 'error' %}
+                    {% set alert_class = 'alert-danger' %}
+                {% elif category == 'warning' %}
+                    {% set alert_class = 'alert-warning' %}
+                {% endif %}
+                
+                <div class="alert {{ alert_class }} alert-dismissible fade show shadow-sm" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+</div>

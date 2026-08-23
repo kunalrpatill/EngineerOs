@@ -1,0 +1,409 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Profile{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    
+    <!-- Page Header -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-2 border-bottom">
+        <div>
+            <h1 class="h3 fw-bold text-dark mb-1">
+                <i class="bi bi-person-gear text-primary me-2"></i> Edit Student Profile
+            </h1>
+            <p class="text-muted small mb-0">Update your academic information, career ambitions, skills, and links.</p>
+        </div>
+        <div class="mt-3 mt-md-0">
+            <a href="{{ url_for('profile.view') }}" class="btn btn-outline-secondary rounded-3 px-3">
+                <i class="bi bi-x-lg me-1"></i> Cancel
+            </a>
+        </div>
+    </div>
+
+    <!-- Edit Form -->
+    <form method="POST" action="{{ url_for('profile.edit') }}" novalidate>
+        {{ form.hidden_tag() }}
+
+        <div class="row g-4">
+            
+            <!-- Left Column: Academic & Career Goals -->
+            <div class="col-12 col-lg-7">
+                
+                <!-- Section 1: Academic Background -->
+                <div class="card shadow-sm border-0 rounded-4 mb-4">
+                    <div class="card-header bg-white border-bottom py-3">
+                        <h2 class="h5 fw-bold mb-0 text-dark">
+                            <i class="bi bi-mortarboard text-primary me-2"></i> 1. Academic Background
+                        </h2>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="row g-3">
+                            
+                            <!-- College Name -->
+                            <div class="col-12">
+                                <label for="{{ form.college.id }}" class="form-label fw-medium small text-secondary">
+                                    {{ form.college.label.text }}
+                                </label>
+                                {{ form.college(class="form-control" + (" is-invalid" if form.college.errors else "")) }}
+                                {% for error in form.college.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+
+                            <!-- Branch / Major -->
+                            <div class="col-12">
+                                <label for="{{ form.branch.id }}" class="form-label fw-medium small text-secondary">
+                                    {{ form.branch.label.text }}
+                                </label>
+                                {{ form.branch(class="form-control" + (" is-invalid" if form.branch.errors else "")) }}
+                                {% for error in form.branch.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+
+                            <!-- Year of Study -->
+                            <div class="col-sm-4">
+                                <label for="{{ form.year.id }}" class="form-label fw-medium small text-secondary">
+                                    {{ form.year.label.text }}
+                                </label>
+                                {{ form.year(class="form-select" + (" is-invalid" if form.year.errors else "")) }}
+                                {% for error in form.year.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+
+                            <!-- Semester -->
+                            <div class="col-sm-4">
+                                <label for="{{ form.semester.id }}" class="form-label fw-medium small text-secondary">
+                                    {{ form.semester.label.text }}
+                                </label>
+                                {{ form.semester(class="form-select" + (" is-invalid" if form.semester.errors else "")) }}
+                                {% for error in form.semester.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+
+                            <!-- CGPA -->
+                            <div class="col-sm-4">
+                                <label for="{{ form.cgpa.id }}" class="form-label fw-medium small text-secondary">
+                                    {{ form.cgpa.label.text }}
+                                </label>
+                                {{ form.cgpa(class="form-control" + (" is-invalid" if form.cgpa.errors else "")) }}
+                                {% for error in form.cgpa.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 2: Career Goals & Timeline -->
+                <div class="card shadow-sm border-0 rounded-4 mb-4">
+                    <div class="card-header bg-white border-bottom py-3">
+                        <h2 class="h5 fw-bold mb-0 text-dark">
+                            <i class="bi bi-crosshair text-primary me-2"></i> 2. Career Goals & Aspirations
+                        </h2>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="row g-3">
+                            
+                            <!-- Target Role -->
+                            <div class="col-12">
+                                <label for="{{ form.target_role.id }}" class="form-label fw-medium small text-secondary">
+                                    {{ form.target_role.label.text }}
+                                </label>
+                                {{ form.target_role(class="form-control" + (" is-invalid" if form.target_role.errors else "")) }}
+                                {% for error in form.target_role.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+
+                            <!-- Preferred Domain -->
+                            <div class="col-sm-6">
+                                <label for="{{ form.preferred_domain.id }}" class="form-label fw-medium small text-secondary">
+                                    {{ form.preferred_domain.label.text }}
+                                </label>
+                                {{ form.preferred_domain(class="form-select" + (" is-invalid" if form.preferred_domain.errors else "")) }}
+                                {% for error in form.preferred_domain.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+
+                            <!-- Career Timeline -->
+                            <div class="col-sm-6">
+                                <label for="{{ form.career_timeline.id }}" class="form-label fw-medium small text-secondary">
+                                    {{ form.career_timeline.label.text }}
+                                </label>
+                                {{ form.career_timeline(class="form-select" + (" is-invalid" if form.career_timeline.errors else "")) }}
+                                {% for error in form.career_timeline.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+
+                            <!-- Target Companies -->
+                            <div class="col-12">
+                                <label for="{{ form.target_companies.id }}" class="form-label fw-medium small text-secondary">
+                                    {{ form.target_companies.label.text }}
+                                </label>
+                                {{ form.target_companies(class="form-control" + (" is-invalid" if form.target_companies.errors else "")) }}
+                                <div class="form-text text-muted small">Separate multiple company names with commas (e.g. Google, Microsoft, Amazon, Swiggy)</div>
+                                {% for error in form.target_companies.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Right Column: Skills, Interests & Social Links -->
+            <div class="col-12 col-lg-5">
+                
+                <!-- Section 3: Dynamic Technical Skills -->
+                <div class="card shadow-sm border-0 rounded-4 mb-4">
+                    <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
+                        <h2 class="h5 fw-bold mb-0 text-dark">
+                            <i class="bi bi-code-slash text-primary me-2"></i> 3. Technical Skills
+                        </h2>
+                        <button type="button" id="add-skill-btn" class="btn btn-sm btn-primary rounded-pill px-3">
+                            <i class="bi bi-plus-lg me-1"></i> Add Skill
+                        </button>
+                    </div>
+                    <div class="card-body p-4">
+                        <p class="text-muted small mb-3">Add programming languages, frameworks, databases, or core subjects.</p>
+                        
+                        <div id="skills-container" class="d-flex flex-column gap-2 mb-3">
+                            {% if existing_skills %}
+                                {% for skill in existing_skills %}
+                                    <div class="skill-row row g-2 align-items-center p-2 rounded-3 bg-light border">
+                                        <div class="col-7">
+                                            <input type="text" name="skill_names[]" class="form-control form-control-sm" placeholder="e.g. Python, React, SQL" value="{{ skill.name }}" required>
+                                        </div>
+                                        <div class="col-4">
+                                            <select name="skill_levels[]" class="form-select form-select-sm">
+                                                <option value="beginner" {% if skill.level == 'beginner' %}selected{% endif %}>Beginner</option>
+                                                <option value="intermediate" {% if skill.level == 'intermediate' %}selected{% endif %}>Intermediate</option>
+                                                <option value="advanced" {% if skill.level == 'advanced' %}selected{% endif %}>Advanced</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-1 text-end">
+                                            <button type="button" class="btn btn-sm btn-link text-danger remove-row-btn p-0" title="Remove Skill">
+                                                <i class="bi bi-trash fs-6"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                <!-- Default sample empty row for new users -->
+                                <div class="skill-row row g-2 align-items-center p-2 rounded-3 bg-light border">
+                                    <div class="col-7">
+                                        <input type="text" name="skill_names[]" class="form-control form-control-sm" placeholder="e.g. Python, React, SQL">
+                                    </div>
+                                    <div class="col-4">
+                                        <select name="skill_levels[]" class="form-select form-select-sm">
+                                            <option value="beginner">Beginner</option>
+                                            <option value="intermediate" selected>Intermediate</option>
+                                            <option value="advanced">Advanced</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-1 text-end">
+                                        <button type="button" class="btn btn-sm btn-link text-danger remove-row-btn p-0" title="Remove Skill">
+                                            <i class="bi bi-trash fs-6"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Section 4: Dynamic Areas of Interest -->
+                <div class="card shadow-sm border-0 rounded-4 mb-4">
+                    <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
+                        <h2 class="h5 fw-bold mb-0 text-dark">
+                            <i class="bi bi-heart text-danger me-2"></i> 4. Areas of Interest
+                        </h2>
+                        <button type="button" id="add-interest-btn" class="btn btn-sm btn-outline-danger rounded-pill px-3">
+                            <i class="bi bi-plus-lg me-1"></i> Add Interest
+                        </button>
+                    </div>
+                    <div class="card-body p-4">
+                        <p class="text-muted small mb-3">Add domains you are passionate about exploring.</p>
+                        
+                        <div id="interests-container" class="d-flex flex-column gap-2 mb-3">
+                            {% if existing_interests %}
+                                {% for interest in existing_interests %}
+                                    <div class="interest-row row g-2 align-items-center p-2 rounded-3 bg-light border">
+                                        <div class="col-11">
+                                            <input type="text" name="interest_names[]" class="form-control form-control-sm" placeholder="e.g. Machine Learning, Cloud Systems, Open Source" value="{{ interest.name }}" required>
+                                        </div>
+                                        <div class="col-1 text-end">
+                                            <button type="button" class="btn btn-sm btn-link text-danger remove-row-btn p-0" title="Remove Interest">
+                                                <i class="bi bi-trash fs-6"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                <div class="interest-row row g-2 align-items-center p-2 rounded-3 bg-light border">
+                                    <div class="col-11">
+                                        <input type="text" name="interest_names[]" class="form-control form-control-sm" placeholder="e.g. Machine Learning, Web Development, Cybersecurity">
+                                    </div>
+                                    <div class="col-1 text-end">
+                                        <button type="button" class="btn btn-sm btn-link text-danger remove-row-btn p-0" title="Remove Interest">
+                                            <i class="bi bi-trash fs-6"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Section 5: Portfolio & Social Links -->
+                <div class="card shadow-sm border-0 rounded-4 mb-4">
+                    <div class="card-header bg-white border-bottom py-3">
+                        <h2 class="h5 fw-bold mb-0 text-dark">
+                            <i class="bi bi-link-45deg text-primary me-2"></i> 5. Coding & Social Profiles
+                        </h2>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="row g-3">
+                            
+                            <!-- GitHub -->
+                            <div class="col-12">
+                                <label for="{{ form.github_url.id }}" class="form-label fw-medium small text-secondary">
+                                    <i class="bi bi-github me-1"></i> {{ form.github_url.label.text }}
+                                </label>
+                                {{ form.github_url(class="form-control" + (" is-invalid" if form.github_url.errors else "")) }}
+                                {% for error in form.github_url.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+
+                            <!-- LinkedIn -->
+                            <div class="col-12">
+                                <label for="{{ form.linkedin_url.id }}" class="form-label fw-medium small text-secondary">
+                                    <i class="bi bi-linkedin me-1 text-primary"></i> {{ form.linkedin_url.label.text }}
+                                </label>
+                                {{ form.linkedin_url(class="form-control" + (" is-invalid" if form.linkedin_url.errors else "")) }}
+                                {% for error in form.linkedin_url.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+
+                            <!-- LeetCode -->
+                            <div class="col-12">
+                                <label for="{{ form.leetcode_url.id }}" class="form-label fw-medium small text-secondary">
+                                    <i class="bi bi-code-square me-1 text-warning"></i> {{ form.leetcode_url.label.text }}
+                                </label>
+                                {{ form.leetcode_url(class="form-control" + (" is-invalid" if form.leetcode_url.errors else "")) }}
+                                {% for error in form.leetcode_url.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Sticky Bottom Submit Bar -->
+            <div class="col-12">
+                <div class="card shadow-sm border-0 rounded-4 bg-light p-3">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+                        <div class="text-muted small">
+                            <i class="bi bi-info-circle me-1"></i> Saving will automatically recalculate your profile completion score.
+                        </div>
+                        <div class="d-flex gap-2">
+                            <a href="{{ url_for('profile.view') }}" class="btn btn-outline-secondary px-4 rounded-3">Cancel</a>
+                            <button type="submit" class="btn btn-primary px-5 rounded-3 fw-semibold shadow-sm">
+                                <i class="bi bi-check2-circle me-1"></i> Save Profile Details
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </form>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    
+    // --- Dynamic Skill Rows ---
+    const skillsContainer = document.getElementById('skills-container');
+    const addSkillBtn = document.getElementById('add-skill-btn');
+    
+    if (addSkillBtn && skillsContainer) {
+        addSkillBtn.addEventListener('click', function() {
+            const row = document.createElement('div');
+            row.className = 'skill-row row g-2 align-items-center p-2 rounded-3 bg-light border fade-in';
+            row.innerHTML = `
+                <div class="col-7">
+                    <input type="text" name="skill_names[]" class="form-control form-control-sm" placeholder="e.g. Java, Docker, React" required>
+                </div>
+                <div class="col-4">
+                    <select name="skill_levels[]" class="form-select form-select-sm">
+                        <option value="beginner">Beginner</option>
+                        <option value="intermediate" selected>Intermediate</option>
+                        <option value="advanced">Advanced</option>
+                    </select>
+                </div>
+                <div class="col-1 text-end">
+                    <button type="button" class="btn btn-sm btn-link text-danger remove-row-btn p-0" title="Remove Skill">
+                        <i class="bi bi-trash fs-6"></i>
+                    </button>
+                </div>
+            `;
+            skillsContainer.appendChild(row);
+            row.querySelector('input').focus();
+        });
+    }
+
+    // --- Dynamic Interest Rows ---
+    const interestsContainer = document.getElementById('interests-container');
+    const addInterestBtn = document.getElementById('add-interest-btn');
+    
+    if (addInterestBtn && interestsContainer) {
+        addInterestBtn.addEventListener('click', function() {
+            const row = document.createElement('div');
+            row.className = 'interest-row row g-2 align-items-center p-2 rounded-3 bg-light border fade-in';
+            row.innerHTML = `
+                <div class="col-11">
+                    <input type="text" name="interest_names[]" class="form-control form-control-sm" placeholder="e.g. Distributed Systems, Robotics" required>
+                </div>
+                <div class="col-1 text-end">
+                    <button type="button" class="btn btn-sm btn-link text-danger remove-row-btn p-0" title="Remove Interest">
+                        <i class="bi bi-trash fs-6"></i>
+                    </button>
+                </div>
+            `;
+            interestsContainer.appendChild(row);
+            row.querySelector('input').focus();
+        });
+    }
+
+    // Event delegation for remove buttons
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.remove-row-btn')) {
+            const row = e.target.closest('.skill-row, .interest-row');
+            if (row) {
+                row.remove();
+            }
+        }
+    });
+
+});
+</script>
+{% endblock %}

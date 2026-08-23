@@ -1,0 +1,185 @@
+{% extends 'base.html' %}
+
+{% block title %}Career Roadmap{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+    {% if roadmap %}
+        <!-- Active Roadmap Banner -->
+        <div class="card shadow-sm border-0 rounded-4 mb-4 bg-primary text-white p-4 p-md-5 overflow-hidden position-relative">
+            <div class="row align-items-center position-relative z-1">
+                <div class="col-lg-8">
+                    <div class="d-inline-flex align-items-center gap-2 bg-white bg-opacity-25 rounded-pill px-3 py-1 mb-3 small fw-medium text-white">
+                        <i class="bi bi-map-fill"></i> Active Career Track
+                    </div>
+                    <h1 class="h2 fw-bold mb-2">{{ roadmap.title }}</h1>
+                    <p class="text-white-50 mb-3 fs-6">
+                        Target Role: <strong class="text-white">{{ roadmap.target_role }}</strong> 
+                        {% if roadmap.estimated_duration %} • Estimated Timeline: <strong class="text-white">{{ roadmap.estimated_duration }}</strong>{% endif %}
+                    </p>
+                    
+                    <div class="d-flex flex-wrap gap-2 pt-2">
+                        <a href="{{ url_for('roadmap.view', roadmap_id=roadmap.id) }}" class="btn btn-light text-primary fw-semibold px-4 rounded-3 shadow-sm">
+                            <i class="bi bi-arrow-right-circle me-1"></i> View Full Roadmap & Milestones
+                        </a>
+                        <form method="POST" action="{{ url_for('roadmap.generate') }}" class="d-inline" onsubmit="return confirm('Regenerating will create a new roadmap based on your latest profile. Proceed?');">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() if csrf_token else '' }}">
+                            <button type="submit" class="btn btn-outline-light px-4 rounded-3">
+                                <i class="bi bi-arrow-clockwise me-1"></i> Regenerate
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 text-center text-lg-end mt-4 mt-lg-0">
+                    <div class="bg-white bg-opacity-10 border border-white border-opacity-25 rounded-4 p-4 d-inline-block text-center shadow-sm" style="min-width: 220px;">
+                        <div class="display-5 fw-bold text-white mb-0">{{ roadmap.overall_readiness }}%</div>
+                        <div class="text-white-50 small mb-2">Initial Career Readiness</div>
+                        <div class="progress bg-white bg-opacity-25 rounded-pill" style="height: 8px;">
+                            <div class="progress-bar bg-white rounded-pill" style="width: {{ roadmap.overall_readiness }}%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="position-absolute end-0 bottom-0 opacity-10 pe-4 pb-2 d-none d-md-block" style="pointer-events: none;">
+                <i class="bi bi-compass" style="font-size: 14rem; line-height: 1;"></i>
+            </div>
+        </div>
+
+        <!-- Skill Gap Analysis Overview -->
+        <div class="row g-4 mb-4">
+            <!-- Strong Areas -->
+            <div class="col-12 col-md-6">
+                <div class="card shadow-sm border-0 rounded-4 h-100 p-4">
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <div class="d-flex align-items-center justify-content-center bg-success-subtle text-success rounded-circle" style="width: 40px; height: 40px;">
+                            <i class="bi bi-check-circle-fill fs-5"></i>
+                        </div>
+                        <h2 class="h5 fw-bold mb-0 text-dark">Strong Areas & Existing Skills</h2>
+                    </div>
+                    <p class="text-muted small mb-3">Skills in your profile that align well with your target role:</p>
+                    <div class="d-flex flex-wrap gap-2">
+                        {% if strong_areas %}
+                            {% for skill in strong_areas %}
+                                <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 rounded-pill fw-medium">
+                                    <i class="bi bi-check2 me-1"></i> {{ skill }}
+                                </span>
+                            {% endfor %}
+                        {% else %}
+                            <span class="text-muted fst-italic small">No matching strong areas detected yet.</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gaps Identified -->
+            <div class="col-12 col-md-6">
+                <div class="card shadow-sm border-0 rounded-4 h-100 p-4">
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <div class="d-flex align-items-center justify-content-center bg-danger-subtle text-danger rounded-circle" style="width: 40px; height: 40px;">
+                            <i class="bi bi-exclamation-triangle-fill fs-5"></i>
+                        </div>
+                        <h2 class="h5 fw-bold mb-0 text-dark">Identified Skill Gaps</h2>
+                    </div>
+                    <p class="text-muted small mb-3">Core competencies you should focus on developing:</p>
+                    <div class="d-flex flex-wrap gap-2">
+                        {% if gaps_identified %}
+                            {% for gap in gaps_identified %}
+                                <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-3 py-2 rounded-pill fw-medium">
+                                    <i class="bi bi-arrow-up-right me-1"></i> {{ gap }}
+                                </span>
+                            {% endfor %}
+                        {% else %}
+                            <span class="text-muted fst-italic small">All core skills identified in your profile!</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Roadmap Action Card -->
+        <div class="card shadow-sm border-0 rounded-4 p-4 text-center bg-light">
+            <h3 class="h5 fw-bold text-dark mb-2">Ready to start learning?</h3>
+            <p class="text-muted small mb-3">Explore step-by-step milestones, curated learning resources, projects, and interview prep.</p>
+            <div>
+                <a href="{{ url_for('roadmap.view', roadmap_id=roadmap.id) }}" class="btn btn-primary px-5 py-2 rounded-3 fw-semibold shadow-sm">
+                    Open Detailed Roadmap <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+
+    {% else %}
+        <!-- No Active Roadmap: Call To Action -->
+        <div class="row justify-content-center py-4">
+            <div class="col-12 col-lg-8">
+                <div class="card shadow-sm border-0 rounded-4 text-center p-4 p-md-5">
+                    <div class="mb-4">
+                        <div class="d-inline-flex align-items-center justify-content-center bg-primary-subtle text-primary rounded-circle shadow-sm" style="width: 80px; height: 80px;">
+                            <i class="bi bi-compass fs-1"></i>
+                        </div>
+                    </div>
+                    
+                    <h1 class="h3 fw-bold text-dark mb-2">Generate Your AI Career Roadmap</h1>
+                    <p class="text-muted mb-4 fs-6">
+                        EngineerOS analyzes your current skills, academic background, and target career aspirations to construct a personalized, phase-by-phase learning roadmap with curated resources.
+                    </p>
+
+                    {% if has_minimum_profile %}
+                        <div class="card bg-light border-0 rounded-4 p-4 mb-4 text-start">
+                            <h2 class="h6 fw-bold text-dark mb-3">
+                                <i class="bi bi-stars text-primary me-2"></i> What your generated roadmap will include:
+                            </h2>
+                            <ul class="list-unstyled mb-0 d-flex flex-column gap-2 text-secondary small">
+                                <li class="d-flex align-items-start gap-2">
+                                    <i class="bi bi-check-circle-fill text-success mt-1"></i>
+                                    <span><strong>AI Skill-Gap Analysis:</strong> Detailed mapping of your existing strengths vs missing skills.</span>
+                                </li>
+                                <li class="d-flex align-items-start gap-2">
+                                    <i class="bi bi-check-circle-fill text-success mt-1"></i>
+                                    <span><strong>Phased Learning Tracks:</strong> 3–4 structured phases from CS fundamentals to placement readiness.</span>
+                                </li>
+                                <li class="d-flex align-items-start gap-2">
+                                    <i class="bi bi-check-circle-fill text-success mt-1"></i>
+                                    <span><strong>Actionable Milestones:</strong> Targeted coding practice, real-world portfolio projects, and interview prep.</span>
+                                </li>
+                                <li class="d-flex align-items-start gap-2">
+                                    <i class="bi bi-check-circle-fill text-success mt-1"></i>
+                                    <span><strong>Curated Free Resources:</strong> Direct links to top tutorials, documentation, and practice platforms.</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <form method="POST" action="{{ url_for('roadmap.generate') }}">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() if csrf_token else '' }}">
+                            <button type="submit" class="btn btn-primary btn-lg px-5 py-3 rounded-3 fw-semibold shadow-sm">
+                                <i class="bi bi-magic me-2"></i> Generate AI Roadmap Now
+                            </button>
+                        </form>
+                    {% else %}
+                        <div class="alert alert-warning rounded-4 text-start p-4 mb-4">
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <i class="bi bi-exclamation-triangle-fill fs-5 text-warning"></i>
+                                <strong class="text-dark">Profile Incomplete</strong>
+                            </div>
+                            <p class="small text-secondary mb-3">
+                                To generate a meaningful, personalized roadmap, please ensure your profile has at least:
+                            </p>
+                            <ul class="small text-secondary mb-3">
+                                <li>A <strong>Target Career Role</strong> (e.g. Full Stack Developer, AI/ML Engineer)</li>
+                                <li>At least <strong>1 Technical Skill</strong> added to your profile</li>
+                            </ul>
+                            <a href="{{ url_for('profile.edit') }}" class="btn btn-warning btn-sm text-dark fw-semibold px-4 rounded-pill">
+                                <i class="bi bi-pencil-square me-1"></i> Complete Profile Details
+                            </a>
+                        </div>
+                    {% endif %}
+
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}
