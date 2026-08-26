@@ -1,0 +1,111 @@
+﻿<!-- app/templates/components/_sidebar.html -->
+
+<!-- Desktop Sidebar -->
+<aside class="sidebar">
+    <!-- Branding -->
+    <div class="sidebar-brand d-flex align-items-center gap-2">
+        <i class="bi bi-heptagon-fill sidebar-brand-icon"></i>
+        <div>
+            <div class="sidebar-brand-name">EngineerOS</div>
+            <div class="sidebar-brand-sub">AI Career Command Center</div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="sidebar-nav">
+        <div class="sidebar-section-label">Main Menu</div>
+
+        <a href="{{ url_for('dashboard.index') }}"
+           class="sidebar-link {% if request.endpoint == 'dashboard.index' %}active{% endif %}">
+            <i class="bi bi-grid-1x2"></i>
+            <span>Dashboard</span>
+        </a>
+
+        <a href="{{ url_for('profile.view') }}"
+           class="sidebar-link {% if request.endpoint and request.endpoint.startswith('profile') %}active{% endif %}">
+            <i class="bi bi-person-circle"></i>
+            <span>My Profile</span>
+        </a>
+
+        <div class="sidebar-section-label">Career Engine</div>
+
+        <a href="{{ url_for('roadmap.index') }}"
+           class="sidebar-link {% if request.endpoint and request.endpoint.startswith('roadmap') %}active{% endif %}">
+            <i class="bi bi-map"></i>
+            <span>Roadmap</span>
+        </a>
+
+        <a href="{{ url_for('progress.index') }}"
+           class="sidebar-link {% if request.endpoint and request.endpoint.startswith('progress') %}active{% endif %}">
+            <i class="bi bi-bar-chart-steps"></i>
+            <span>Progress</span>
+        </a>
+
+        <a href="{{ url_for('interview.index') }}"
+           class="sidebar-link {% if request.endpoint and request.endpoint.startswith('interview') %}active{% endif %}">
+            <i class="bi bi-mic-fill"></i>
+            <span>AI Mock Interview</span>
+        </a>
+    </nav>
+
+    <!-- User Footer -->
+    <div class="sidebar-footer">
+        <div class="sidebar-user">
+            <div class="sidebar-avatar">
+                {{ current_user.name[:1] | upper }}
+            </div>
+            <div class="sidebar-user-info">
+                <div class="sidebar-user-name">{{ current_user.name }}</div>
+                <div class="sidebar-user-email">{{ current_user.email }}</div>
+            </div>
+        </div>
+        <a href="{{ url_for('auth.logout') }}" class="sidebar-link" style="color: #EF4444;">
+            <i class="bi bi-box-arrow-left"></i>
+            <span>Logout</span>
+        </a>
+    </div>
+</aside>
+
+<!-- Mobile Offcanvas Sidebar -->
+<div class="offcanvas offcanvas-start" tabindex="-1" id="mobileSidebar"
+     style="background-color: var(--bg-sidebar); border-right: 1px solid var(--border-color);">
+    <div class="offcanvas-header" style="border-bottom: 1px solid var(--border-subtle);">
+        <div class="d-flex align-items-center gap-2">
+            <i class="bi bi-heptagon-fill sidebar-brand-icon"></i>
+            <div>
+                <div class="sidebar-brand-name">EngineerOS</div>
+                <div class="sidebar-brand-sub">AI Career Command Center</div>
+            </div>
+        </div>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+    </div>
+    <div class="offcanvas-body p-0 d-flex flex-column">
+        <nav class="sidebar-nav p-2">
+            <a href="{{ url_for('dashboard.index') }}"
+               class="sidebar-link {% if request.endpoint == 'dashboard.index' %}active{% endif %}">
+                <i class="bi bi-grid-1x2"></i> Dashboard
+            </a>
+            <a href="{{ url_for('profile.view') }}"
+               class="sidebar-link {% if request.endpoint and request.endpoint.startswith('profile') %}active{% endif %}">
+                <i class="bi bi-person-circle"></i> My Profile
+            </a>
+            <a href="{{ url_for('roadmap.index') }}"
+               class="sidebar-link {% if request.endpoint and request.endpoint.startswith('roadmap') %}active{% endif %}">
+                <i class="bi bi-map"></i> Roadmap
+            </a>
+            <a href="{{ url_for('progress.index') }}"
+               class="sidebar-link {% if request.endpoint and request.endpoint.startswith('progress') %}active{% endif %}">
+                <i class="bi bi-bar-chart-steps"></i> Progress
+            </a>
+            <a href="{{ url_for('interview.index') }}"
+               class="sidebar-link {% if request.endpoint and request.endpoint.startswith('interview') %}active{% endif %}">
+                <i class="bi bi-mic-fill"></i> AI Mock Interview
+            </a>
+        </nav>
+        <div class="mt-auto p-3" style="border-top: 1px solid var(--border-subtle);">
+            <a href="{{ url_for('auth.logout') }}" class="sidebar-link" style="color: #EF4444;">
+                <i class="bi bi-box-arrow-left"></i> Logout
+            </a>
+        </div>
+    </div>
+</div>

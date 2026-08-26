@@ -199,12 +199,10 @@ class Phase5TestCase(unittest.TestCase):
         self.assertIn(b'Full Stack Development Track', resp.data)
         self.assertIn(b'Full Stack Developer', resp.data)
 
-        # Milestone counts: 1 of 4 completed
-        self.assertIn(b'1', resp.data)
-        self.assertIn(b'4', resp.data)
-        self.assertIn(b'25', resp.data)  # 1/4 = 25%
+        # Milestone pct is rendered
+        self.assertIn(b'25', resp.data)  # 25% Done badge
 
-        # View Full Roadmap link is present (changed to Manage Milestones / View Roadmap icon)
+        # View Full Roadmap link is present
         self.assertIn(b'roadmap', resp.data.lower())
 
     # ── Test 4: Dashboard without roadmap ───────────────────────────────
@@ -218,8 +216,6 @@ class Phase5TestCase(unittest.TestCase):
 
         # CTA to generate roadmap is visible
         self.assertIn(b'Generate Roadmap', resp.data)
-        # Milestone stats show 0/0
-        self.assertIn(b'0', resp.data)
 
     # ── Test 5: Recent activity feed ────────────────────────────────────
 
@@ -245,14 +241,14 @@ class Phase5TestCase(unittest.TestCase):
         resp = self.client.get('/dashboard/')
         self.assertEqual(resp.status_code, 200)
 
-        # Strong areas badges
-        self.assertIn(b'Strong Areas', resp.data)
+        # Strong area badges
+        self.assertIn(b'Strong Skills', resp.data)
         self.assertIn(b'Python', resp.data)
         self.assertIn(b'Flask', resp.data)
         self.assertIn(b'SQL', resp.data)
 
         # Gap badges
-        self.assertIn(b'Gaps to Bridge', resp.data)
+        self.assertIn(b'Skill Gaps', resp.data)
         self.assertIn(b'React', resp.data)
         self.assertIn(b'DevOps', resp.data)
         self.assertIn(b'System Design', resp.data)

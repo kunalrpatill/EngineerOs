@@ -108,7 +108,7 @@ class Phase6TestCase(unittest.TestCase):
             c.post('/interview/generate')
             resp = c.get('/interview/session')
             self.assertEqual(resp.status_code, 200)
-            self.assertIn(b'Interview Session', resp.data)
+            self.assertIn(b'Mock Interview', resp.data)
             self.assertIn(b'<textarea', resp.data)
 
     def test_interview_session_missing(self):

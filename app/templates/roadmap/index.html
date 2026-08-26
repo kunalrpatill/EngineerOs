@@ -10,7 +10,7 @@
         <div class="card shadow-sm border-0 rounded-4 mb-4 bg-primary text-white p-4 p-md-5 overflow-hidden position-relative">
             <div class="row align-items-center position-relative z-1">
                 <div class="col-lg-8">
-                    <div class="d-inline-flex align-items-center gap-2 bg-white bg-opacity-25 rounded-pill px-3 py-1 mb-3 small fw-medium text-white">
+                    <div class="d-inline-flex align-items-center gap-2 bg-body bg-opacity-25 rounded-pill px-3 py-1 mb-3 small fw-medium text-white">
                         <i class="bi bi-map-fill"></i> Active Career Track
                     </div>
                     <h1 class="h2 fw-bold mb-2">{{ roadmap.title }}</h1>
@@ -33,11 +33,11 @@
                 </div>
 
                 <div class="col-lg-4 text-center text-lg-end mt-4 mt-lg-0">
-                    <div class="bg-white bg-opacity-10 border border-white border-opacity-25 rounded-4 p-4 d-inline-block text-center shadow-sm" style="min-width: 220px;">
+                    <div class="bg-body bg-opacity-10 border border-white border-opacity-25 rounded-4 p-4 d-inline-block text-center shadow-sm" style="min-width: 220px;">
                         <div class="display-5 fw-bold text-white mb-0">{{ roadmap.overall_readiness }}%</div>
                         <div class="text-white-50 small mb-2">Initial Career Readiness</div>
-                        <div class="progress bg-white bg-opacity-25 rounded-pill" style="height: 8px;">
-                            <div class="progress-bar bg-white rounded-pill" style="width: {{ roadmap.overall_readiness }}%;"></div>
+                        <div class="progress bg-body bg-opacity-25 rounded-pill" style="height: 8px;">
+                            <div class="progress-bar bg-body rounded-pill" style="width: {{ roadmap.overall_readiness }}%;"></div>
                         </div>
                     </div>
                 </div>
@@ -57,7 +57,7 @@
                         <div class="d-flex align-items-center justify-content-center bg-success-subtle text-success rounded-circle" style="width: 40px; height: 40px;">
                             <i class="bi bi-check-circle-fill fs-5"></i>
                         </div>
-                        <h2 class="h5 fw-bold mb-0 text-dark">Strong Areas & Existing Skills</h2>
+                        <h2 class="h5 fw-bold mb-0 text-white">Strong Areas & Existing Skills</h2>
                     </div>
                     <p class="text-muted small mb-3">Skills in your profile that align well with your target role:</p>
                     <div class="d-flex flex-wrap gap-2">
@@ -81,7 +81,7 @@
                         <div class="d-flex align-items-center justify-content-center bg-danger-subtle text-danger rounded-circle" style="width: 40px; height: 40px;">
                             <i class="bi bi-exclamation-triangle-fill fs-5"></i>
                         </div>
-                        <h2 class="h5 fw-bold mb-0 text-dark">Identified Skill Gaps</h2>
+                        <h2 class="h5 fw-bold mb-0 text-white">Identified Skill Gaps</h2>
                     </div>
                     <p class="text-muted small mb-3">Core competencies you should focus on developing:</p>
                     <div class="d-flex flex-wrap gap-2">
@@ -100,8 +100,8 @@
         </div>
 
         <!-- Roadmap Action Card -->
-        <div class="card shadow-sm border-0 rounded-4 p-4 text-center bg-light">
-            <h3 class="h5 fw-bold text-dark mb-2">Ready to start learning?</h3>
+        <div class="card shadow-sm border-0 rounded-4 p-4 text-center bg-body-secondary">
+            <h3 class="h5 fw-bold text-white mb-2">Ready to start learning?</h3>
             <p class="text-muted small mb-3">Explore step-by-step milestones, curated learning resources, projects, and interview prep.</p>
             <div>
                 <a href="{{ url_for('roadmap.view', roadmap_id=roadmap.id) }}" class="btn btn-primary px-5 py-2 rounded-3 fw-semibold shadow-sm">
@@ -121,14 +121,14 @@
                         </div>
                     </div>
                     
-                    <h1 class="h3 fw-bold text-dark mb-2">Generate Your AI Career Roadmap</h1>
+                    <h1 class="h3 fw-bold text-white mb-2">Generate Your AI Career Roadmap</h1>
                     <p class="text-muted mb-4 fs-6">
                         EngineerOS analyzes your current skills, academic background, and target career aspirations to construct a personalized, phase-by-phase learning roadmap with curated resources.
                     </p>
 
                     {% if has_minimum_profile %}
-                        <div class="card bg-light border-0 rounded-4 p-4 mb-4 text-start">
-                            <h2 class="h6 fw-bold text-dark mb-3">
+                        <div class="card bg-body-secondary border-0 rounded-4 p-4 mb-4 text-start">
+                            <h2 class="h6 fw-bold text-white mb-3">
                                 <i class="bi bi-stars text-primary me-2"></i> What your generated roadmap will include:
                             </h2>
                             <ul class="list-unstyled mb-0 d-flex flex-column gap-2 text-secondary small">
@@ -161,7 +161,7 @@
                         <div class="alert alert-warning rounded-4 text-start p-4 mb-4">
                             <div class="d-flex align-items-center gap-2 mb-2">
                                 <i class="bi bi-exclamation-triangle-fill fs-5 text-warning"></i>
-                                <strong class="text-dark">Profile Incomplete</strong>
+                                <strong class="text-white">Profile Incomplete</strong>
                             </div>
                             <p class="small text-secondary mb-3">
                                 To generate a meaningful, personalized roadmap, please ensure your profile has at least:
@@ -170,7 +170,7 @@
                                 <li>A <strong>Target Career Role</strong> (e.g. Full Stack Developer, AI/ML Engineer)</li>
                                 <li>At least <strong>1 Technical Skill</strong> added to your profile</li>
                             </ul>
-                            <a href="{{ url_for('profile.edit') }}" class="btn btn-warning btn-sm text-dark fw-semibold px-4 rounded-pill">
+                            <a href="{{ url_for('profile.edit') }}" class="btn btn-warning btn-sm text-white fw-semibold px-4 rounded-pill">
                                 <i class="bi bi-pencil-square me-1"></i> Complete Profile Details
                             </a>
                         </div>

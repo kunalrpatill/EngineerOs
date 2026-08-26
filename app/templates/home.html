@@ -5,39 +5,57 @@
 {% block content %}
 <!-- Hero Section -->
 <section class="hero-section text-center position-relative overflow-hidden">
-    <div class="container position-relative z-1">
+    <!-- AI Glow Orbs Background -->
+    <div class="position-absolute top-0 start-50 translate-middle-x w-100 h-100 z-0 pointer-events-none" style="max-width: 1200px;">
+        <div class="position-absolute rounded-circle" style="width: 500px; height: 500px; background: radial-gradient(circle, rgba(79,70,229,0.15) 0%, transparent 70%); top: -100px; left: -100px; filter: blur(40px);"></div>
+        <div class="position-absolute rounded-circle" style="width: 400px; height: 400px; background: radial-gradient(circle, rgba(14,165,233,0.15) 0%, transparent 70%); bottom: 0; right: -50px; filter: blur(40px);"></div>
+    </div>
+
+    <div class="container position-relative z-1 pt-4">
         <div class="row justify-content-center">
-            <div class="col-lg-10 col-xl-8">
-                <div class="d-inline-flex align-items-center gap-2 px-3 py-2 rounded-pill bg-white border shadow-sm mb-4 fade-in">
-                    <span class="badge bg-primary rounded-pill">New</span>
-                    <span class="text-secondary small fw-medium">Phase 6: AI Mock Interviews are now live!</span>
+            <div class="col-lg-10 col-xl-9">
+                <div class="d-inline-flex align-items-center gap-2 px-3 py-2 rounded-pill bg-body border border-primary border-opacity-25 shadow-sm mb-4 fade-in">
+                    <span class="badge bg-primary rounded-pill ai-glow px-2 py-1"><i class="bi bi-stars"></i> Phase 9</span>
+                    <span class="text-secondary small fw-bold tracking-wider">AI CAREER COMMAND CENTER IS LIVE</span>
                 </div>
-                <h1 class="hero-title mb-4 fade-in" style="animation-delay: 0.1s;">
+                <h1 class="hero-title mb-4 fade-in" style="animation-delay: 0.1s; font-size: clamp(2.5rem, 5vw, 4rem);">
                     Your AI-Powered <br>
                     <span class="text-gradient">Engineering Career Platform</span>
                 </h1>
-                <p class="hero-subtitle mb-5 fade-in" style="animation-delay: 0.2s;">
-                    Profile → Skill Gap → Roadmap → Progress → Interview.<br>
-                    EngineerOS guides you through every step of your career journey.
+                <p class="hero-subtitle mb-5 fade-in fs-5" style="animation-delay: 0.2s; max-width: 700px; line-height: 1.6;">
+                    Discover your skill gaps, build a personalized career roadmap, track your progress and practice interviews with AI.
                 </p>
-                <div class="d-flex flex-column flex-sm-row justify-content-center gap-3 fade-in" style="animation-delay: 0.3s;">
-                    <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-lg px-5 py-3 shadow-md rounded-pill fw-semibold">
+                
+                <!-- Visual Career Journey -->
+                <div class="d-none d-md-flex justify-content-center align-items-center mb-5 fade-in" style="animation-delay: 0.3s;">
+                    <div class="d-flex align-items-center gap-2 px-4 py-3 bg-body rounded-pill shadow-sm border">
+                        <div class="fw-bold text-white small"><i class="bi bi-person-badge text-primary me-1"></i> PROFILE</div>
+                        <i class="bi bi-arrow-right text-muted opacity-50 mx-2"></i>
+                        <div class="fw-bold text-white small"><i class="bi bi-cpu text-info me-1"></i> AI ANALYSIS</div>
+                        <i class="bi bi-arrow-right text-muted opacity-50 mx-2"></i>
+                        <div class="fw-bold text-white small"><i class="bi bi-map text-primary me-1"></i> ROADMAP</div>
+                        <i class="bi bi-arrow-right text-muted opacity-50 mx-2"></i>
+                        <div class="fw-bold text-white small"><i class="bi bi-journal-check text-success me-1"></i> PROGRESS</div>
+                        <i class="bi bi-arrow-right text-muted opacity-50 mx-2"></i>
+                        <div class="fw-bold text-white small"><i class="bi bi-mic text-warning me-1"></i> INTERVIEW</div>
+                    </div>
+                </div>
+
+                <div class="d-flex flex-column flex-sm-row justify-content-center gap-3 fade-in" style="animation-delay: 0.4s;">
+                    <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-lg px-5 py-3 shadow-lg rounded-pill fw-bold hover-elevate">
                         Get Started Free <i class="bi bi-arrow-right ms-2"></i>
+                    </a>
+                    <a href="{{ url_for('auth.login') }}" class="btn btn-outline-secondary btn-lg px-5 py-3 rounded-pill fw-bold hover-elevate bg-body">
+                        Student Login
                     </a>
                 </div>
             </div>
         </div>
     </div>
-    
-    <!-- Decorative background element -->
-    <div class="position-absolute top-50 start-50 translate-middle w-100 h-100 z-0 pointer-events-none" style="opacity: 0.03;">
-        <i class="bi bi-hexagon-fill position-absolute" style="font-size: 30rem; top: -10%; left: -5%; color: var(--primary); transform: rotate(15deg);"></i>
-        <i class="bi bi-heptagon-fill position-absolute" style="font-size: 25rem; bottom: -10%; right: -5%; color: var(--primary); transform: rotate(-15deg);"></i>
-    </div>
 </section>
 
 <!-- Features Section -->
-<section id="features" class="section-padding bg-white">
+<section id="features" class="section-padding bg-body">
     <div class="container">
         <div class="text-center mb-5">
             <h2 class="section-title">Everything You Need to Succeed</h2>
@@ -171,7 +189,7 @@
 {% endblock %}
 
 {% block footer %}
-<footer class="mt-auto py-4 bg-white text-center text-muted border-top small">
+<footer class="mt-auto py-4 bg-body text-center text-muted border-top small">
     <div class="container">
         <p class="mb-0">&copy; 2026 EngineerOS. An AI-Powered Engineering Career Platform.</p>
     </div>

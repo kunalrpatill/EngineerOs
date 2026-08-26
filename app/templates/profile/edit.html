@@ -8,7 +8,7 @@
     <!-- Page Header -->
     <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-2 border-bottom">
         <div>
-            <h1 class="h3 fw-bold text-dark mb-1">
+            <h1 class="h3 fw-bold text-white mb-1">
                 <i class="bi bi-person-gear text-primary me-2"></i> Edit Student Profile
             </h1>
             <p class="text-muted small mb-0">Update your academic information, career ambitions, skills, and links.</p>
@@ -31,8 +31,8 @@
                 
                 <!-- Section 1: Academic Background -->
                 <div class="card shadow-sm border-0 rounded-4 mb-4">
-                    <div class="card-header bg-white border-bottom py-3">
-                        <h2 class="h5 fw-bold mb-0 text-dark">
+                    <div class="card-header bg-body border-bottom py-3">
+                        <h2 class="h5 fw-bold mb-0 text-white">
                             <i class="bi bi-mortarboard text-primary me-2"></i> 1. Academic Background
                         </h2>
                     </div>
@@ -100,8 +100,8 @@
 
                 <!-- Section 2: Career Goals & Timeline -->
                 <div class="card shadow-sm border-0 rounded-4 mb-4">
-                    <div class="card-header bg-white border-bottom py-3">
-                        <h2 class="h5 fw-bold mb-0 text-dark">
+                    <div class="card-header bg-body border-bottom py-3">
+                        <h2 class="h5 fw-bold mb-0 text-white">
                             <i class="bi bi-crosshair text-primary me-2"></i> 2. Career Goals & Aspirations
                         </h2>
                     </div>
@@ -164,8 +164,8 @@
                 
                 <!-- Section 3: Dynamic Technical Skills -->
                 <div class="card shadow-sm border-0 rounded-4 mb-4">
-                    <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
-                        <h2 class="h5 fw-bold mb-0 text-dark">
+                    <div class="card-header bg-body border-bottom py-3 d-flex justify-content-between align-items-center">
+                        <h2 class="h5 fw-bold mb-0 text-white">
                             <i class="bi bi-code-slash text-primary me-2"></i> 3. Technical Skills
                         </h2>
                         <button type="button" id="add-skill-btn" class="btn btn-sm btn-primary rounded-pill px-3">
@@ -178,7 +178,7 @@
                         <div id="skills-container" class="d-flex flex-column gap-2 mb-3">
                             {% if existing_skills %}
                                 {% for skill in existing_skills %}
-                                    <div class="skill-row row g-2 align-items-center p-2 rounded-3 bg-light border">
+                                    <div class="skill-row row g-2 align-items-center p-2 rounded-3 bg-body-secondary border">
                                         <div class="col-7">
                                             <input type="text" name="skill_names[]" class="form-control form-control-sm" placeholder="e.g. Python, React, SQL" value="{{ skill.name }}" required>
                                         </div>
@@ -198,7 +198,7 @@
                                 {% endfor %}
                             {% else %}
                                 <!-- Default sample empty row for new users -->
-                                <div class="skill-row row g-2 align-items-center p-2 rounded-3 bg-light border">
+                                <div class="skill-row row g-2 align-items-center p-2 rounded-3 bg-body-secondary border">
                                     <div class="col-7">
                                         <input type="text" name="skill_names[]" class="form-control form-control-sm" placeholder="e.g. Python, React, SQL">
                                     </div>
@@ -223,8 +223,8 @@
 
                 <!-- Section 4: Dynamic Areas of Interest -->
                 <div class="card shadow-sm border-0 rounded-4 mb-4">
-                    <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
-                        <h2 class="h5 fw-bold mb-0 text-dark">
+                    <div class="card-header bg-body border-bottom py-3 d-flex justify-content-between align-items-center">
+                        <h2 class="h5 fw-bold mb-0 text-white">
                             <i class="bi bi-heart text-danger me-2"></i> 4. Areas of Interest
                         </h2>
                         <button type="button" id="add-interest-btn" class="btn btn-sm btn-outline-danger rounded-pill px-3">
@@ -237,7 +237,7 @@
                         <div id="interests-container" class="d-flex flex-column gap-2 mb-3">
                             {% if existing_interests %}
                                 {% for interest in existing_interests %}
-                                    <div class="interest-row row g-2 align-items-center p-2 rounded-3 bg-light border">
+                                    <div class="interest-row row g-2 align-items-center p-2 rounded-3 bg-body-secondary border">
                                         <div class="col-11">
                                             <input type="text" name="interest_names[]" class="form-control form-control-sm" placeholder="e.g. Machine Learning, Cloud Systems, Open Source" value="{{ interest.name }}" required>
                                         </div>
@@ -249,7 +249,7 @@
                                     </div>
                                 {% endfor %}
                             {% else %}
-                                <div class="interest-row row g-2 align-items-center p-2 rounded-3 bg-light border">
+                                <div class="interest-row row g-2 align-items-center p-2 rounded-3 bg-body-secondary border">
                                     <div class="col-11">
                                         <input type="text" name="interest_names[]" class="form-control form-control-sm" placeholder="e.g. Machine Learning, Web Development, Cybersecurity">
                                     </div>
@@ -267,8 +267,8 @@
 
                 <!-- Section 5: Portfolio & Social Links -->
                 <div class="card shadow-sm border-0 rounded-4 mb-4">
-                    <div class="card-header bg-white border-bottom py-3">
-                        <h2 class="h5 fw-bold mb-0 text-dark">
+                    <div class="card-header bg-body border-bottom py-3">
+                        <h2 class="h5 fw-bold mb-0 text-white">
                             <i class="bi bi-link-45deg text-primary me-2"></i> 5. Coding & Social Profiles
                         </h2>
                     </div>
@@ -316,7 +316,7 @@
 
             <!-- Sticky Bottom Submit Bar -->
             <div class="col-12">
-                <div class="card shadow-sm border-0 rounded-4 bg-light p-3">
+                <div class="card shadow-sm border-0 rounded-4 bg-body-secondary p-3">
                     <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
                         <div class="text-muted small">
                             <i class="bi bi-info-circle me-1"></i> Saving will automatically recalculate your profile completion score.
@@ -348,7 +348,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (addSkillBtn && skillsContainer) {
         addSkillBtn.addEventListener('click', function() {
             const row = document.createElement('div');
-            row.className = 'skill-row row g-2 align-items-center p-2 rounded-3 bg-light border fade-in';
+            row.className = 'skill-row row g-2 align-items-center p-2 rounded-3 bg-body-secondary border fade-in';
             row.innerHTML = `
                 <div class="col-7">
                     <input type="text" name="skill_names[]" class="form-control form-control-sm" placeholder="e.g. Java, Docker, React" required>
@@ -378,7 +378,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (addInterestBtn && interestsContainer) {
         addInterestBtn.addEventListener('click', function() {
             const row = document.createElement('div');
-            row.className = 'interest-row row g-2 align-items-center p-2 rounded-3 bg-light border fade-in';
+            row.className = 'interest-row row g-2 align-items-center p-2 rounded-3 bg-body-secondary border fade-in';
             row.innerHTML = `
                 <div class="col-11">
                     <input type="text" name="interest_names[]" class="form-control form-control-sm" placeholder="e.g. Distributed Systems, Robotics" required>

@@ -10,7 +10,7 @@
         <div class="row align-items-center position-relative z-1">
             <div class="col-lg-8">
                 <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
-                    <span class="badge bg-white bg-opacity-25 text-white rounded-pill px-3 py-1 fw-medium">
+                    <span class="badge bg-body bg-opacity-25 text-white rounded-pill px-3 py-1 fw-medium">
                         <i class="bi bi-map-fill me-1"></i> Career Roadmap
                     </span>
                     {% if roadmap.is_active %}
@@ -48,11 +48,11 @@
             </div>
 
             <div class="col-lg-4 text-center text-lg-end mt-4 mt-lg-0">
-                <div class="bg-white bg-opacity-10 border border-white border-opacity-25 rounded-4 p-4 d-inline-block text-center shadow-sm" style="min-width: 220px;">
+                <div class="bg-body bg-opacity-10 border border-white border-opacity-25 rounded-4 p-4 d-inline-block text-center shadow-sm" style="min-width: 220px;">
                     <div class="display-5 fw-bold text-white mb-0">{{ roadmap.overall_readiness }}%</div>
                     <div class="text-white-50 small mb-2">Target Readiness Match</div>
-                    <div class="progress bg-white bg-opacity-25 rounded-pill mb-2" style="height: 8px;">
-                        <div class="progress-bar bg-white rounded-pill" style="width: {{ roadmap.overall_readiness }}%;"></div>
+                    <div class="progress bg-body bg-opacity-25 rounded-pill mb-2" style="height: 8px;">
+                        <div class="progress-bar bg-body rounded-pill" style="width: {{ roadmap.overall_readiness }}%;"></div>
                     </div>
                     <div class="text-white-50 small">
                         <i class="bi bi-check2-circle"></i> {{ completed_milestones }}/{{ total_milestones }} Milestones Done ({{ progress_pct }}%)
@@ -68,8 +68,8 @@
 
     <!-- Skill-Gap Analysis Card -->
     <div class="card shadow-sm border-0 rounded-4 mb-4 stagger-1">
-        <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
-            <h2 class="h5 fw-bold mb-0 text-dark">
+        <div class="card-header bg-body border-bottom py-3 d-flex justify-content-between align-items-center">
+            <h2 class="h5 fw-bold mb-0 text-white">
                 <i class="bi bi-bar-chart-steps text-primary me-2"></i> AI Skill-Gap Analysis
             </h2>
             <span class="badge bg-primary-subtle text-primary rounded-pill px-3 py-1">AI Evaluated</span>
@@ -81,7 +81,7 @@
                 <div class="col-12 col-md-6">
                     <div class="d-flex align-items-center gap-2 mb-2">
                         <i class="bi bi-check-circle-fill text-success fs-5"></i>
-                        <h3 class="h6 fw-bold mb-0 text-dark">Existing Strengths</h3>
+                        <h3 class="h6 fw-bold mb-0 text-white">Existing Strengths</h3>
                     </div>
                     <p class="text-muted small mb-3">Skills in your profile that directly match industry expectations for {{ roadmap.target_role }}:</p>
                     <div class="d-flex flex-wrap gap-2">
@@ -101,7 +101,7 @@
                 <div class="col-12 col-md-6">
                     <div class="d-flex align-items-center gap-2 mb-2">
                         <i class="bi bi-exclamation-triangle-fill text-danger fs-5"></i>
-                        <h3 class="h6 fw-bold mb-0 text-dark">Skill Gaps to Bridge</h3>
+                        <h3 class="h6 fw-bold mb-0 text-white">Skill Gaps to Bridge</h3>
                     </div>
                     <p class="text-muted small mb-3">Critical skills recommended to learn through this roadmap:</p>
                     <div class="d-flex flex-wrap gap-2">
@@ -123,7 +123,7 @@
 
     <!-- Phased Roadmap Timeline -->
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2 class="h4 fw-bold text-dark mb-0">
+        <h2 class="h4 fw-bold text-white mb-0">
             <i class="bi bi-signpost-split text-primary me-2"></i> Phased Learning Path
         </h2>
         <span class="text-muted small">{{ phases|length }} Sequential Phases</span>
@@ -133,19 +133,19 @@
         <div class="timeline mt-4 stagger-2">
             {% for phase in phases %}
                 <div class="timeline-item {% if phase.status == 'completed' %}completed{% elif phase.status == 'in_progress' %}in-progress{% endif %}">
-                    <div class="card shadow-sm border-0 rounded-4 overflow-hidden mb-4">
+                    <div class="card border-0 rounded-4 overflow-hidden mb-5 {% if phase.status == 'in_progress' %}shadow-lg ai-glow bg-body{% else %}shadow-sm bg-body-secondary bg-opacity-50 opacity-75{% endif %} transition-base card-hover-elevate">
                         
                         <!-- Phase Header -->
-                        <div class="card-header bg-light border-bottom p-3 p-md-4 d-flex flex-wrap justify-content-between align-items-center gap-2">
+                        <div class="card-header border-bottom p-3 p-md-4 d-flex flex-wrap justify-content-between align-items-center gap-2 {% if phase.status == 'in_progress' %}bg-primary-subtle text-primary border-primary border-opacity-25{% else %}bg-body{% endif %}">
                             <div class="d-flex align-items-center gap-3">
-                                <div class="d-flex align-items-center justify-content-center bg-primary text-white rounded-circle fw-bold shadow-sm" style="width: 36px; height: 36px;">
-                                    {{ phase.phase_number }}
+                                <div class="d-flex align-items-center justify-content-center rounded-circle fw-bold shadow-sm {% if phase.status == 'completed' %}bg-success text-white{% elif phase.status == 'in_progress' %}bg-primary text-white ai-glow{% else %}bg-secondary text-white{% endif %}" style="width: 48px; height: 48px; font-size: 1.25rem;">
+                                    {% if phase.status == 'completed' %}<i class="bi bi-check-lg"></i>{% else %}{{ phase.phase_number }}{% endif %}
                                 </div>
                                 <div>
-                                    <h3 class="h5 fw-bold text-dark mb-0">{{ phase.title }}</h3>
+                                    <h3 class="h5 fw-bold mb-1 {% if phase.status == 'in_progress' %}text-primary{% else %}text-white{% endif %}">{{ phase.title }}</h3>
                                     {% if phase.duration %}
-                                        <span class="text-muted small">
-                                            <i class="bi bi-clock me-1"></i> Estimated Duration: {{ phase.duration }}
+                                        <span class="small fw-medium tracking-wider text-uppercase {% if phase.status == 'in_progress' %}text-primary opacity-75{% else %}text-muted{% endif %}">
+                                            <i class="bi bi-clock me-1"></i> {{ phase.duration }}
                                         </span>
                                     {% endif %}
                                 </div>
@@ -153,16 +153,16 @@
 
                             <div>
                                 {% if phase.status == 'completed' %}
-                                    <span class="badge bg-success-subtle text-success rounded-pill px-3 py-1 fw-semibold">
-                                        <i class="bi bi-check2-all me-1"></i> Completed
+                                    <span class="badge bg-success text-white rounded-pill px-3 py-2 fw-bold tracking-wider">
+                                        <i class="bi bi-check2-all me-1"></i> COMPLETED
                                     </span>
                                 {% elif phase.status == 'in_progress' %}
-                                    <span class="badge bg-primary-subtle text-primary rounded-pill px-3 py-1 fw-semibold">
-                                        <i class="bi bi-play-circle me-1"></i> In Progress
+                                    <span class="badge bg-primary text-white rounded-pill px-3 py-2 fw-bold tracking-wider shadow-sm animate-float">
+                                        <i class="bi bi-play-circle me-1"></i> ACTIVE PHASE
                                     </span>
                                 {% else %}
-                                    <span class="badge bg-secondary-subtle text-secondary rounded-pill px-3 py-1 fw-semibold">
-                                        <i class="bi bi-hourglass me-1"></i> Not Started
+                                    <span class="badge bg-secondary bg-opacity-25 text-secondary rounded-pill px-3 py-2 fw-bold tracking-wider">
+                                        <i class="bi bi-lock me-1"></i> LOCKED
                                     </span>
                                 {% endif %}
                             </div>
@@ -195,12 +195,12 @@
                                                             <i class="bi bi-person-check me-1"></i> Career / Interview
                                                         </span>
                                                     {% else %}
-                                                        <span class="badge bg-light text-secondary rounded-pill px-2 py-1 small">
+                                                        <span class="badge bg-body-secondary text-secondary rounded-pill px-2 py-1 small">
                                                             <i class="bi bi-check-circle me-1"></i> Milestone
                                                         </span>
                                                     {% endif %}
 
-                                                    <h4 class="h6 fw-bold mb-0 text-dark {% if milestone.status == 'completed' %}text-decoration-line-through text-muted{% endif %}">
+                                                    <h4 class="h6 fw-bold mb-0 text-white {% if milestone.status == 'completed' %}text-decoration-line-through text-muted{% endif %}">
                                                         {{ milestone.title }}
                                                     </h4>
                                                 </div>
@@ -215,7 +215,7 @@
                                                             </button>
                                                             <span class="badge bg-success text-white ms-2 animate-pop-in rounded-pill"><i class="bi bi-graph-up-arrow me-1"></i>+Readiness</span>
                                                         {% else %}
-                                                            <button type="submit" class="btn btn-outline-primary btn-sm rounded-pill px-3 bg-white" title="Click to mark as completed">
+                                                            <button type="submit" class="btn btn-outline-primary btn-sm rounded-pill px-3 bg-body" title="Click to mark as completed">
                                                                 <i class="bi bi-circle me-1"></i> Mark Done
                                                             </button>
                                                         {% endif %}
@@ -235,7 +235,7 @@
                                                         <i class="bi bi-link-45deg"></i> Resources:
                                                     </span>
                                                     {% for res in milestone.resources %}
-                                                        <a href="{{ res }}" target="_blank" rel="noopener noreferrer" class="badge bg-white text-primary border rounded-pill px-3 py-1 text-decoration-none small shadow-sm">
+                                                        <a href="{{ res }}" target="_blank" rel="noopener noreferrer" class="badge bg-body text-primary border rounded-pill px-3 py-1 text-decoration-none small shadow-sm">
                                                             <i class="bi bi-box-arrow-up-right me-1 small"></i>
                                                             {{ res | replace('https://', '') | replace('http://', '') | replace('www.', '') | truncate(35) }}
                                                         </a>

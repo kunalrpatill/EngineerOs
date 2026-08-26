@@ -4,7 +4,7 @@
         <!-- Brand -->
         <a class="navbar-brand d-flex align-items-center gap-2" href="{{ url_for('main.home') }}">
             <i class="bi bi-heptagon-fill fs-3"></i>
-            <span class="text-dark">EngineerOS</span>
+            <span class="text-white">EngineerOS</span>
         </a>
         
         <!-- Mobile Toggle Button -->
@@ -46,7 +46,7 @@
                             <div class="d-flex align-items-center justify-content-center bg-primary text-white rounded-circle fw-bold shadow-sm" style="width: 36px; height: 36px;" title="{{ current_user.name }}">
                                 {{ current_user.name[:1] | upper }}
                             </div>
-                            <span class="d-lg-none fw-semibold text-dark">{{ current_user.name }}</span>
+                            <span class="d-lg-none fw-semibold text-white">{{ current_user.name }}</span>
                         </div>
                         <a class="btn btn-light btn-sm rounded-pill px-3 fw-semibold text-danger border shadow-sm" href="{{ url_for('auth.logout') }}">
                             Logout

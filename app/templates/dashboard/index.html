@@ -1,399 +1,478 @@
 {% extends 'base.html' %}
 
-{% block title %}Dashboard{% endblock %}
+{% block title %}AI Career Command Center | EngineerOS{% endblock %}
 
 {% block content %}
+<style>
+    .journey-connector {
+        position: absolute;
+        top: 25px; /* Half of 50px icon height */
+        left: 50%;
+        width: 100%;
+        height: 3px;
+        background: var(--border-color);
+        z-index: 1;
+        transition: background 1s ease;
+    }
+    .journey-connector.active {
+        background: linear-gradient(90deg, var(--primary), var(--info));
+    }
+    .journey-node {
+        position: relative;
+        z-index: 2;
+        width: 130px;
+    }
+    .journey-icon {
+        width: 50px; 
+        height: 50px;
+        transition: transform var(--transition-base), box-shadow var(--transition-base);
+    }
+    .journey-icon:hover {
+        transform: scale(1.1);
+    }
+    .journey-node.completed .journey-icon {
+        background: var(--primary);
+        color: white;
+        border: none;
+    }
+    .journey-node.current .journey-icon {
+        background: linear-gradient(135deg, var(--primary), var(--info));
+        color: white;
+        animation: pulse-ring 2s infinite;
+        border: none;
+    }
+    .journey-node.pending .journey-icon {
+        background: var(--bg-surface);
+        color: var(--text-muted);
+        border: 2px solid var(--border-color);
+    }
+    
+    .skill-bar-container {
+        height: 8px;
+        background: var(--border-color);
+        border-radius: var(--radius-pill);
+        overflow: hidden;
+    }
+    .skill-bar {
+        height: 100%;
+        border-radius: var(--radius-pill);
+        width: 0; /* Animated via JS or inline style */
+        transition: width 1.5s ease-out;
+    }
+    
+    .hover-elevate {
+        transition: transform var(--transition-base), box-shadow var(--transition-base);
+    }
+    .hover-elevate:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-sm);
+        border-color: var(--primary-light) !important;
+    }
+</style>
+
 <div class="container py-4">
     
     <!-- ═══════════════════════════════════════════════════════════════════
-         SECTION 1: Welcome Banner with Career Readiness & Profile Completion
+         SECTION 1: Welcome Banner & Career Readiness
          ═══════════════════════════════════════════════════════════════════ -->
-    <div class="card shadow-sm border-0 rounded-4 mb-4 bg-primary text-white p-4 p-md-5 overflow-hidden position-relative">
-        <div class="row align-items-center position-relative z-1">
-            <div class="col-lg-7">
-                <div class="d-inline-flex align-items-center gap-2 bg-white bg-opacity-25 rounded-pill px-3 py-1 mb-3 small fw-medium text-white stagger-1">
-                    <i class="bi bi-mortarboard-fill"></i> EngineerOS Student Portal
-                </div>
-                <h1 class="h2 fw-bold mb-2 stagger-2">Welcome back, {{ current_user.name }}!</h1>
-                <p class="text-white-50 mb-4 fs-6 stagger-3">
-                    {% if profile and profile.target_role %}
-                        Targeting: <strong class="text-white">{{ profile.target_role }}</strong> 
-                        {% if profile.preferred_domain %}({{ profile.preferred_domain }}){% endif %}
-                    {% else %}
-                        Your engineering career launchpad is ready. Complete your profile to generate your AI roadmap.
-                    {% endif %}
-                </p>
-                
-                <div class="d-flex flex-wrap gap-2 stagger-4">
-                    <a href="{{ url_for('profile.view') }}" class="btn btn-light text-primary fw-semibold px-4 rounded-3 shadow-sm">
-                        <i class="bi bi-person-circle me-1"></i> View Profile
-                    </a>
-                    <a href="{{ url_for('profile.edit') }}" class="btn btn-outline-light px-4 rounded-3">
-                        <i class="bi bi-pencil-square me-1"></i> Edit Details
-                    </a>
-                </div>
-            </div>
-            
-            <div class="col-lg-5 text-center text-lg-end mt-4 mt-lg-0 stagger-5">
-                <div class="d-flex flex-wrap justify-content-center justify-content-lg-end gap-4">
-                    <!-- Career Readiness SVG Gauge -->
-                    <div class="position-relative d-inline-flex flex-column align-items-center">
-                        <div class="position-relative ai-glow rounded-circle" style="width: 120px; height: 120px; box-shadow: 0 0 20px rgba(255,255,255,0.2);">
-                            <svg class="w-100 h-100 animate-pop-in" viewBox="0 0 100 100">
-                                <circle cx="50" cy="50" r="45" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="8"/>
-                                <circle cx="50" cy="50" r="45" fill="none" stroke="#ffffff" stroke-width="8" stroke-dasharray="283" stroke-dashoffset="{{ 283 - (283 * readiness / 100) }}" transform="rotate(-90 50 50)" stroke-linecap="round" style="transition: stroke-dashoffset 1.5s ease-out;"/>
-                            </svg>
-                            <div class="position-absolute top-50 start-50 translate-middle text-center">
-                                <span class="fs-4 fw-bold text-white"><span class="animate-counter" data-target="{{ readiness }}">0</span>%</span>
-                            </div>
-                        </div>
-                        <div class="text-white-50 small mt-2 fw-medium">Career Readiness</div>
-                        <span class="badge 
-                            {% if readiness >= 75 %}bg-success
-                            {% elif readiness >= 50 %}bg-info
-                            {% elif readiness >= 25 %}bg-warning text-dark
-                            {% else %}bg-secondary
-                            {% endif %} rounded-pill small mt-1 shadow-sm">
-                            {% if readiness >= 75 %}Industry Ready
-                            {% elif readiness >= 50 %}Placement Ready
-                            {% elif readiness >= 25 %}Emerging
-                            {% else %}Novice
-                            {% endif %}
-                        </span>
-                    </div>
-
-                    <!-- Profile Completion SVG Gauge -->
-                    <div class="position-relative d-inline-flex flex-column align-items-center">
-                        <div class="position-relative" style="width: 120px; height: 120px;">
-                            <svg class="w-100 h-100 animate-pop-in" viewBox="0 0 100 100">
-                                <circle cx="50" cy="50" r="45" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="8"/>
-                                <circle cx="50" cy="50" r="45" fill="none" stroke="#ffffff" stroke-width="8" stroke-dasharray="283" stroke-dashoffset="{{ 283 - (283 * completion / 100) }}" transform="rotate(-90 50 50)" stroke-linecap="round" style="transition: stroke-dashoffset 1.5s ease-out;"/>
-                            </svg>
-                            <div class="position-absolute top-50 start-50 translate-middle text-center">
-                                <span class="fs-4 fw-bold text-white"><span class="animate-counter" data-target="{{ completion }}">0</span>%</span>
-                            </div>
-                        </div>
-                        <div class="text-white-50 small mt-2 fw-medium">Profile Complete</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Decorative Background Shape -->
-        <div class="position-absolute end-0 bottom-0 opacity-10 pe-4 pb-2 d-none d-md-block animate-float" style="pointer-events: none;">
-            <i class="bi bi-rocket-takeoff" style="font-size: 14rem; line-height: 1;"></i>
-        </div>
-    </div>
-
-    <!-- ═══════════════════════════════════════════════════════════════════
-         SECTION 2: Quick Stats Grid (4 Cards)
-         ═══════════════════════════════════════════════════════════════════ -->
-    <div class="row g-3 mb-4 stagger-2">
-        
-        <!-- Stat 1: Career Readiness -->
-        <div class="col-12 col-sm-6 col-lg-3">
-            <div class="card shadow-sm border-0 rounded-4 h-100 p-3 card-hover-elevate">
-                <div class="d-flex align-items-center gap-3">
-                    <div class="d-flex align-items-center justify-content-center rounded-3
-                        {% if readiness >= 75 %}bg-success-subtle text-success
-                        {% elif readiness >= 50 %}bg-info-subtle text-info
-                        {% elif readiness >= 25 %}bg-warning-subtle text-warning
-                        {% else %}bg-secondary-subtle text-secondary
-                        {% endif %}" style="width: 48px; height: 48px;">
-                        <i class="bi bi-speedometer2 fs-4"></i>
-                    </div>
-                    <div>
-                        <div class="text-muted small">Career Readiness</div>
-                        <div class="fw-bold fs-5 text-dark"><span class="animate-counter" data-target="{{ readiness }}">0</span>%</div>
-                    </div>
-                </div>
-            </div>
+    <div class="card shadow-md border-0 rounded-4 mb-5 overflow-hidden position-relative" style="background: linear-gradient(135deg, var(--primary-dark), var(--primary));">
+        <!-- Decorative Glow -->
+        <div class="position-absolute top-0 start-0 w-100 h-100 overflow-hidden" style="pointer-events: none;">
+            <div class="position-absolute rounded-circle" style="width: 400px; height: 400px; background: radial-gradient(circle, rgba(14, 165, 233, 0.4) 0%, transparent 70%); top: -200px; right: -100px; filter: blur(40px);"></div>
         </div>
 
-        <!-- Stat 2: Profile Status -->
-        <div class="col-12 col-sm-6 col-lg-3">
-            <div class="card shadow-sm border-0 rounded-4 h-100 p-3 card-hover-elevate">
-                <div class="d-flex align-items-center gap-3">
-                    <div class="d-flex align-items-center justify-content-center bg-primary-subtle text-primary rounded-3" style="width: 48px; height: 48px;">
-                        <i class="bi bi-person-check fs-4"></i>
+        <div class="card-body p-4 p-md-5 position-relative z-1 text-white">
+            <div class="row align-items-center">
+                <div class="col-lg-7 mb-4 mb-lg-0 stagger-1">
+                    <div class="d-inline-flex align-items-center gap-2 bg-body bg-opacity-10 border border-white border-opacity-25 rounded-pill px-3 py-1 mb-3 small fw-medium text-white shadow-sm">
+                        <i class="bi bi-heptagon-fill text-info"></i> AI Career Command Center
                     </div>
-                    <div>
-                        <div class="text-muted small">Profile Status</div>
-                        <div class="fw-bold fs-5 text-dark">
-                            {% if completion >= 80 %}
-                                Ready (<span class="animate-counter" data-target="{{ completion }}">0</span>%)
-                            {% else %}
-                                <span class="animate-counter" data-target="{{ completion }}">0</span>% Done
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Stat 3: Skills Count -->
-        <div class="col-12 col-sm-6 col-lg-3">
-            <div class="card shadow-sm border-0 rounded-4 h-100 p-3 card-hover-elevate">
-                <div class="d-flex align-items-center gap-3">
-                    <div class="d-flex align-items-center justify-content-center bg-success-subtle text-success rounded-3" style="width: 48px; height: 48px;">
-                        <i class="bi bi-code-slash fs-4"></i>
-                    </div>
-                    <div>
-                        <div class="text-muted small">Skills Logged</div>
-                        <div class="fw-bold fs-5 text-dark"><span class="animate-counter" data-target="{{ skills_count }}">0</span> Skills</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Stat 4: Milestones Completed -->
-        <div class="col-12 col-sm-6 col-lg-3">
-            <div class="card shadow-sm border-0 rounded-4 h-100 p-3 card-hover-elevate">
-                <div class="d-flex align-items-center gap-3">
-                    <div class="d-flex align-items-center justify-content-center bg-warning-subtle text-warning rounded-3" style="width: 48px; height: 48px;">
-                        <i class="bi bi-trophy fs-4"></i>
-                    </div>
-                    <div>
-                        <div class="text-muted small">Milestones Done</div>
-                        <div class="fw-bold fs-5 text-dark"><span class="animate-counter" data-target="{{ completed_milestones }}">0</span>/{{ total_milestones }}</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-    </div>
-
-    <!-- ═══════════════════════════════════════════════════════════════════
-         SECTION 3: Active Roadmap Summary + Skill-Gap Snapshot (2-col)
-         ═══════════════════════════════════════════════════════════════════ -->
-    <div class="row g-4 mb-4">
-
-        <!-- Active Roadmap Summary Card -->
-        <div class="col-12 col-lg-6">
-            <div class="card shadow-sm border-0 rounded-4 h-100 p-4">
-                <div class="d-flex align-items-center gap-2 mb-3">
-                    <i class="bi bi-map text-primary fs-5"></i>
-                    <h2 class="h5 fw-bold mb-0">Active Roadmap</h2>
-                </div>
-
-                {% if active_roadmap %}
-                    <h3 class="h6 fw-semibold text-dark mb-1">{{ active_roadmap.title }}</h3>
-                    <p class="text-muted small mb-3">
-                        Target: <strong>{{ active_roadmap.target_role }}</strong>
-                        {% if active_roadmap.estimated_duration %}
-                            &middot; {{ active_roadmap.estimated_duration }}
+                    
+                    <h1 class="h2 fw-bold mb-2">Welcome back, {{ current_user.name }}!</h1>
+                    
+                    <p class="text-white-50 mb-4 fs-6">
+                        {% if profile and profile.target_role %}
+                            Targeting: <strong class="text-white">{{ profile.target_role }}</strong> 
+                            {% if profile.preferred_domain %}({{ profile.preferred_domain }}){% endif %}
+                        {% else %}
+                            Your engineering career launchpad is ready. Complete your profile to generate your AI roadmap.
                         {% endif %}
                     </p>
-
-                    <!-- Milestone progress bar -->
-                    <div class="d-flex justify-content-between align-items-center small text-muted mb-1">
-                        <span>{{ completed_milestones }} of {{ total_milestones }} milestones completed</span>
-                        <span class="fw-semibold">{{ milestones_pct }}%</span>
+                    
+                    <div class="d-flex flex-wrap gap-2">
+                        <a href="{{ url_for('roadmap.index') }}" class="btn btn-info fw-bold px-4 rounded-3 shadow-sm text-white hover-elevate">
+                            <i class="bi bi-play-fill me-1"></i> Continue Journey
+                        </a>
                     </div>
-                    <div class="progress rounded-pill mb-3" style="height: 10px;">
-                        <div class="progress-bar bg-primary rounded-pill" role="progressbar"
-                             style="width: {{ milestones_pct }}%;"
-                             aria-valuenow="{{ milestones_pct }}" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                
+                <div class="col-lg-5 text-center text-lg-end stagger-2">
+                    <div class="d-inline-block text-center p-4 rounded-4 shadow-lg ai-glow" style="background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.2);">
+                        <div class="fw-bold mb-3 text-white-50 tracking-wider small"><i class="bi bi-bar-chart-fill me-1"></i> AI CAREER READINESS</div>
+                        
+                        <div class="position-relative d-inline-flex flex-column align-items-center mb-2">
+                            <div class="position-relative" style="width: 140px; height: 140px;">
+                                <svg class="w-100 h-100 animate-pop-in" viewBox="0 0 100 100">
+                                    <circle cx="50" cy="50" r="45" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="8"/>
+                                    <!-- Dashed gradient ring -->
+                                    <circle cx="50" cy="50" r="45" fill="none" stroke="#0ea5e9" stroke-width="8" stroke-dasharray="283" stroke-dashoffset="{{ 283 - (283 * readiness / 100) }}" transform="rotate(-90 50 50)" stroke-linecap="round" style="transition: stroke-dashoffset 1.5s cubic-bezier(0.4, 0, 0.2, 1);"/>
+                                </svg>
+                                <div class="position-absolute top-50 start-50 translate-middle text-center" style="line-height: 1;">
+                                    <span class="fs-2 fw-bold text-white"><span class="animate-counter" data-target="{{ readiness }}">0</span>%</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <span class="badge bg-body text-primary rounded-pill px-3 py-2 fw-bold shadow-sm">
+                                {% if readiness >= 75 %}Industry Ready
+                                {% elif readiness >= 50 %}Placement Ready
+                                {% elif readiness >= 25 %}Emerging
+                                {% else %}Novice
+                                {% endif %}
+                            </span>
+                        </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-                    <a href="{{ url_for('roadmap.view', roadmap_id=active_roadmap.id) }}" class="btn btn-outline-primary btn-sm rounded-3">
-                        <i class="bi bi-arrow-right me-1"></i> View Full Roadmap
-                    </a>
+    <!-- ═══════════════════════════════════════════════════════════════════
+         SECTION 2: AI Career Journey (Connected Nodes)
+         ═══════════════════════════════════════════════════════════════════ -->
+    <div class="mb-5 stagger-3">
+        <h2 class="h5 fw-bold mb-3 text-white d-flex align-items-center gap-2">
+            <i class="bi bi-diagram-3-fill text-primary"></i> AI Career Journey
+        </h2>
+        <div class="card shadow-sm border-0 rounded-4 p-4 overflow-auto card-hover-elevate">
+            <!-- Ensure container can scroll horizontally if screen is small -->
+            <div class="d-flex justify-content-between text-center position-relative mx-auto" style="min-width: 800px; padding: 0 20px;">
+                
+                <!-- Profile -->
+                <div class="journey-node {% if completion > 0 %}completed{% else %}pending{% endif %}">
+                    {% if completion > 0 %}<div class="journey-connector active"></div>{% else %}<div class="journey-connector"></div>{% endif %}
+                    <div class="journey-icon rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2 shadow-sm">
+                        <i class="bi bi-person-check fs-4"></i>
+                    </div>
+                    <div class="fw-bold small {% if completion > 0 %}text-primary{% else %}text-muted{% endif %}">Profile</div>
+                </div>
+                
+                <!-- AI Skill Analysis -->
+                <div class="journey-node {% if active_roadmap %}completed{% elif completion > 0 %}current{% else %}pending{% endif %}">
+                    {% if active_roadmap %}<div class="journey-connector active"></div>{% else %}<div class="journey-connector"></div>{% endif %}
+                    <div class="journey-icon rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2 shadow-sm">
+                        <i class="bi bi-cpu fs-4"></i>
+                    </div>
+                    <div class="fw-bold small {% if active_roadmap %}text-primary{% elif completion > 0 %}text-info{% else %}text-muted{% endif %}">AI Analysis</div>
+                </div>
+                
+                <!-- Skill Gaps -->
+                <div class="journey-node {% if gaps_identified %}completed{% elif active_roadmap %}current{% else %}pending{% endif %}">
+                    {% if gaps_identified %}<div class="journey-connector active"></div>{% else %}<div class="journey-connector"></div>{% endif %}
+                    <div class="journey-icon rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2 shadow-sm">
+                        <i class="bi bi-pie-chart fs-4"></i>
+                    </div>
+                    <div class="fw-bold small {% if gaps_identified %}text-primary{% elif active_roadmap %}text-info{% else %}text-muted{% endif %}">Skill Gaps</div>
+                </div>
+                
+                <!-- Roadmap -->
+                <div class="journey-node {% if active_roadmap %}completed{% else %}pending{% endif %}">
+                    {% if active_roadmap %}<div class="journey-connector active"></div>{% else %}<div class="journey-connector"></div>{% endif %}
+                    <div class="journey-icon rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2 shadow-sm">
+                        <i class="bi bi-map fs-4"></i>
+                    </div>
+                    <div class="fw-bold small {% if active_roadmap %}text-primary{% else %}text-muted{% endif %}">Roadmap</div>
+                </div>
+                
+                <!-- Progress -->
+                <div class="journey-node {% if completed_milestones > 0 %}completed{% elif active_roadmap %}current{% else %}pending{% endif %}">
+                    {% if completed_milestones > 0 %}<div class="journey-connector active"></div>{% else %}<div class="journey-connector"></div>{% endif %}
+                    <div class="journey-icon rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2 shadow-sm">
+                        <i class="bi bi-journal-check fs-4"></i>
+                    </div>
+                    <div class="fw-bold small {% if completed_milestones > 0 %}text-primary{% elif active_roadmap %}text-info{% else %}text-muted{% endif %}">Progress</div>
+                </div>
+                
+                <!-- AI Interview -->
+                <div class="journey-node {% if readiness >= 25 %}current{% else %}pending{% endif %}">
+                    {% if readiness >= 75 %}<div class="journey-connector active"></div>{% else %}<div class="journey-connector"></div>{% endif %}
+                    <div class="journey-icon rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2 shadow-sm">
+                        <i class="bi bi-mic fs-4"></i>
+                    </div>
+                    <div class="fw-bold small {% if readiness >= 25 %}text-info{% else %}text-muted{% endif %}">AI Interview</div>
+                </div>
+                
+                <!-- Career Ready -->
+                <div class="journey-node {% if readiness >= 75 %}completed{% else %}pending{% endif %}">
+                    <div class="journey-icon rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2 shadow-sm">
+                        <i class="bi bi-award fs-4"></i>
+                    </div>
+                    <div class="fw-bold small {% if readiness >= 75 %}text-success{% else %}text-muted{% endif %}">Career Ready</div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-5">
+        <!-- ═══════════════════════════════════════════════════════════════════
+             SECTION 3A: AI Career Insight & Skill-Gap Visualization
+             ═══════════════════════════════════════════════════════════════════ -->
+        <div class="col-lg-8 stagger-4">
+            <div class="card shadow-sm border-0 rounded-4 h-100 p-4 card-hover-elevate">
+                <div class="d-flex align-items-center gap-2 mb-4 border-bottom pb-3">
+                    <i class="bi bi-lightning-charge-fill text-primary fs-5"></i>
+                    <h2 class="h5 fw-bold mb-0">✦ AI Career Insight</h2>
+                </div>
+                
+                {% if active_roadmap and (strong_areas or gaps_identified) %}
+                    <div class="mb-4">
+                        <p class="text-white fw-medium fs-6 mb-2">
+                            Your strongest areas are <strong class="text-success">{{ strong_areas[:2] | join(' and ') if strong_areas else 'general fundamentals' }}</strong>.
+                        </p>
+                        <p class="text-white fw-medium fs-6 mb-3">
+                            Your biggest current gap is <strong class="text-danger">{{ gaps_identified[0] if gaps_identified else 'advanced topics' }}</strong>.
+                        </p>
+                        
+                        <div class="bg-primary-subtle border border-primary border-opacity-10 rounded-3 p-3 position-relative overflow-hidden">
+                            <div class="position-absolute top-0 end-0 opacity-10 m-2">
+                                <i class="bi bi-robot fs-1"></i>
+                            </div>
+                            <p class="mb-1 fw-bold text-primary small text-uppercase tracking-wider">Recommended Next Steps</p>
+                            <ul class="list-unstyled mb-0 text-white small position-relative z-1">
+                                {% if gaps_identified %}
+                                <li class="mb-1"><i class="bi bi-arrow-right-short text-primary fs-6 align-middle"></i> Focus on learning <strong>{{ gaps_identified[0] }}</strong>.</li>
+                                {% endif %}
+                                <li class="mb-1"><i class="bi bi-arrow-right-short text-primary fs-6 align-middle"></i> Complete your next roadmap milestone.</li>
+                                <li><i class="bi bi-arrow-right-short text-primary fs-6 align-middle"></i> Practice AI mock interviews for {{ active_roadmap.target_role }}.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <h3 class="h6 fw-bold text-muted mb-3 mt-4">Skill Analysis</h3>
+                    
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <div class="fw-bold text-success small mb-3"><i class="bi bi-shield-check me-1"></i> Strong Skills</div>
+                            {% if strong_areas %}
+                                {% for area in strong_areas[:4] %}
+                                    <div class="mb-3">
+                                        <div class="d-flex justify-content-between small fw-medium mb-1">
+                                            <span>{{ area }}</span>
+                                            <span class="text-success">Verified</span>
+                                        </div>
+                                        <div class="skill-bar-container">
+                                            <!-- Delay animation to trigger via JS class or just CSS -->
+                                            <div class="skill-bar bg-success" style="width: 85%;"></div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                <p class="small text-muted">No strong areas identified yet.</p>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="fw-bold text-danger small mb-3" style="color: #d97706 !important;"><i class="bi bi-exclamation-triangle me-1"></i> Skill Gaps</div>
+                            {% if gaps_identified %}
+                                {% for gap in gaps_identified[:4] %}
+                                    <div class="mb-3">
+                                        <div class="d-flex justify-content-between small fw-medium mb-1">
+                                            <span>{{ gap }}</span>
+                                            <span class="text-warning" style="color: #d97706 !important;">Needs Work</span>
+                                        </div>
+                                        <div class="skill-bar-container">
+                                            <div class="skill-bar bg-warning" style="width: 30%;"></div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                <p class="small text-muted">No skill gaps identified.</p>
+                            {% endif %}
+                        </div>
+                    </div>
                 {% else %}
-                    <div class="empty-state mt-3 h-100 d-flex flex-column justify-content-center align-items-center">
-                        <i class="bi bi-map empty-state-icon"></i>
-                        <p class="text-muted mt-2 mb-3">No active roadmap yet. Generate one to get your personalized career plan.</p>
-                        <a href="{{ url_for('roadmap.index') }}" class="btn btn-primary btn-sm rounded-pill px-4">
-                            <i class="bi bi-plus-circle me-1"></i> Generate Roadmap
+                    <div class="empty-state h-100 d-flex flex-column justify-content-center align-items-center">
+                        <i class="bi bi-robot empty-state-icon animate-float"></i>
+                        <p class="text-muted mt-2 mb-3 text-center">Generate your roadmap to unlock AI-powered career insights and skill-gap analysis.</p>
+                        <a href="{{ url_for('roadmap.index') }}" class="btn btn-primary rounded-pill px-4 shadow-sm hover-elevate">
+                            Generate AI Insight
                         </a>
                     </div>
                 {% endif %}
             </div>
         </div>
 
-        <!-- Skill-Gap Analysis Snapshot -->
-        <div class="col-12 col-lg-6">
-            <div class="card shadow-sm border-0 rounded-4 h-100 p-4">
-                <div class="d-flex align-items-center gap-2 mb-3">
-                    <i class="bi bi-bar-chart-line text-primary fs-5"></i>
-                    <h2 class="h5 fw-bold mb-0">Skill-Gap Analysis</h2>
+        <!-- ═══════════════════════════════════════════════════════════════════
+             SECTION 3B: Active Roadmap Timeline
+             ═══════════════════════════════════════════════════════════════════ -->
+        <div class="col-lg-4 stagger-5">
+            <div class="card shadow-sm border-0 rounded-4 h-100 p-4 card-hover-elevate d-flex flex-column">
+                <div class="d-flex align-items-center gap-2 mb-4 border-bottom pb-3">
+                    <i class="bi bi-map text-primary fs-5"></i>
+                    <h2 class="h5 fw-bold mb-0">Active Roadmap</h2>
                 </div>
 
-                {% if strong_areas or gaps_identified %}
-                    <!-- Strengths -->
-                    {% if strong_areas %}
-                    <div class="mb-3">
-                        <div class="text-muted small fw-medium mb-2"><i class="bi bi-check-circle text-success me-1"></i> Strong Areas</div>
-                        <div class="d-flex flex-wrap gap-2">
-                            {% for area in strong_areas %}
-                                <span class="badge bg-success-subtle text-success rounded-pill px-3 py-2">{{ area }}</span>
-                            {% endfor %}
-                        </div>
+                {% if active_roadmap %}
+                    <div class="mb-4 d-flex justify-content-between align-items-center">
+                        <span class="fw-bold text-white small text-truncate pe-2" title="{{ active_roadmap.target_role }}">{{ active_roadmap.title }}</span>
+                        <span class="badge bg-primary-subtle text-primary rounded-pill">{{ milestones_pct }}% Done</span>
                     </div>
-                    {% endif %}
-
-                    <!-- Gaps -->
-                    {% if gaps_identified %}
-                    <div class="mb-3">
-                        <div class="text-muted small fw-medium mb-2"><i class="bi bi-exclamation-triangle text-danger me-1"></i> Gaps to Bridge</div>
-                        <div class="d-flex flex-wrap gap-2">
-                            {% for gap in gaps_identified %}
-                                <span class="badge bg-danger-subtle text-danger rounded-pill px-3 py-2">{{ gap }}</span>
+                    
+                    <div class="timeline flex-grow-1 overflow-hidden position-relative ms-2">
+                        {% set ns = namespace(found_current=false, count=0) %}
+                        {% for phase in active_roadmap.phases %}
+                            {% for m in phase.milestones %}
+                                {% if ns.count < 5 %}
+                                    <div class="timeline-item {% if m.status == 'completed' %}completed{% elif m.status == 'in_progress' or (m.status == 'not_started' and not ns.found_current) %}in-progress{% endif %} mb-4 pb-1">
+                                        {% if m.status == 'completed' %}
+                                            <div class="fw-semibold text-muted small text-truncate" style="text-decoration: line-through;"><i class="bi bi-check-circle-fill text-success me-1 animate-pop-in"></i> {{ m.title }}</div>
+                                        {% elif m.status == 'in_progress' or (m.status == 'not_started' and not ns.found_current) %}
+                                            {% set ns.found_current = true %}
+                                            <div class="fw-bold text-primary small text-truncate ai-glow rounded px-2 py-1 bg-primary-subtle ms-n2" style="width: fit-content; max-width: 100%;">{{ m.title }}</div>
+                                        {% else %}
+                                            <div class="fw-medium text-secondary small text-truncate"><i class="bi bi-circle text-muted me-1"></i> {{ m.title }}</div>
+                                        {% endif %}
+                                    </div>
+                                    {% set ns.count = ns.count + 1 %}
+                                {% endif %}
                             {% endfor %}
-                        </div>
+                        {% endfor %}
+                        
+                        {% if total_milestones > 5 %}
+                            <div class="text-muted small fst-italic ms-1 mt-2">+ {{ total_milestones - 5 }} more milestones</div>
+                        {% endif %}
                     </div>
-                    {% endif %}
-
-                    <a href="{{ url_for('roadmap.index') }}" class="btn btn-outline-secondary btn-sm rounded-3 mt-auto">
-                        <i class="bi bi-arrow-right me-1"></i> Full Analysis
+                    
+                    <a href="{{ url_for('roadmap.view', roadmap_id=active_roadmap.id) }}" class="btn btn-outline-primary btn-sm rounded-3 mt-4 w-100 hover-elevate">
+                        View Full Roadmap <i class="bi bi-arrow-right ms-1"></i>
                     </a>
                 {% else %}
-                    <div class="empty-state mt-3 h-100 d-flex flex-column justify-content-center align-items-center">
-                        <i class="bi bi-bar-chart-line empty-state-icon"></i>
-                        <p class="text-muted mt-2 mb-0">Generate a roadmap to see your AI-powered skill-gap analysis.</p>
+                    <div class="empty-state mt-auto mb-auto border-0">
+                        <i class="bi bi-map empty-state-icon mb-2" style="font-size: 2rem;"></i>
+                        <p class="text-muted mt-2 mb-0 small text-center">Your personalized career roadmap will appear here.</p>
                     </div>
                 {% endif %}
             </div>
         </div>
-
     </div>
-
+    
     <!-- ═══════════════════════════════════════════════════════════════════
-         SECTION 4: Recent Activity Feed
+         SECTION 4: Quick Actions & Recent Activity
          ═══════════════════════════════════════════════════════════════════ -->
-    <div class="card shadow-sm border-0 rounded-4 mb-4 p-4">
-        <div class="d-flex align-items-center justify-content-between mb-3">
-            <div class="d-flex align-items-center gap-2">
-                <i class="bi bi-activity text-primary fs-5"></i>
-                <h2 class="h5 fw-bold mb-0">Recent Activity</h2>
+    <div class="row g-4 mb-4 stagger-5">
+        <!-- Quick Actions -->
+        <div class="col-lg-6">
+            <div class="card shadow-sm border-0 rounded-4 p-4 h-100 card-hover-elevate">
+                <div class="d-flex align-items-center gap-2 mb-4">
+                    <i class="bi bi-lightning text-warning fs-5"></i>
+                    <h2 class="h5 fw-bold mb-0">Quick Actions</h2>
+                </div>
+                <div class="row g-3">
+                    <div class="col-sm-6">
+                        <a href="{{ url_for('roadmap.index') }}" class="btn btn-light border w-100 p-3 rounded-4 text-start hover-elevate d-flex align-items-center gap-3">
+                            <div class="bg-primary-subtle text-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                <i class="bi bi-map fs-5"></i>
+                            </div>
+                            <div class="fw-semibold text-white small">Generate Roadmap</div>
+                        </a>
+                    </div>
+                    <div class="col-sm-6">
+                        <a href="{{ url_for('progress.index') }}" class="btn btn-light border w-100 p-3 rounded-4 text-start hover-elevate d-flex align-items-center gap-3">
+                            <div class="bg-success-subtle text-success rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                <i class="bi bi-journal-check fs-5"></i>
+                            </div>
+                            <div class="fw-semibold text-white small">Track Progress</div>
+                        </a>
+                    </div>
+                    <div class="col-sm-6">
+                        <a href="{{ url_for('interview.index') }}" class="btn btn-light border w-100 p-3 rounded-4 text-start hover-elevate d-flex align-items-center gap-3">
+                            <div class="bg-info-subtle text-info rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                <i class="bi bi-mic fs-5"></i>
+                            </div>
+                            <div class="fw-semibold text-white small">Practice Interview</div>
+                        </a>
+                    </div>
+                    <div class="col-sm-6">
+                        <a href="{{ url_for('profile.view') }}" class="btn btn-light border w-100 p-3 rounded-4 text-start hover-elevate d-flex align-items-center gap-3">
+                            <div class="bg-secondary-subtle text-secondary rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                <i class="bi bi-person fs-5"></i>
+                            </div>
+                            <div class="fw-semibold text-white small">Edit Profile</div>
+                        </a>
+                    </div>
+                </div>
             </div>
-            {% if recent_activities %}
-            <a href="{{ url_for('progress.index') }}" class="btn btn-outline-primary btn-sm rounded-3">
-                View All <i class="bi bi-arrow-right ms-1"></i>
-            </a>
-            {% endif %}
         </div>
-
-        {% if recent_activities %}
-            <div class="list-group list-group-flush">
-                {% for activity in recent_activities %}
-                <div class="list-group-item border-0 px-0 py-3 d-flex align-items-start gap-3">
-                    <!-- Type Icon -->
-                    <div class="d-flex align-items-center justify-content-center rounded-3 flex-shrink-0
-                        {% if activity.type == 'milestone_completed' %}bg-primary-subtle text-primary
-                        {% elif activity.type == 'project_completed' %}bg-success-subtle text-success
-                        {% elif activity.type == 'course_completed' %}bg-warning-subtle text-warning
-                        {% else %}bg-info-subtle text-info
-                        {% endif %}" style="width: 40px; height: 40px;">
-                        {% if activity.type == 'milestone_completed' %}
-                            <i class="bi bi-check2-circle"></i>
-                        {% elif activity.type == 'project_completed' %}
-                            <i class="bi bi-code-square"></i>
-                        {% elif activity.type == 'course_completed' %}
-                            <i class="bi bi-book"></i>
-                        {% else %}
-                            <i class="bi bi-star"></i>
-                        {% endif %}
+        
+        <!-- Recent Activity -->
+        <div class="col-lg-6">
+            <div class="card shadow-sm border-0 rounded-4 p-4 h-100 card-hover-elevate">
+                <div class="d-flex align-items-center justify-content-between mb-4">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-activity text-primary fs-5"></i>
+                        <h2 class="h5 fw-bold mb-0">Recent Activity</h2>
                     </div>
-                    <!-- Content -->
-                    <div class="flex-grow-1 min-width-0">
-                        <div class="fw-semibold text-dark text-truncate">{{ activity.title }}</div>
-                        <div class="text-muted small">
-                            {{ activity.type | replace('_', ' ') | title }}
-                            &middot;
-                            {{ activity.created_at.strftime('%b %d, %Y') if activity.created_at else 'N/A' }}
-                        </div>
-                    </div>
-                    <!-- Readiness Delta -->
-                    {% if activity.readiness_before is not none and activity.readiness_after is not none %}
-                        {% set delta = activity.readiness_after - activity.readiness_before %}
-                        {% if delta > 0 %}
-                        <span class="badge bg-success-subtle text-success rounded-pill align-self-center">+{{ delta }}%</span>
-                        {% elif delta < 0 %}
-                        <span class="badge bg-danger-subtle text-danger rounded-pill align-self-center">{{ delta }}%</span>
-                        {% endif %}
+                    {% if recent_activities %}
+                    <a href="{{ url_for('progress.index') }}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">View All</a>
                     {% endif %}
                 </div>
-                {% endfor %}
-            </div>
-        {% else %}
-            <div class="empty-state mt-3 mb-2">
-                <i class="bi bi-activity empty-state-icon"></i>
-                <p class="text-muted mt-2 mb-0">No activity yet. Complete milestones or log accomplishments to see your progress here.</p>
-            </div>
-        {% endif %}
-    </div>
-
-    <!-- ═══════════════════════════════════════════════════════════════════
-         SECTION 5: Feature Hub Grid (Quick Actions)
-         ═══════════════════════════════════════════════════════════════════ -->
-    <div class="row g-4">
-        
-        <!-- Feature 1: Student Profile -->
-        <div class="col-12 col-md-6 col-lg-4">
-            <div class="card shadow-sm border-0 rounded-4 h-100 feature-card p-4">
-                <div class="feature-icon mb-3 d-flex align-items-center justify-content-center">
-                    <i class="bi bi-person-badge"></i>
-                </div>
-                <h3 class="h5 fw-bold mb-2">Student Profile</h3>
-                <p class="text-secondary small mb-4">Manage your academics, career goals, technical skills, interests, and coding links.</p>
-                <div class="mt-auto">
-                    <a href="{{ url_for('profile.view') }}" class="btn btn-outline-primary w-100 rounded-3">
-                        View & Edit Profile <i class="bi bi-arrow-right ms-1"></i>
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        <!-- Feature 2: AI Roadmap -->
-        <div class="col-12 col-md-6 col-lg-4">
-            <div class="card shadow-sm border-0 rounded-4 h-100 feature-card p-4">
-                <div class="feature-icon mb-3 d-flex align-items-center justify-content-center bg-warning-subtle text-warning">
-                    <i class="bi bi-map"></i>
-                </div>
-                <h3 class="h5 fw-bold mb-2">Career Roadmap</h3>
-                <p class="text-secondary small mb-4">AI-driven skill-gap analysis and step-by-step milestone generation based on your target role.</p>
-                <div class="mt-auto">
-                    <a href="{{ url_for('roadmap.index') }}" class="btn btn-outline-secondary w-100 rounded-3">
-                        Explore Roadmap <i class="bi bi-arrow-right ms-1"></i>
-                    </a>
-                </div>
+                
+                {% if recent_activities %}
+                    <div class="list-group list-group-flush mt-n2">
+                        {% for activity in recent_activities[:4] %}
+                        <div class="list-group-item border-0 px-0 py-2 d-flex align-items-center gap-3">
+                            <div class="d-flex align-items-center justify-content-center rounded-circle flex-shrink-0
+                                {% if activity.type == 'milestone_completed' %}bg-primary-subtle text-primary
+                                {% elif activity.type == 'project_completed' %}bg-success-subtle text-success
+                                {% elif activity.type == 'course_completed' %}bg-warning-subtle text-warning
+                                {% else %}bg-info-subtle text-info
+                                {% endif %}" style="width: 36px; height: 36px;">
+                                {% if activity.type == 'milestone_completed' %}<i class="bi bi-check2-circle"></i>
+                                {% elif activity.type == 'project_completed' %}<i class="bi bi-code-square"></i>
+                                {% elif activity.type == 'course_completed' %}<i class="bi bi-book"></i>
+                                {% else %}<i class="bi bi-star"></i>{% endif %}
+                            </div>
+                            <div class="flex-grow-1 min-width-0">
+                                <div class="fw-semibold text-white text-truncate small">{{ activity.title }}</div>
+                                <div class="text-muted" style="font-size: 0.75rem;">{{ activity.type | replace('_', ' ') | title }}</div>
+                            </div>
+                            {% if activity.readiness_after and activity.readiness_before %}
+                                {% set delta = activity.readiness_after - activity.readiness_before %}
+                                {% if delta > 0 %}
+                                    <span class="badge bg-success-subtle text-success rounded-pill fw-bold">+{{ delta }}%</span>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-state mt-auto mb-auto border-0">
+                        <i class="bi bi-activity empty-state-icon mb-2" style="font-size: 2rem;"></i>
+                        <p class="text-muted mt-2 mb-0 small text-center">Your career activity will appear here as you complete milestones.</p>
+                    </div>
+                {% endif %}
             </div>
         </div>
-
-        <!-- Feature 3: Progress Tracker -->
-        <div class="col-12 col-md-6 col-lg-4">
-            <div class="card shadow-sm border-0 rounded-4 h-100 feature-card p-4">
-                <div class="feature-icon mb-3 d-flex align-items-center justify-content-center bg-success-subtle text-success">
-                    <i class="bi bi-journal-check"></i>
-                </div>
-                <h3 class="h5 fw-bold mb-2">Progress Tracker</h3>
-                <p class="text-secondary small mb-4">Log completed courses, projects, and milestones to watch your career readiness score grow.</p>
-                <div class="mt-auto">
-                    <a href="{{ url_for('progress.index') }}" class="btn btn-outline-secondary w-100 rounded-3">
-                        Track Progress <i class="bi bi-arrow-right ms-1"></i>
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        <!-- Feature 4: AI Mock Interviews -->
-        <div class="col-12 col-md-6 col-lg-4">
-            <div class="card shadow-sm border-0 rounded-4 h-100 feature-card p-4">
-                <div class="feature-icon mb-3 d-flex align-items-center justify-content-center bg-info-subtle text-info">
-                    <i class="bi bi-mic"></i>
-                </div>
-                <h3 class="h5 fw-bold mb-2">AI Interview Prep</h3>
-                <p class="text-secondary small mb-4">Practice mock interviews tailored to your target role and get instant AI feedback.</p>
-                <div class="mt-auto">
-                    <a href="{{ url_for('interview.index') }}" class="btn btn-outline-secondary w-100 rounded-3">
-                        Start Practice <i class="bi bi-arrow-right ms-1"></i>
-                    </a>
-                </div>
-            </div>
-        </div>
-
     </div>
 
 </div>
+
+<script>
+    // Animate skill bars on load
+    document.addEventListener("DOMContentLoaded", function() {
+        const skillBars = document.querySelectorAll('.skill-bar');
+        setTimeout(() => {
+            skillBars.forEach(bar => {
+                // Read original width, set it
+                const targetWidth = bar.style.width;
+                bar.style.width = '0';
+                setTimeout(() => {
+                    bar.style.width = targetWidth;
+                }, 100);
+            });
+        }, 300);
+    });
+</script>
 {% endblock %}

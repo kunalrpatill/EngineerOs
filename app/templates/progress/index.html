@@ -9,7 +9,7 @@
     <div class="card shadow-sm border-0 rounded-4 mb-4 bg-primary text-white p-4 p-md-5 overflow-hidden position-relative">
         <div class="row align-items-center position-relative z-1">
             <div class="col-lg-8">
-                <div class="d-inline-flex align-items-center gap-2 bg-white bg-opacity-25 rounded-pill px-3 py-1 mb-3 small fw-medium text-white">
+                <div class="d-inline-flex align-items-center gap-2 bg-body bg-opacity-25 rounded-pill px-3 py-1 mb-3 small fw-medium text-white">
                     <i class="bi bi-speedometer2"></i> Career Readiness Engine
                 </div>
                 <h1 class="h2 fw-bold mb-2">Your Career Readiness: {{ readiness }}%</h1>
@@ -18,13 +18,13 @@
                         <span class="badge bg-success text-white rounded-pill px-3 py-1 fw-semibold me-2">Industry Ready</span>
                         Exceptional progress! You are well-positioned for placement cycles and internship interviews.
                     {% elif readiness >= 50 %}
-                        <span class="badge bg-white text-primary rounded-pill px-3 py-1 fw-semibold me-2">Placement Ready</span>
+                        <span class="badge bg-body text-primary rounded-pill px-3 py-1 fw-semibold me-2">Placement Ready</span>
                         Strong foundational and project progress. Focus on remaining roadmap milestones and mock practice.
                     {% elif readiness >= 25 %}
-                        <span class="badge bg-warning text-dark rounded-pill px-3 py-1 fw-semibold me-2">Emerging Engineer</span>
+                        <span class="badge bg-warning text-white rounded-pill px-3 py-1 fw-semibold me-2">Emerging Engineer</span>
                         Good initial foundation. Continue completing learning milestones and logging portfolio projects.
                     {% else %}
-                        <span class="badge bg-light text-secondary rounded-pill px-3 py-1 fw-semibold me-2">Novice Explorer</span>
+                        <span class="badge bg-body-secondary text-secondary rounded-pill px-3 py-1 fw-semibold me-2">Novice Explorer</span>
                         Start completing your roadmap milestones and logging your coding projects to boost your readiness.
                     {% endif %}
                 </p>
@@ -42,11 +42,11 @@
             </div>
 
             <div class="col-lg-4 text-center text-lg-end mt-4 mt-lg-0">
-                <div class="bg-white bg-opacity-10 border border-white border-opacity-25 rounded-4 p-4 d-inline-block text-center shadow-sm" style="min-width: 220px;">
+                <div class="bg-body bg-opacity-10 border border-white border-opacity-25 rounded-4 p-4 d-inline-block text-center shadow-sm" style="min-width: 220px;">
                     <div class="display-4 fw-bold text-white mb-0">{{ readiness }}%</div>
                     <div class="text-white-50 small mb-2">Overall Career Readiness</div>
-                    <div class="progress bg-white bg-opacity-25 rounded-pill mb-2" style="height: 10px;">
-                        <div class="progress-bar bg-white rounded-pill progress-bar-striped progress-bar-animated" role="progressbar" style="width: {{ readiness }}%;"></div>
+                    <div class="progress bg-body bg-opacity-25 rounded-pill mb-2" style="height: 10px;">
+                        <div class="progress-bar bg-body rounded-pill progress-bar-striped progress-bar-animated" role="progressbar" style="width: {{ readiness }}%;"></div>
                     </div>
                     <div class="text-white-50 small">
                         Calculated from milestones, skills & projects
@@ -71,7 +71,7 @@
                     </div>
                     <div>
                         <div class="text-muted small">Roadmap Milestones</div>
-                        <div class="fw-bold fs-5 text-dark">
+                        <div class="fw-bold fs-5 text-white">
                             <span class="animate-counter" data-target="{{ completed_milestones }}">0</span>/{{ total_milestones }} Done
                             <span class="text-muted small fw-normal">(<span class="animate-counter" data-target="{{ milestones_pct }}">0</span>%)</span>
                         </div>
@@ -89,7 +89,7 @@
                     </div>
                     <div>
                         <div class="text-muted small">Projects Completed</div>
-                        <div class="fw-bold fs-5 text-dark"><span class="animate-counter" data-target="{{ projects_count }}">0</span> Projects</div>
+                        <div class="fw-bold fs-5 text-white"><span class="animate-counter" data-target="{{ projects_count }}">0</span> Projects</div>
                     </div>
                 </div>
             </div>
@@ -104,7 +104,7 @@
                     </div>
                     <div>
                         <div class="text-muted small">Courses & Certs</div>
-                        <div class="fw-bold fs-5 text-dark"><span class="animate-counter" data-target="{{ courses_count }}">0</span> Logged</div>
+                        <div class="fw-bold fs-5 text-white"><span class="animate-counter" data-target="{{ courses_count }}">0</span> Logged</div>
                     </div>
                 </div>
             </div>
@@ -119,7 +119,7 @@
                     </div>
                     <div>
                         <div class="text-muted small">Profile Skills</div>
-                        <div class="fw-bold fs-5 text-dark"><span class="animate-counter" data-target="{{ skills_count }}">0</span> Skills</div>
+                        <div class="fw-bold fs-5 text-white"><span class="animate-counter" data-target="{{ skills_count }}">0</span> Skills</div>
                     </div>
                 </div>
             </div>
@@ -128,12 +128,12 @@
 
     <!-- Active Roadmap Summary Card (if exists) -->
     {% if active_roadmap %}
-        <div class="card shadow-sm border-0 rounded-4 mb-4 p-4 bg-light border">
+        <div class="card shadow-sm border-0 rounded-4 mb-4 p-4 bg-body-secondary border">
             <div class="row align-items-center g-3">
                 <div class="col-12 col-md-8">
                     <div class="d-flex align-items-center gap-2 mb-1">
                         <span class="badge bg-primary rounded-pill px-2 py-1 small">Active Roadmap</span>
-                        <h2 class="h6 fw-bold text-dark mb-0">{{ active_roadmap.title }}</h2>
+                        <h2 class="h6 fw-bold text-white mb-0">{{ active_roadmap.title }}</h2>
                     </div>
                     <p class="text-secondary small mb-2">
                         Targeting: <strong>{{ active_roadmap.target_role }}</strong> • {{ active_roadmap.phases|length }} Learning Phases
@@ -155,9 +155,9 @@
     <div class="card shadow-sm border-0 rounded-4">
         
         <!-- Header & Filter Tabs -->
-        <div class="card-header bg-white border-bottom p-3 p-md-4 d-flex flex-wrap justify-content-between align-items-center gap-3">
+        <div class="card-header bg-body border-bottom p-3 p-md-4 d-flex flex-wrap justify-content-between align-items-center gap-3">
             <div>
-                <h2 class="h5 fw-bold text-dark mb-1">
+                <h2 class="h5 fw-bold text-white mb-1">
                     <i class="bi bi-clock-history text-primary me-2"></i> Activity & Accomplishment Feed
                 </h2>
                 <p class="text-muted small mb-0">Record of your completed milestones, projects, courses, and skills.</p>
@@ -188,49 +188,49 @@
             {% if progress_entries %}
                 <div class="timeline mt-3">
                     {% for entry in progress_entries %}
-                        <div class="timeline-item {% if entry.type == 'milestone_completed' %}completed{% else %}in-progress{% endif %}">
-                            <div class="p-3 rounded-3 border bg-body transition-base hover-shadow">
+                        <div class="timeline-item {% if entry.type == 'milestone_completed' %}completed{% else %}in-progress{% endif %} stagger-{{ loop.index if loop.index <= 5 else 5 }}">
+                            <div class="p-3 rounded-4 border bg-body transition-base card-hover-elevate shadow-sm mb-3">
                                 <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-2">
                                     
                                     <!-- Event Title & Type Badge -->
                                     <div class="d-flex align-items-center gap-2">
                                         {% if entry.type == 'milestone_completed' %}
-                                            <span class="badge bg-primary-subtle text-primary rounded-pill px-2 py-1 small">
+                                            <span class="badge bg-primary-subtle text-primary rounded-pill px-3 py-1 small fw-bold">
                                                 <i class="bi bi-check2-circle me-1"></i> Milestone
                                             </span>
                                         {% elif entry.type == 'project_completed' %}
-                                            <span class="badge bg-success-subtle text-success rounded-pill px-2 py-1 small">
+                                            <span class="badge bg-success-subtle text-success rounded-pill px-3 py-1 small fw-bold">
                                                 <i class="bi bi-tools me-1"></i> Project
                                             </span>
                                         {% elif entry.type == 'course_completed' %}
-                                            <span class="badge bg-warning-subtle text-warning rounded-pill px-2 py-1 small">
+                                            <span class="badge bg-warning-subtle text-warning rounded-pill px-3 py-1 small fw-bold">
                                                 <i class="bi bi-mortarboard me-1"></i> Course / Cert
                                             </span>
                                         {% else %}
-                                            <span class="badge bg-info-subtle text-info rounded-pill px-2 py-1 small">
+                                            <span class="badge bg-info-subtle text-info rounded-pill px-3 py-1 small fw-bold">
                                                 <i class="bi bi-code-slash me-1"></i> Skill
                                             </span>
                                         {% endif %}
 
-                                        <h3 class="h6 fw-bold mb-0 text-dark">{{ entry.title }}</h3>
+                                        <h3 class="h6 fw-bold mb-0 text-white">{{ entry.title }}</h3>
                                     </div>
 
                                     <!-- Timestamp & Readiness Delta -->
                                     <div class="d-flex align-items-center gap-2">
                                         {% if entry.readiness_after is not none and entry.readiness_before is not none and entry.readiness_after > entry.readiness_before %}
-                                            <span class="badge bg-success rounded-pill px-2 py-1 small shadow-sm" title="Readiness Increase">
+                                            <span class="badge bg-success text-white rounded-pill px-2 py-1 small shadow-sm animate-pop-in ai-glow" title="Readiness Increase">
                                                 +{{ entry.readiness_after - entry.readiness_before }}% Readiness
                                             </span>
                                         {% endif %}
-                                        <span class="text-muted small">
+                                        <span class="text-muted small tracking-wider text-uppercase fw-bold">
                                             <i class="bi bi-calendar3 me-1"></i> {{ entry.created_at.strftime('%b %d, %Y') if entry.created_at else 'Recent' }}
                                         </span>
                                         
                                         <!-- Delete Button -->
                                         <form method="POST" action="{{ url_for('progress.delete_accomplishment', progress_id=entry.id) }}" class="d-inline" onsubmit="return confirm('Remove this accomplishment entry?');">
                                             <input type="hidden" name="csrf_token" value="{{ csrf_token() if csrf_token else '' }}">
-                                            <button type="submit" class="btn btn-link text-danger p-0 ms-2" title="Delete Entry">
-                                                <i class="bi bi-trash"></i>
+                                            <button type="submit" class="btn btn-light text-danger rounded-circle p-1 ms-2 hover-elevate" style="width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;" title="Delete Entry">
+                                                <i class="bi bi-trash small"></i>
                                             </button>
                                         </form>
                                     </div>
@@ -238,16 +238,16 @@
 
                                 <!-- Description -->
                                 {% if entry.description %}
-                                    <p class="text-secondary small mb-2">{{ entry.description }}</p>
+                                    <p class="text-secondary small mb-2 lh-base mt-2">{{ entry.description }}</p>
                                 {% endif %}
 
                                 <!-- Skills Gained Badges -->
                                 {% if entry.skills_gained %}
-                                    <div class="d-flex flex-wrap align-items-center gap-1 mt-2 pt-2 border-top">
-                                        <span class="text-muted small fw-medium me-1">Skills:</span>
+                                    <div class="d-flex flex-wrap align-items-center gap-2 mt-3 pt-3 border-top">
+                                        <span class="text-muted small fw-bold tracking-wider text-uppercase me-1"><i class="bi bi-lightning-charge me-1"></i> SKILLS GAINED:</span>
                                         {% for skill in entry.skills_gained.split(',') %}
                                             {% if skill.strip() %}
-                                                <span class="badge bg-white text-secondary border rounded-pill px-2 py-1 small shadow-sm">
+                                                <span class="badge bg-body-secondary text-secondary border rounded-pill px-3 py-1 small shadow-sm">
                                                     {{ skill.strip() }}
                                                 </span>
                                             {% endif %}
@@ -262,10 +262,10 @@
             {% else %}
                 <!-- Empty State -->
                 <div class="text-center py-5">
-                    <div class="d-inline-flex align-items-center justify-content-center bg-light text-secondary rounded-circle mb-3" style="width: 64px; height: 64px;">
+                    <div class="d-inline-flex align-items-center justify-content-center bg-body-secondary text-secondary rounded-circle mb-3" style="width: 64px; height: 64px;">
                         <i class="bi bi-journal-x fs-2"></i>
                     </div>
-                    <h3 class="h6 fw-bold text-dark mb-1">No activities logged yet</h3>
+                    <h3 class="h6 fw-bold text-white mb-1">No activities logged yet</h3>
                     <p class="text-muted small mb-3">
                         {% if filter_type != 'all' and filter_type %}
                             No entries found matching the selected filter.
@@ -294,7 +294,7 @@
                     <div class="d-flex align-items-center justify-content-center bg-primary-subtle text-primary rounded-circle" style="width: 36px; height: 36px;">
                         <i class="bi bi-award-fill"></i>
                     </div>
-                    <h5 class="modal-title fw-bold text-dark" id="logAccomplishmentModalLabel">Log an Accomplishment</h5>
+                    <h5 class="modal-title fw-bold text-white" id="logAccomplishmentModalLabel">Log an Accomplishment</h5>
                 </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -338,7 +338,7 @@
 
                 </div>
 
-                <div class="modal-footer bg-light border-top p-3">
+                <div class="modal-footer bg-body-secondary border-top p-3">
                     <button type="button" class="btn btn-outline-secondary rounded-3 px-3" data-bs-dismiss="modal">Cancel</button>
                     <button type="submit" class="btn btn-primary rounded-3 px-4 fw-semibold shadow-sm">
                         <i class="bi bi-check2-circle me-1"></i> Save Accomplishment

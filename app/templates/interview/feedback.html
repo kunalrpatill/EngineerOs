@@ -29,8 +29,8 @@
         {% for item in feedback %}
         <div class="col-12 stagger-{{ loop.index if loop.index <= 5 else 5 }}">
             <div class="card shadow-sm border-0 rounded-4 overflow-hidden card-hover-elevate">
-                <div class="card-header bg-light border-0 py-3 d-flex justify-content-between align-items-center">
-                    <h2 class="h6 fw-bold mb-0 text-dark">
+                <div class="card-header bg-body-secondary border-0 py-3 d-flex justify-content-between align-items-center">
+                    <h2 class="h6 fw-bold mb-0 text-white">
                         <span class="badge bg-primary rounded-pill me-2">Q{{ loop.index }}</span>
                         {{ item.question }}
                     </h2>
@@ -50,7 +50,7 @@
                 <div class="card-body p-4">
                     <div class="mb-4">
                         <h3 class="h6 fw-bold text-muted mb-2">Your Answer:</h3>
-                        <div class="bg-white border rounded-3 p-3 text-secondary" style="white-space: pre-wrap;">{{ item.answer }}</div>
+                        <div class="bg-body border rounded-3 p-3 text-secondary" style="white-space: pre-wrap;">{{ item.answer }}</div>
                     </div>
                     
                     <div class="row g-4 mb-4">
@@ -81,7 +81,7 @@
                             <i class="bi bi-robot fs-1"></i>
                         </div>
                         <h3 class="h6 fw-bold text-primary mb-1"><span class="ai-text-gradient">✦ AI Evaluation</span></h3>
-                        <p class="mb-0 text-dark small position-relative z-1">{{ item.feedback }}</p>
+                        <p class="mb-0 text-white small position-relative z-1">{{ item.feedback }}</p>
                     </div>
                 </div>
             </div>
@@ -90,9 +90,23 @@
     </div>
     
     <div class="text-center mt-5">
-        <a href="{{ url_for('interview.index') }}" class="btn btn-primary px-4 py-2 rounded-3 shadow-sm">
+        <a href="{{ url_for('interview.index') }}" class="btn btn-primary px-4 py-2 rounded-3 shadow-sm hover-elevate">
             <i class="bi bi-arrow-clockwise me-1"></i> Try Another Mock Interview
         </a>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Animate SVG rings
+    const rings = document.querySelectorAll('circle[stroke-dashoffset]');
+    rings.forEach(ring => {
+        const targetOffset = ring.getAttribute('stroke-dashoffset');
+        ring.style.strokeDashoffset = '283'; // Start empty
+        setTimeout(() => {
+            ring.style.strokeDashoffset = targetOffset;
+        }, 300);
+    });
+});
+</script>
 {% endblock %}
