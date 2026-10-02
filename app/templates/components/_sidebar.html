@@ -1,4 +1,4 @@
-﻿<!-- app/templates/components/_sidebar.html -->
+<!-- app/templates/components/_sidebar.html -->
 
 <!-- Desktop Sidebar -->
 <aside class="sidebar">
@@ -45,6 +45,12 @@
            class="sidebar-link {% if request.endpoint and request.endpoint.startswith('interview') %}active{% endif %}">
             <i class="bi bi-mic-fill"></i>
             <span>AI Mock Interview</span>
+        </a>
+
+        <a href="{{ url_for('practice.index') }}"
+           class="sidebar-link {% if request.endpoint and request.endpoint.startswith('practice') %}active{% endif %}">
+            <i class="bi bi-laptop"></i>
+            <span>Practice Arena</span>
         </a>
     </nav>
 
@@ -100,6 +106,10 @@
             <a href="{{ url_for('interview.index') }}"
                class="sidebar-link {% if request.endpoint and request.endpoint.startswith('interview') %}active{% endif %}">
                 <i class="bi bi-mic-fill"></i> AI Mock Interview
+            </a>
+            <a href="{{ url_for('practice.index') }}"
+               class="sidebar-link {% if request.endpoint and request.endpoint.startswith('practice') %}active{% endif %}">
+                <i class="bi bi-laptop"></i> Practice Arena
             </a>
         </nav>
         <div class="mt-auto p-3" style="border-top: 1px solid var(--border-subtle);">

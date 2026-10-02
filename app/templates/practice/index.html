@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}Practice Arena - EngineerOS{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="mb-1">Practice Arena</h1>
+            <p class="text-muted">Master your skills with targeted practice based on your roadmap.</p>
+        </div>
+    </div>
+
+    {% if current_topic %}
+    <div class="card mb-4" style="border: 1px solid var(--border-color); background-color: var(--bg-secondary);">
+        <div class="card-body">
+            <h5 class="card-title">Current Roadmap Topic: <span class="text-primary">{{ current_topic }}</span></h5>
+            <div class="d-flex justify-content-between align-items-center mt-3">
+                <span>Progress: {{ completed_count }} / {{ total_topic_questions }} completed</span>
+                <div class="progress flex-grow-1 mx-3" style="height: 10px; background-color: var(--border-subtle);">
+                    <div class="progress-bar bg-success" role="progressbar" style="width: {{ progress_percent }}%;" aria-valuenow="{{ progress_percent }}" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                <span>{{ progress_percent }}%</span>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        You do not have an active roadmap topic currently.
+    </div>
+    {% endif %}
+
+    <!-- Filter Buttons (mocked for now, can be implemented via JS or query params) -->
+    <div class="mb-4 gap-2 d-flex flex-wrap">
+        <a href="#" class="btn btn-sm btn-primary">Recommended</a>
+        <a href="#" class="btn btn-sm btn-outline-secondary">All</a>
+        <a href="#" class="btn btn-sm btn-outline-secondary">Not Attempted</a>
+        <a href="#" class="btn btn-sm btn-outline-secondary">Completed</a>
+    </div>
+
+    <h3>Recommended Practice</h3>
+    {% if not recommended_questions %}
+    <div class="alert alert-secondary">
+        No verified practice questions are currently available for this topic.
+    </div>
+    {% else %}
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        {% for question in recommended_questions %}
+        <div class="col">
+            <div class="card h-100" style="background-color: var(--bg-card); border-color: var(--border-subtle);">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <span class="badge bg-secondary">{{ question.language }}</span>
+                        {% if question.id in completed_ids %}
+                        <span class="badge bg-success"><i class="bi bi-check-circle"></i> Completed</span>
+                        {% else %}
+                        <span class="badge bg-warning text-dark"><i class="bi bi-circle"></i> Not Completed</span>
+                        {% endif %}
+                    </div>
+                    <h5 class="card-title text-truncate">{{ question.title }}</h5>
+                    <p class="card-text text-muted small mb-2">{{ question.topic }} &rarr; {{ question.subtopic or 'General' }}</p>
+                    
+                    <div class="d-flex justify-content-between mb-3">
+                        <span class="badge {% if question.difficulty == 'Easy' %}bg-success{% elif question.difficulty == 'Medium' %}bg-warning text-dark{% else %}bg-danger{% endif %}">{{ question.difficulty }}</span>
+                        <span class="badge bg-info text-dark">{{ question.question_type }}</span>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent border-top-0">
+                    <a href="{{ url_for('practice.question_detail', question_id=question.id) }}" class="btn btn-primary w-100">
+                        Start Practice
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

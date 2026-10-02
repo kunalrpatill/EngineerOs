@@ -25,15 +25,24 @@
     {% if current_user.is_authenticated %}
         <!-- Sidebar -->
         {% include 'components/_sidebar.html' %}
+        <!-- Atmospheric mid-page blob (purely decorative, pointer-events: none) -->
+        <div aria-hidden="true" style="
+            position: fixed; top: 40%; right: -80px;
+            width: 320px; height: 320px; border-radius: 50%;
+            background: radial-gradient(circle, rgba(74,144,217,0.10) 0%, transparent 70%);
+            filter: blur(70px); pointer-events: none; z-index: 0;
+        "></div>
+
         <!-- Main Content Wrapper -->
         <div class="main-wrapper flex-grow-1 d-flex flex-column">
             <!-- Mobile Header (Visible only on small screens) -->
-            <div class="d-lg-none bg-body border-bottom p-3 d-flex justify-content-between align-items-center sticky-top">
+            <div class="d-lg-none p-3 d-flex justify-content-between align-items-center sticky-top"
+                 style="background: rgba(5,9,15,0.80); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-bottom: 1px solid rgba(255,255,255,0.08); z-index: 100;">
                 <div class="d-flex align-items-center gap-2">
-                    <i class="bi bi-heptagon-fill fs-4 text-info"></i>
-                    <span class="fw-bold text-white">EngineerOS</span>
+                    <i class="bi bi-heptagon-fill fs-4" style="color: var(--accent-cyan); filter: drop-shadow(0 0 6px rgba(6,182,212,0.50));"></i>
+                    <span class="fw-bold" style="color: var(--text-primary);">EngineerOS</span>
                 </div>
-                <button class="btn btn-link text-white p-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar">
+                <button class="btn btn-link p-0" style="color: var(--text-secondary);" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar">
                     <i class="bi bi-list fs-2"></i>
                 </button>
             </div>
