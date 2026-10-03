@@ -1,71 +1,106 @@
 <!-- app/templates/components/_sidebar.html -->
 
+<style>
+    /* Premium Sidebar Overrides */
+    .sidebar {
+        background: #0f172a !important; /* Deep slate */
+        border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
+    }
+    .sidebar-link {
+        color: #94a3b8 !important;
+        padding: 12px 20px !important;
+        margin: 4px 12px !important;
+        border-radius: 12px !important;
+        display: flex;
+        align-items: center;
+        gap: 14px !important;
+        font-weight: 500;
+        font-size: 0.95rem;
+        transition: all 0.2s ease;
+        border-right: 3px solid transparent;
+    }
+    .sidebar-link:hover {
+        background: rgba(255, 255, 255, 0.05) !important;
+        color: #e2e8f0 !important;
+    }
+    .sidebar-link.active {
+        background: linear-gradient(90deg, #1d4ed8 0%, rgba(37, 99, 235, 0.4) 100%) !important;
+        color: #ffffff !important;
+        border-right: 3px solid #00f0ff !important;
+        border-top-right-radius: 4px !important;
+        border-bottom-right-radius: 4px !important;
+        box-shadow: inset -5px 0 15px rgba(0, 240, 255, 0.15) !important;
+    }
+    .sidebar-link i {
+        font-size: 1.15rem;
+    }
+    .sidebar-link.active i {
+        color: #ffffff !important;
+    }
+</style>
+
 <!-- Desktop Sidebar -->
 <aside class="sidebar">
     <!-- Branding -->
-    <div class="sidebar-brand d-flex align-items-center gap-2">
-        <i class="bi bi-heptagon-fill sidebar-brand-icon"></i>
+    <div class="sidebar-brand d-flex align-items-center gap-2 px-3 pt-3 pb-4">
+        <i class="bi bi-triangle-half sidebar-brand-icon fs-3 text-info-neon" style="transform: rotate(90deg);"></i>
         <div>
-            <div class="sidebar-brand-name">EngineerOS</div>
-            <div class="sidebar-brand-sub">AI Career Command Center</div>
+            <div class="sidebar-brand-name fs-5 fw-bold text-white">AI Career</div>
+            <div class="sidebar-brand-sub" style="font-size: 0.75rem;">Command Center</div>
         </div>
     </div>
 
     <!-- Navigation -->
-    <nav class="sidebar-nav">
-        <div class="sidebar-section-label">Main Menu</div>
-
-        <a href="{{ url_for('dashboard.index') }}"
-           class="sidebar-link {% if request.endpoint == 'dashboard.index' %}active{% endif %}">
-            <i class="bi bi-grid-1x2"></i>
+    <nav class="sidebar-nav mt-2">
+        <a href="{{ url_for('dashboard.index') }}" class="sidebar-link {% if request.endpoint == 'dashboard.index' %}active{% endif %}">
+            <i class="bi bi-house-door"></i>
             <span>Dashboard</span>
         </a>
 
-        <a href="{{ url_for('profile.view') }}"
-           class="sidebar-link {% if request.endpoint and request.endpoint.startswith('profile') %}active{% endif %}">
-            <i class="bi bi-person-circle"></i>
+        <a href="{{ url_for('profile.view') }}" class="sidebar-link {% if request.endpoint and request.endpoint.startswith('profile') %}active{% endif %}">
+            <i class="bi bi-person"></i>
             <span>My Profile</span>
         </a>
 
-        <div class="sidebar-section-label">Career Engine</div>
-
-        <a href="{{ url_for('roadmap.index') }}"
-           class="sidebar-link {% if request.endpoint and request.endpoint.startswith('roadmap') %}active{% endif %}">
-            <i class="bi bi-map"></i>
+        <a href="{{ url_for('roadmap.index') }}" class="sidebar-link {% if request.endpoint and request.endpoint.startswith('roadmap') %}active{% endif %}">
+            <i class="bi bi-signpost-split"></i>
             <span>Roadmap</span>
         </a>
 
-        <a href="{{ url_for('progress.index') }}"
-           class="sidebar-link {% if request.endpoint and request.endpoint.startswith('progress') %}active{% endif %}">
-            <i class="bi bi-bar-chart-steps"></i>
-            <span>Progress</span>
+        <a href="#" class="sidebar-link">
+            <i class="bi bi-book"></i>
+            <span>Courses</span>
         </a>
 
-        <a href="{{ url_for('interview.index') }}"
-           class="sidebar-link {% if request.endpoint and request.endpoint.startswith('interview') %}active{% endif %}">
-            <i class="bi bi-mic-fill"></i>
-            <span>AI Mock Interview</span>
+        <a href="#" class="sidebar-link">
+            <i class="bi bi-grid"></i>
+            <span>Projects</span>
         </a>
 
-        <a href="{{ url_for('practice.index') }}"
-           class="sidebar-link {% if request.endpoint and request.endpoint.startswith('practice') %}active{% endif %}">
-            <i class="bi bi-laptop"></i>
-            <span>Practice Arena</span>
+        <a href="{{ url_for('practice.index') }}" class="sidebar-link {% if request.endpoint and request.endpoint.startswith('practice') %}active{% endif %}">
+            <i class="bi bi-code-slash"></i>
+            <span>Coding Challenges</span>
+        </a>
+
+        <a href="#" class="sidebar-link">
+            <i class="bi bi-briefcase"></i>
+            <span>Internships</span>
+        </a>
+
+        <a href="#" class="sidebar-link">
+            <i class="bi bi-file-earmark-text"></i>
+            <span>Resume Builder</span>
+        </a>
+
+        <a href="{{ url_for('interview.index') }}" class="sidebar-link {% if request.endpoint and request.endpoint.startswith('interview') %}active{% endif %}">
+            <i class="bi bi-robot"></i>
+            <span>AI Assistant</span>
         </a>
     </nav>
 
     <!-- User Footer -->
-    <div class="sidebar-footer">
-        <div class="sidebar-user">
-            <div class="sidebar-avatar">
-                {{ current_user.name[:1] | upper }}
-            </div>
-            <div class="sidebar-user-info">
-                <div class="sidebar-user-name">{{ current_user.name }}</div>
-                <div class="sidebar-user-email">{{ current_user.email }}</div>
-            </div>
-        </div>
-        <a href="{{ url_for('auth.logout') }}" class="sidebar-link" style="color: #EF4444;">
+    <div class="sidebar-footer mt-auto p-3" style="border-top: 1px solid rgba(255,255,255,0.05);">
+        <a href="{{ url_for('auth.logout') }}" class="sidebar-link" style="color: #ef4444 !important;">
             <i class="bi bi-box-arrow-left"></i>
             <span>Logout</span>
         </a>
@@ -73,47 +108,49 @@
 </aside>
 
 <!-- Mobile Offcanvas Sidebar -->
-<div class="offcanvas offcanvas-start" tabindex="-1" id="mobileSidebar"
-     style="background-color: var(--bg-sidebar); border-right: 1px solid var(--border-color);">
-    <div class="offcanvas-header" style="border-bottom: 1px solid var(--border-subtle);">
+<div class="offcanvas offcanvas-start" tabindex="-1" id="mobileSidebar" style="background-color: #0f172a; border-right: 1px solid rgba(255,255,255,0.05);">
+    <div class="offcanvas-header" style="border-bottom: 1px solid rgba(255,255,255,0.05);">
         <div class="d-flex align-items-center gap-2">
-            <i class="bi bi-heptagon-fill sidebar-brand-icon"></i>
+            <i class="bi bi-triangle-half sidebar-brand-icon fs-3 text-info-neon" style="transform: rotate(90deg);"></i>
             <div>
-                <div class="sidebar-brand-name">EngineerOS</div>
-                <div class="sidebar-brand-sub">AI Career Command Center</div>
+                <div class="sidebar-brand-name fs-5 fw-bold text-white">AI Career</div>
+                <div class="sidebar-brand-sub" style="font-size: 0.75rem;">Command Center</div>
             </div>
         </div>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
     </div>
     <div class="offcanvas-body p-0 d-flex flex-column">
-        <nav class="sidebar-nav p-2">
-            <a href="{{ url_for('dashboard.index') }}"
-               class="sidebar-link {% if request.endpoint == 'dashboard.index' %}active{% endif %}">
-                <i class="bi bi-grid-1x2"></i> Dashboard
+        <nav class="sidebar-nav pt-2">
+            <a href="{{ url_for('dashboard.index') }}" class="sidebar-link {% if request.endpoint == 'dashboard.index' %}active{% endif %}">
+                <i class="bi bi-house-door"></i> Dashboard
             </a>
-            <a href="{{ url_for('profile.view') }}"
-               class="sidebar-link {% if request.endpoint and request.endpoint.startswith('profile') %}active{% endif %}">
-                <i class="bi bi-person-circle"></i> My Profile
+            <a href="{{ url_for('profile.view') }}" class="sidebar-link {% if request.endpoint and request.endpoint.startswith('profile') %}active{% endif %}">
+                <i class="bi bi-person"></i> My Profile
             </a>
-            <a href="{{ url_for('roadmap.index') }}"
-               class="sidebar-link {% if request.endpoint and request.endpoint.startswith('roadmap') %}active{% endif %}">
-                <i class="bi bi-map"></i> Roadmap
+            <a href="{{ url_for('roadmap.index') }}" class="sidebar-link {% if request.endpoint and request.endpoint.startswith('roadmap') %}active{% endif %}">
+                <i class="bi bi-signpost-split"></i> Roadmap
             </a>
-            <a href="{{ url_for('progress.index') }}"
-               class="sidebar-link {% if request.endpoint and request.endpoint.startswith('progress') %}active{% endif %}">
-                <i class="bi bi-bar-chart-steps"></i> Progress
+            <a href="#" class="sidebar-link">
+                <i class="bi bi-book"></i> Courses
             </a>
-            <a href="{{ url_for('interview.index') }}"
-               class="sidebar-link {% if request.endpoint and request.endpoint.startswith('interview') %}active{% endif %}">
-                <i class="bi bi-mic-fill"></i> AI Mock Interview
+            <a href="#" class="sidebar-link">
+                <i class="bi bi-grid"></i> Projects
             </a>
-            <a href="{{ url_for('practice.index') }}"
-               class="sidebar-link {% if request.endpoint and request.endpoint.startswith('practice') %}active{% endif %}">
-                <i class="bi bi-laptop"></i> Practice Arena
+            <a href="{{ url_for('practice.index') }}" class="sidebar-link {% if request.endpoint and request.endpoint.startswith('practice') %}active{% endif %}">
+                <i class="bi bi-code-slash"></i> Coding Challenges
+            </a>
+            <a href="#" class="sidebar-link">
+                <i class="bi bi-briefcase"></i> Internships
+            </a>
+            <a href="#" class="sidebar-link">
+                <i class="bi bi-file-earmark-text"></i> Resume Builder
+            </a>
+            <a href="{{ url_for('interview.index') }}" class="sidebar-link {% if request.endpoint and request.endpoint.startswith('interview') %}active{% endif %}">
+                <i class="bi bi-robot"></i> AI Assistant
             </a>
         </nav>
-        <div class="mt-auto p-3" style="border-top: 1px solid var(--border-subtle);">
-            <a href="{{ url_for('auth.logout') }}" class="sidebar-link" style="color: #EF4444;">
+        <div class="mt-auto p-3" style="border-top: 1px solid rgba(255,255,255,0.05);">
+            <a href="{{ url_for('auth.logout') }}" class="sidebar-link" style="color: #ef4444 !important;">
                 <i class="bi bi-box-arrow-left"></i> Logout
             </a>
         </div>

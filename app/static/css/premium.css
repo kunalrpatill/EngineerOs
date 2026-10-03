@@ -1,0 +1,265 @@
+/* Premium Dashboard CSS */
+:root {
+    --bg-dark: #050b14;
+    --card-bg: rgba(13, 20, 36, 0.7);
+    --border-light: rgba(56, 189, 248, 0.15);
+    --neon-cyan: #00f0ff;
+    --neon-blue: #0057ff;
+    --neon-purple: #9d00ff;
+    --text-main: #e2e8f0;
+    --text-muted: #94a3b8;
+}
+
+body {
+    background-color: var(--bg-dark) !important;
+    color: var(--text-main) !important;
+    background-image: 
+        radial-gradient(circle at 15% 50%, rgba(0, 87, 255, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 85% 30%, rgba(157, 0, 255, 0.08) 0%, transparent 50%);
+    background-attachment: fixed;
+}
+
+/* Glassmorphism Cards */
+.glass-card {
+    background: var(--card-bg) !important;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--border-light) !important;
+    border-radius: 20px !important;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05) !important;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.glass-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.6), 0 0 20px rgba(0, 240, 255, 0.1) !important;
+    border-color: rgba(56, 189, 248, 0.3) !important;
+}
+
+/* Hero Section */
+.hero-card {
+    background: linear-gradient(135deg, rgba(0, 87, 255, 0.2) 0%, rgba(13, 20, 36, 0.8) 100%) !important;
+    border: 1px solid rgba(0, 240, 255, 0.3) !important;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: url('https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=2070&auto=format&fit=crop') center/cover;
+    opacity: 0.15;
+    z-index: 0;
+    mix-blend-mode: overlay;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 1;
+}
+
+/* Typography & Glows */
+.text-gradient-cyan {
+    background: linear-gradient(to right, var(--neon-cyan), #38bdf8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
+}
+
+.text-gradient-purple {
+    background: linear-gradient(to right, #c084fc, var(--neon-purple));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.icon-glow {
+    filter: drop-shadow(0 0 8px var(--neon-cyan));
+}
+
+/* Buttons */
+.btn-neon {
+    background: linear-gradient(45deg, var(--neon-blue), var(--neon-cyan));
+    border: none;
+    color: white !important;
+    font-weight: 600;
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
+    transition: all 0.3s ease;
+}
+.btn-neon:hover {
+    box-shadow: 0 0 25px rgba(0, 240, 255, 0.6);
+    transform: scale(1.02);
+}
+
+/* Progress Bars */
+.progress-neon {
+    background-color: rgba(255,255,255,0.05) !important;
+    border-radius: 10px;
+    height: 8px !important;
+    overflow: visible !important;
+}
+
+.progress-bar-neon {
+    background: linear-gradient(90deg, var(--neon-blue), var(--neon-cyan)) !important;
+    border-radius: 10px;
+    position: relative;
+    box-shadow: 0 0 10px var(--neon-cyan);
+}
+
+.progress-bar-neon::after {
+    content: '';
+    position: absolute;
+    right: -4px;
+    top: -3px;
+    width: 14px;
+    height: 14px;
+    background: #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--neon-cyan);
+}
+
+/* Circular Progress */
+.circular-progress {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: conic-gradient(var(--neon-cyan) calc(var(--progress) * 1%), rgba(255,255,255,0.05) 0);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 20px rgba(0, 240, 255, 0.2);
+}
+
+.circular-progress::before {
+    content: '';
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background-color: var(--bg-dark);
+}
+
+.circular-progress-value {
+    position: relative;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: white;
+}
+
+/* Timeline */
+.timeline-horizontal {
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    padding: 20px 0;
+}
+.timeline-horizontal::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: rgba(255,255,255,0.1);
+    z-index: 0;
+}
+.timeline-step {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+.timeline-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--bg-dark);
+    border: 2px solid var(--border-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    transition: all 0.3s ease;
+}
+.timeline-step.active .timeline-icon {
+    border-color: var(--neon-cyan);
+    color: var(--neon-cyan);
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
+}
+
+/* Lists */
+.neon-list-item {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 12px;
+    margin-bottom: 8px;
+    transition: all 0.2s ease;
+}
+.neon-list-item:hover {
+    background: rgba(0, 240, 255, 0.05);
+    border-color: rgba(0, 240, 255, 0.2);
+}
+
+/* Animated AI Robot Background */
+@keyframes float-ai {
+    0% { transform: translateY(0px) rotate(0deg) scale(1); filter: brightness(1) drop-shadow(0 0 10px rgba(0,240,255,0)); }
+    50% { transform: translateY(-12px) rotate(2deg) scale(1.02); filter: brightness(1.25) drop-shadow(0 0 25px rgba(0,240,255,0.6)); }
+    100% { transform: translateY(0px) rotate(0deg) scale(1); filter: brightness(1) drop-shadow(0 0 10px rgba(0,240,255,0)); }
+}
+
+.ai-robot-bg {
+    position: absolute;
+    bottom: -10px;
+    right: 320px; /* Positioned dynamically between text and progress card */
+    width: 250px;
+    height: auto;
+    animation: float-ai 5s ease-in-out infinite;
+    mix-blend-mode: screen; /* Removes the dark background of the PNG */
+    opacity: 0.9;
+    z-index: 0;
+    pointer-events: none;
+}
+
+@media (max-width: 991px) {
+    .ai-robot-bg {
+        right: 20px;
+        bottom: 20px;
+        width: 180px;
+        opacity: 0.3;
+    }
+}
+
+/* Solid Cards -> Upgraded to True Glassmorphism */
+.solid-card {
+    background: rgba(10, 15, 30, 0.25) !important; /* Highly transparent */
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255,255,255,0.05);
+}
+
+.text-success-neon {
+    color: #10b981 !important;
+    text-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+}
+.text-warning-neon {
+    color: #f59e0b !important;
+    text-shadow: 0 0 10px rgba(245, 158, 11, 0.4);
+}
+.text-info-neon {
+    color: #0ea5e9 !important;
+    text-shadow: 0 0 10px rgba(14, 165, 233, 0.4);
+}
+
+.bg-success-neon {
+    background-color: #10b981 !important;
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+}
+.bg-warning-neon {
+    background-color: #f59e0b !important;
+    box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
+}

@@ -1,177 +1,172 @@
 {% extends 'base.html' %}
-
-{% block title %}Mock Interview Session{% endblock %}
-
+{% block title %}AI Mock Interview{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/mock_interview.css') }}?v=3">
+{% endblock %}
 {% block content %}
-<div class="container py-4">
-    <div class="d-flex flex-column align-items-center justify-content-center text-center mb-5">
-        <div class="d-inline-flex align-items-center justify-content-center ai-glow bg-primary-subtle text-primary rounded-circle mb-3 animate-float" style="width: 64px; height: 64px;">
-            <i class="bi bi-robot fs-2"></i>
-        </div>
-        <h1 class="h4 fw-bold mb-1 tracking-wider text-uppercase text-white"><span class="ai-text-gradient">✦ AI Mock Interview</span></h1>
-        <p class="text-muted small mb-0">Your technical interview is in progress.</p>
-    </div>
+<div class="interview-room position-relative overflow-hidden w-100">
+    <!-- 3D Canvas Container -->
+    <div id="canvas-container" class="position-absolute top-0 start-0 w-100 h-100"></div>
 
-    <form method="POST" action="{{ url_for('interview.submit') }}" id="interviewForm">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() if csrf_token else '' }}">
+    <div class="container position-relative z-1 h-100 d-flex flex-column py-4" style="pointer-events: none;">
         
-        <div class="row justify-content-center fade-in">
-            <div class="col-12 col-md-10 col-lg-8">
-                
-                <div class="card shadow-lg border-0 rounded-4 overflow-hidden position-relative bg-body">
-                    <!-- Top AI Progress Bar -->
-                    <div class="bg-body-secondary p-3 border-bottom d-flex justify-content-between align-items-center">
-                        <div class="d-flex gap-1" id="progressDots">
-                            {% for q in questions %}
-                                <div class="rounded-pill bg-{{ 'primary' if loop.first else 'secondary opacity-25' }}" id="dot-{{ loop.index }}" style="width: 20px; height: 6px; transition: all 0.3s ease;"></div>
-                            {% endfor %}
-                        </div>
-                        <span class="text-muted fw-bold small tracking-wider" id="progressText">QUESTION 1 / {{ questions|length }}</span>
-                    </div>
-                    
-                    <div class="position-absolute top-0 start-0 w-100">
-                        <div class="progress" style="height: 3px; border-radius: 0;">
-                            <div class="progress-bar bg-primary" id="progressBar" role="progressbar" style="width: {{ 100 / questions|length }}%; transition: width 0.4s ease;"></div>
-                        </div>
-                    </div>
+        <!-- Header & Status -->
+        <div class="d-flex justify-content-between align-items-center mb-4" style="pointer-events: auto;">
+            <h1 class="h3 fw-bold text-white mb-0"><i class="bi bi-robot text-primary me-2"></i> AI Mock Interview</h1>
+            <div class="status-chip d-flex align-items-center px-3 py-2 rounded-pill bg-dark bg-opacity-50 border border-secondary" id="interviewStatus">
+                <div class="status-indicator online me-2"></div>
+                <span class="text-white-50 small fw-semibold" id="statusText">Interviewer Online</span>
+            </div>
+        </div>
+        
+        <!-- Speech Bubble -->
+        <div class="speech-bubble-container d-flex justify-content-center mb-auto mt-2" style="pointer-events: none;">
+            <div class="speech-bubble glass-panel px-4 py-3 rounded-4 shadow-lg text-center" id="speechBubble">
+                <span class="text-white fw-medium h5 mb-0" id="speechText">Initializing 3D Room...</span>
+            </div>
+        </div>
 
-                    <div class="position-relative" id="questionsContainer" style="min-height: 300px;">
+        <!-- Main Controls / Questions -->
+        <div class="interview-controls w-100 d-flex justify-content-center mt-auto pb-4" style="pointer-events: auto;">
+            
+            <!-- Start Screen -->
+            <div id="startScreen" class="glass-panel p-5 rounded-4 text-center max-w-md w-100 animate-slide-up">
+                <h3 class="text-white fw-bold mb-3">Practice real interview conversations</h3>
+                <p class="text-white-50 mb-4">Your AI interviewer will ask you {{ questions|length }} questions based on your profile.</p>
+                <button id="startInterviewBtn" class="btn btn-primary btn-lg rounded-pill px-5 py-3 fw-bold shadow-lg hover-tactile w-100">
+                    <i class="bi bi-play-fill fs-4 me-2"></i> Start Interview
+                </button>
+            </div>
+
+            <!-- Question Card -->
+            <div id="questionScreen" class="glass-panel p-4 p-md-5 rounded-4 max-w-lg w-100 animate-slide-up d-none">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="badge bg-primary bg-opacity-25 text-primary rounded-pill px-3 py-2 fw-bold tracking-wider" id="questionCounter">QUESTION 1 OF 5</span>
+                </div>
+                <h2 class="h5 fw-bold text-white lh-base mb-4" id="questionText">Loading question...</h2>
+                
+                <form id="interviewForm" method="POST" action="{{ url_for('interview.submit') }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() if csrf_token else '' }}">
+                    
+                    <div id="questionsInputsContainer">
                         {% for q in questions %}
-                        <div class="col-12 question-slide position-absolute w-100 p-4 p-md-5" id="slide-{{ loop.index }}" style="{% if not loop.first %}opacity: 0; pointer-events: none; transform: translateX(20px);{% else %}opacity: 1; transform: translateX(0); z-index: 1; transition: all 0.3s ease;{% endif %}">
-                            
-                            <div class="d-flex gap-3 mb-4">
-                                <i class="bi bi-quote text-primary opacity-25" style="font-size: 3rem; line-height: 0.5;"></i>
-                                <h2 class="h5 fw-bold text-white lh-base mt-2" style="font-family: monospace; font-size: 1.1rem;">
-                                    {{ q.question }}
-                                </h2>
-                            </div>
-                            
-                            <div class="form-group mt-4 position-relative">
-                                <label for="answer-{{ loop.index }}" class="form-label text-muted small fw-bold tracking-wider">YOUR RESPONSE</label>
-                                <textarea class="form-control bg-body-secondary border-0 rounded-3 p-3 shadow-sm" name="answer_{{ q.id }}" id="answer-{{ loop.index }}" rows="5" placeholder="Type your answer..." required minlength="10" maxlength="5000" style="transition: all 0.2s ease; resize: none;"></textarea>
-                                <div class="position-absolute bottom-0 end-0 p-2 text-muted" style="font-size: 0.7rem;"><i class="bi bi-keyboard"></i> Use STAR method</div>
-                            </div>
-                        </div>
+                            <textarea name="answer_{{ q.id }}" id="answer_{{ loop.index }}" class="d-none" required></textarea>
                         {% endfor %}
                     </div>
-                    
-                    <div class="card-footer bg-body border-top-0 p-4 d-flex justify-content-between align-items-center">
-                        <button type="button" class="btn btn-light text-secondary px-4 rounded-pill fw-medium hover-elevate" id="prevBtn" style="display: none;">
-                            <i class="bi bi-arrow-left me-2"></i> Back
+
+                    <!-- Current Answer Area -->
+                    <div class="current-answer-area mb-4">
+                        <label class="form-label text-muted small fw-bold tracking-wider">YOUR RESPONSE</label>
+                        <div class="answer-input-wrapper position-relative">
+                            <textarea class="form-control glass-input text-white rounded-4 p-3 shadow-sm" id="currentAnswerInput" rows="4" placeholder="Type your answer or use voice input..." required minlength="10" maxlength="5000"></textarea>
+                            
+                            <!-- Voice Controls -->
+                            <button type="button" class="btn btn-outline-light rounded-circle position-absolute bottom-0 end-0 m-2 voice-btn" id="voiceBtn" title="Use Microphone">
+                                <i class="bi bi-mic-fill"></i>
+                            </button>
+                        </div>
+                        <div class="voice-status text-primary small fw-semibold mt-2 d-none" id="voiceStatus">
+                            <span class="spinner-grow spinner-grow-sm me-1" role="status" aria-hidden="true"></span> Listening...
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mt-2">
+                        <button type="button" class="btn btn-link text-danger text-decoration-none px-0" id="endInterviewBtn">
+                            <i class="bi bi-x-circle me-1"></i> End Interview
                         </button>
-                        <div class="ms-auto">
-                            <button type="button" class="btn btn-primary px-5 py-2 rounded-pill fw-semibold shadow-sm hover-elevate" id="nextBtn">
-                                Next <i class="bi bi-arrow-right ms-2"></i>
-                            </button>
-                            <button type="submit" class="btn btn-success px-5 py-2 rounded-pill fw-bold shadow-sm ai-glow hover-elevate" id="submitBtn" style="display: none;">
-                                <i class="bi bi-stars me-2"></i> Submit for Evaluation
-                            </button>
+                        <button type="button" class="btn btn-primary rounded-pill px-4 py-2 fw-semibold hover-tactile" id="nextQuestionBtn">
+                            Next Question <i class="bi bi-arrow-right ms-2"></i>
+                        </button>
+                        <button type="submit" class="btn btn-success rounded-pill px-4 py-2 fw-bold ai-glow hover-tactile d-none" id="finishInterviewBtn">
+                            <i class="bi bi-stars me-2"></i> Finish Interview
+                        </button>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Completion Screen -->
+            <div id="completionScreen" class="glass-panel p-5 rounded-4 max-w-lg w-100 animate-slide-up d-none text-center">
+                <div class="mb-4">
+                    <i class="bi bi-check-circle-fill text-success" style="font-size: 4rem;"></i>
+                </div>
+                <h2 class="h3 fw-bold text-white mb-2">Interview Completed</h2>
+                <p class="text-white-50 mb-4">Your AI interview session is complete.</p>
+                
+                <!-- Mock Scores Grid -->
+                <div class="row g-3 mb-4 text-start">
+                    <div class="col-6">
+                        <div class="bg-dark bg-opacity-50 p-3 rounded-3 border border-secondary">
+                            <div class="text-white-50 small fw-bold mb-1">COMMUNICATION</div>
+                            <div class="d-flex align-items-center">
+                                <div class="progress flex-grow-1 me-2" style="height: 6px;">
+                                    <div class="progress-bar bg-primary" style="width: 85%;"></div>
+                                </div>
+                                <span class="text-white fw-bold small">8.5</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="bg-dark bg-opacity-50 p-3 rounded-3 border border-secondary">
+                            <div class="text-white-50 small fw-bold mb-1">TECH KNOWLEDGE</div>
+                            <div class="d-flex align-items-center">
+                                <div class="progress flex-grow-1 me-2" style="height: 6px;">
+                                    <div class="progress-bar bg-success" style="width: 90%;"></div>
+                                </div>
+                                <span class="text-white fw-bold small">9.0</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="bg-dark bg-opacity-50 p-3 rounded-3 border border-secondary">
+                            <div class="text-white-50 small fw-bold mb-1">CONFIDENCE</div>
+                            <div class="d-flex align-items-center">
+                                <div class="progress flex-grow-1 me-2" style="height: 6px;">
+                                    <div class="progress-bar bg-warning" style="width: 75%;"></div>
+                                </div>
+                                <span class="text-white fw-bold small">7.5</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="bg-dark bg-opacity-50 p-3 rounded-3 border border-secondary">
+                            <div class="text-white-50 small fw-bold mb-1">PROBLEM SOLVING</div>
+                            <div class="d-flex align-items-center">
+                                <div class="progress flex-grow-1 me-2" style="height: 6px;">
+                                    <div class="progress-bar bg-info" style="width: 80%;"></div>
+                                </div>
+                                <span class="text-white fw-bold small">8.0</span>
+                            </div>
                         </div>
                     </div>
                 </div>
-                
+
+                <div class="d-flex justify-content-center gap-3">
+                    <button type="button" class="btn btn-outline-light rounded-pill px-4 py-2 hover-tactile" onclick="window.location.reload()">
+                        Start New Interview
+                    </button>
+                    <button type="button" id="viewFeedbackBtn" class="btn btn-success rounded-pill px-4 py-2 fw-bold ai-glow hover-tactile">
+                        <i class="bi bi-stars me-2"></i> View Feedback
+                    </button>
+                </div>
             </div>
+            
         </div>
-    </form>
+    </div>
 </div>
+{% endblock %}
 
 {% block extra_js %}
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const totalSlides = {{ questions|length }};
-        let currentSlide = 1;
-
-        const prevBtn = document.getElementById('prevBtn');
-        const nextBtn = document.getElementById('nextBtn');
-        const submitBtn = document.getElementById('submitBtn');
-        const progressText = document.getElementById('progressText');
-        const progressBar = document.getElementById('progressBar');
-
-        function updateUI() {
-            // Update slides
-            for(let i=1; i<=totalSlides; i++) {
-                const slide = document.getElementById('slide-' + i);
-                if(i === currentSlide) {
-                    slide.style.opacity = '1';
-                    slide.style.pointerEvents = 'auto';
-                    slide.style.transform = 'translateX(0)';
-                    slide.style.zIndex = '1';
-                    // Focus textarea
-                    setTimeout(() => document.getElementById('answer-' + i).focus(), 300);
-                } else {
-                    slide.style.opacity = '0';
-                    slide.style.pointerEvents = 'none';
-                    slide.style.transform = i < currentSlide ? 'translateX(-20px)' : 'translateX(20px)';
-                    slide.style.zIndex = '0';
-                }
-                
-                // Update dots
-                const dot = document.getElementById('dot-' + i);
-                if (i <= currentSlide) {
-                    dot.className = 'rounded-pill bg-primary';
-                } else {
-                    dot.className = 'rounded-pill bg-secondary opacity-25';
-                }
-            }
-
-            // Update Progress text & bar
-            progressText.innerText = `QUESTION ${currentSlide} / ${totalSlides}`;
-            progressBar.style.width = `${(currentSlide / totalSlides) * 100}%`;
-
-            // Update Buttons
-            prevBtn.style.display = currentSlide === 1 ? 'none' : 'block';
-            if(currentSlide === totalSlides) {
-                nextBtn.style.display = 'none';
-                submitBtn.style.display = 'block';
-            } else {
-                nextBtn.style.display = 'block';
-                submitBtn.style.display = 'none';
-            }
-        }
-
-        nextBtn.addEventListener('click', function() {
-            // Validate current answer
-            const textarea = document.getElementById('answer-' + currentSlide);
-            if (!textarea.checkValidity()) {
-                textarea.reportValidity();
-                return;
-            }
-            if(currentSlide < totalSlides) {
-                currentSlide++;
-                updateUI();
-            }
-        });
-
-        prevBtn.addEventListener('click', function() {
-            if(currentSlide > 1) {
-                currentSlide--;
-                updateUI();
-            }
-        });
-
-        document.getElementById('interviewForm').addEventListener('submit', function(e) {
-            // Check all textareas before submit just in case
-            let valid = true;
-            for(let i=1; i<=totalSlides; i++) {
-                const ta = document.getElementById('answer-' + i);
-                if(!ta.checkValidity()) {
-                    currentSlide = i;
-                    updateUI();
-                    ta.reportValidity();
-                    valid = false;
-                    e.preventDefault();
-                    break;
-                }
-            }
-            if(valid) {
-                const btn = document.getElementById('submitBtn');
-                btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Evaluating...';
-                btn.disabled = true;
-            }
-        });
-        
-        updateUI();
-    });
+    // Inject questions array to JS
+    window.INTERVIEW_QUESTIONS = [
+        {% for q in questions %}
+        {
+            id: "{{ q.id }}",
+            text: {{ q.question|tojson|safe }}
+        }{% if not loop.last %},{% endif %}
+        {% endfor %}
+    ];
 </script>
-{% endblock %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="{{ url_for('static', filename='js/mock_interview.js') }}?v=6"></script>
 {% endblock %}

@@ -3,6 +3,44 @@
 {% block title %}AI Career Command Center | EngineerOS{% endblock %}
 
 {% block content %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/premium.css') }}?v=4">
+<style>
+    .hero-card {
+        background: #081229 !important;
+        border: 1px solid rgba(0, 150, 255, 0.3) !important;
+        position: relative;
+        overflow: hidden;
+        min-height: 280px;
+    }
+    .hero-card::before {
+        content: '';
+        position: absolute;
+        top: 0; right: 0; bottom: 0; left: 20%;
+        /* Using a placeholder synthwave/sunset image to match the vibe */
+        background: url('https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=2094&auto=format&fit=crop') center 70% / cover no-repeat;
+        -webkit-mask-image: linear-gradient(to right, transparent 0%, black 50%);
+        mask-image: linear-gradient(to right, transparent 0%, black 50%);
+        opacity: 0.7;
+        z-index: 0;
+    }
+    
+    .hero-content {
+        position: relative;
+        z-index: 1;
+    }
+    
+    .glass-card-right {
+        background: rgba(14, 33, 79, 0.5) !important;
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(56, 189, 248, 0.3) !important;
+        border-radius: 16px !important;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5), inset 0 0 20px rgba(0, 150, 255, 0.1) !important;
+    }
+</style>
+{% endblock %}
+
 <style>
     .journey-connector {
         position: absolute;
@@ -70,71 +108,57 @@
     }
 </style>
 
-<div class="container py-4">
+<div class="container py-4 position-relative">
     
-    <!-- ═══════════════════════════════════════════════════════════════════
-         SECTION 1: Welcome Banner & Career Readiness
-         ═══════════════════════════════════════════════════════════════════ -->
-    <div class="card shadow-md border-0 rounded-4 mb-5 overflow-hidden position-relative" style="background: linear-gradient(135deg, var(--primary-dark), var(--primary));">
-        <!-- Decorative Glow -->
-        <div class="position-absolute top-0 start-0 w-100 h-100 overflow-hidden" style="pointer-events: none;">
-            <div class="position-absolute rounded-circle" style="width: 400px; height: 400px; background: radial-gradient(circle, rgba(14, 165, 233, 0.4) 0%, transparent 70%); top: -200px; right: -100px; filter: blur(40px);"></div>
-        </div>
+    <!-- Animated 3D AI Robot Background -->
+    <div id="dashboard-robot-container" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 800px; height: 800px; z-index: -1; pointer-events: none; opacity: 0.35; filter: blur(3px);"></div>
 
-        <div class="card-body p-4 p-md-5 position-relative z-1 text-white">
-            <div class="row align-items-center">
-                <div class="col-lg-7 mb-4 mb-lg-0 stagger-1">
-                    <div class="d-inline-flex align-items-center gap-2 bg-body bg-opacity-10 border border-white border-opacity-25 rounded-pill px-3 py-1 mb-3 small fw-medium text-white shadow-sm">
-                        <i class="bi bi-heptagon-fill text-info"></i> AI Career Command Center
-                    </div>
-                    
-                    <h1 class="h2 fw-bold mb-2">Welcome back, {{ current_user.name }}!</h1>
-                    
-                    <p class="text-white-50 mb-4 fs-6">
-                        {% if profile and profile.target_role %}
-                            Targeting: <strong class="text-white">{{ profile.target_role }}</strong> 
-                            {% if profile.preferred_domain %}({{ profile.preferred_domain }}){% endif %}
-                        {% else %}
-                            Your engineering career launchpad is ready. Complete your profile to generate your AI roadmap.
-                        {% endif %}
-                    </p>
-                    
-                    <div class="d-flex flex-wrap gap-2">
-                        <a href="{{ url_for('roadmap.index') }}" class="btn btn-info fw-bold px-4 rounded-3 shadow-sm text-white hover-elevate">
-                            <i class="bi bi-play-fill me-1"></i> Continue Journey
-                        </a>
-                    </div>
+    <!-- ═══════════════════════════════════════════════════════════════════
+         SECTION 1: Welcome Banner & Career Readiness (PREMIUM)
+         ═══════════════════════════════════════════════════════════════════ -->
+    <div class="hero-card rounded-4 mb-5 shadow-lg position-relative">
+
+        <div class="card-body p-4 p-md-5 hero-content text-white d-flex flex-column flex-lg-row align-items-center justify-content-between h-100">
+            
+            <!-- Left Side: Welcome Text -->
+            <div class="stagger-1 text-start" style="max-width: 60%;">
+                <div class="d-inline-flex align-items-center gap-2 px-3 py-1 mb-3 small fw-semibold text-white shadow-sm" style="background: rgba(255,255,255,0.1); backdrop-filter: blur(8px); border-radius: 20px; border: 1px solid rgba(255,255,255,0.2);">
+                    <i class="bi bi-house-door-fill text-info"></i> AI Career Command Center
                 </div>
                 
-                <div class="col-lg-5 text-center text-lg-end stagger-2">
-                    <div class="d-inline-block text-center p-4 rounded-4 shadow-lg ai-glow" style="background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.2);">
-                        <div class="fw-bold mb-3 text-white-50 tracking-wider small"><i class="bi bi-bar-chart-fill me-1"></i> AI CAREER READINESS</div>
-                        
-                        <div class="position-relative d-inline-flex flex-column align-items-center mb-2">
-                            <div class="position-relative" style="width: 140px; height: 140px;">
-                                <svg class="w-100 h-100 animate-pop-in" viewBox="0 0 100 100">
-                                    <circle cx="50" cy="50" r="45" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="8"/>
-                                    <!-- Dashed gradient ring -->
-                                    <circle cx="50" cy="50" r="45" fill="none" stroke="#0ea5e9" stroke-width="8" stroke-dasharray="283" stroke-dashoffset="{{ 283 - (283 * readiness / 100) }}" transform="rotate(-90 50 50)" stroke-linecap="round" style="transition: stroke-dashoffset 1.5s cubic-bezier(0.4, 0, 0.2, 1);"/>
-                                </svg>
-                                <div class="position-absolute top-50 start-50 translate-middle text-center" style="line-height: 1;">
-                                    <span class="fs-2 fw-bold text-white"><span class="animate-counter" data-target="{{ readiness }}">0</span>%</span>
-                                </div>
-                            </div>
+                <h1 class="display-5 fw-bold mb-2">Welcome back, {{ current_user.name | upper }}! <span class="ms-1">👋</span></h1>
+                
+                <p class="text-white-50 mb-4 fs-6">
+                    Track your progress. Build your skills. Achieve your dreams.
+                </p>
+                
+                <div class="d-flex flex-wrap gap-3">
+                    <a href="{{ url_for('roadmap.index') }}" class="btn btn-neon rounded-pill px-4 py-2">
+                        Continue Learning <i class="bi bi-arrow-right ms-1"></i>
+                    </a>
+                    <a href="{{ url_for('roadmap.index') }}" class="btn btn-outline-light rounded-pill px-4 py-2 hover-elevate" style="background: rgba(255,255,255,0.05); backdrop-filter: blur(8px); border-color: rgba(255,255,255,0.2);">
+                        View Roadmap
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Right Side: Circular Progress -->
+            <div class="stagger-2 mt-4 mt-lg-0 h-100 d-flex align-items-center">
+                <div class="glass-card-right text-center p-4 d-flex flex-column align-items-center justify-content-center h-100" style="width: 260px;">
+                    <div class="fw-semibold text-white mb-3 small">Overall Progress</div>
+                    
+                    <div class="position-relative mb-3 d-flex align-items-center justify-content-center">
+                        <div class="circular-progress" style="--progress: {{ milestones_pct | default(20) }};">
+                            <div class="circular-progress-value">{{ milestones_pct | default(20) }}%</div>
                         </div>
-                        
-                        <div>
-                            <span class="badge bg-body text-primary rounded-pill px-3 py-2 fw-bold shadow-sm">
-                                {% if readiness >= 75 %}Industry Ready
-                                {% elif readiness >= 50 %}Placement Ready
-                                {% elif readiness >= 25 %}Emerging
-                                {% else %}Novice
-                                {% endif %}
-                            </span>
-                        </div>
+                    </div>
+                    
+                    <div class="text-white small fw-medium mt-1">
+                        🚀 Keep Going!
                     </div>
                 </div>
             </div>
+            
         </div>
     </div>
 
@@ -142,73 +166,73 @@
          SECTION 2: AI Career Journey (Connected Nodes)
          ═══════════════════════════════════════════════════════════════════ -->
     <div class="mb-5 stagger-3">
-        <h2 class="h5 fw-bold mb-3 text-white d-flex align-items-center gap-2">
-            <i class="bi bi-diagram-3-fill text-primary"></i> AI Career Journey
+        <h2 class="h6 fw-bold mb-3 text-white d-flex align-items-center gap-2">
+            <i class="bi bi-diagram-3-fill text-info-neon"></i> AI Career Journey
         </h2>
-        <div class="card shadow-sm border-0 rounded-4 p-4 overflow-auto card-hover-elevate">
+        <div class="solid-card p-4 overflow-auto">
             <!-- Ensure container can scroll horizontally if screen is small -->
             <div class="d-flex justify-content-between text-center position-relative mx-auto" style="min-width: 800px; padding: 0 20px;">
                 
                 <!-- Profile -->
                 <div class="journey-node {% if completion > 0 %}completed{% else %}pending{% endif %}">
                     {% if completion > 0 %}<div class="journey-connector active"></div>{% else %}<div class="journey-connector"></div>{% endif %}
-                    <div class="journey-icon rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2 shadow-sm">
-                        <i class="bi bi-person-check fs-4"></i>
+                    <div class="journey-icon rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2 shadow-sm" style="background: {% if completion > 0 %}#0ea5e9{% else %}#1e293b{% endif %}; border: 1px solid {% if completion > 0 %}#0ea5e9{% else %}rgba(255,255,255,0.1){% endif %};">
+                        <i class="bi bi-person-check fs-4 text-white"></i>
                     </div>
-                    <div class="fw-bold small {% if completion > 0 %}text-primary{% else %}text-muted{% endif %}">Profile</div>
+                    <div class="fw-bold small {% if completion > 0 %}text-info{% else %}text-muted{% endif %}">Profile</div>
                 </div>
                 
                 <!-- AI Skill Analysis -->
                 <div class="journey-node {% if active_roadmap %}completed{% elif completion > 0 %}current{% else %}pending{% endif %}">
                     {% if active_roadmap %}<div class="journey-connector active"></div>{% else %}<div class="journey-connector"></div>{% endif %}
-                    <div class="journey-icon rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2 shadow-sm">
-                        <i class="bi bi-cpu fs-4"></i>
+                    <div class="journey-icon rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2 shadow-sm" style="background: {% if active_roadmap %}#0ea5e9{% elif completion > 0 %}linear-gradient(135deg, #0ea5e9, #3b82f6){% else %}#1e293b{% endif %}; border: 1px solid {% if active_roadmap or completion > 0 %}#0ea5e9{% else %}rgba(255,255,255,0.1){% endif %};">
+                        <i class="bi bi-cpu fs-4 text-white"></i>
                     </div>
-                    <div class="fw-bold small {% if active_roadmap %}text-primary{% elif completion > 0 %}text-info{% else %}text-muted{% endif %}">AI Analysis</div>
+                    <div class="fw-bold small {% if active_roadmap %}text-info{% elif completion > 0 %}text-info-neon{% else %}text-muted{% endif %}">AI Analysis</div>
                 </div>
                 
                 <!-- Skill Gaps -->
                 <div class="journey-node {% if gaps_identified %}completed{% elif active_roadmap %}current{% else %}pending{% endif %}">
                     {% if gaps_identified %}<div class="journey-connector active"></div>{% else %}<div class="journey-connector"></div>{% endif %}
-                    <div class="journey-icon rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2 shadow-sm">
-                        <i class="bi bi-pie-chart fs-4"></i>
+                    <div class="journey-icon rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2 shadow-sm" style="background: {% if gaps_identified %}#0ea5e9{% elif active_roadmap %}linear-gradient(135deg, #0ea5e9, #3b82f6){% else %}#1e293b{% endif %}; border: 1px solid {% if gaps_identified or active_roadmap %}#0ea5e9{% else %}rgba(255,255,255,0.1){% endif %};">
+                        <i class="bi bi-pie-chart fs-4 text-white"></i>
                     </div>
-                    <div class="fw-bold small {% if gaps_identified %}text-primary{% elif active_roadmap %}text-info{% else %}text-muted{% endif %}">Skill Gaps</div>
+                    <div class="fw-bold small {% if gaps_identified %}text-info{% elif active_roadmap %}text-info-neon{% else %}text-muted{% endif %}">Skill Gaps</div>
                 </div>
                 
                 <!-- Roadmap -->
                 <div class="journey-node {% if active_roadmap %}completed{% else %}pending{% endif %}">
                     {% if active_roadmap %}<div class="journey-connector active"></div>{% else %}<div class="journey-connector"></div>{% endif %}
-                    <div class="journey-icon rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2 shadow-sm">
-                        <i class="bi bi-map fs-4"></i>
+                    <div class="journey-icon rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2 shadow-sm" style="background: {% if active_roadmap %}#0ea5e9{% else %}#1e293b{% endif %}; border: 1px solid {% if active_roadmap %}#0ea5e9{% else %}rgba(255,255,255,0.1){% endif %};">
+                        <i class="bi bi-map fs-4 text-white"></i>
                     </div>
-                    <div class="fw-bold small {% if active_roadmap %}text-primary{% else %}text-muted{% endif %}">Roadmap</div>
+                    <div class="fw-bold small {% if active_roadmap %}text-info{% else %}text-muted{% endif %}">Roadmap</div>
                 </div>
                 
                 <!-- Progress -->
                 <div class="journey-node {% if completed_milestones > 0 %}completed{% elif active_roadmap %}current{% else %}pending{% endif %}">
                     {% if completed_milestones > 0 %}<div class="journey-connector active"></div>{% else %}<div class="journey-connector"></div>{% endif %}
-                    <div class="journey-icon rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2 shadow-sm">
-                        <i class="bi bi-journal-check fs-4"></i>
+                    <div class="journey-icon rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2 shadow-sm" style="background: {% if completed_milestones > 0 %}#0ea5e9{% elif active_roadmap %}linear-gradient(135deg, #0ea5e9, #3b82f6){% else %}#1e293b{% endif %}; border: 1px solid {% if completed_milestones > 0 or active_roadmap %}#0ea5e9{% else %}rgba(255,255,255,0.1){% endif %};">
+                        <i class="bi bi-journal-check fs-4 text-white"></i>
                     </div>
-                    <div class="fw-bold small {% if completed_milestones > 0 %}text-primary{% elif active_roadmap %}text-info{% else %}text-muted{% endif %}">Progress</div>
+                    <div class="fw-bold small {% if completed_milestones > 0 %}text-info{% elif active_roadmap %}text-info-neon{% else %}text-muted{% endif %}">Progress</div>
                 </div>
                 
                 <!-- AI Interview -->
                 <div class="journey-node {% if readiness >= 25 %}current{% else %}pending{% endif %}">
                     {% if readiness >= 75 %}<div class="journey-connector active"></div>{% else %}<div class="journey-connector"></div>{% endif %}
-                    <div class="journey-icon rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2 shadow-sm">
-                        <i class="bi bi-mic fs-4"></i>
+                    <div class="journey-icon rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2 shadow-sm" style="background: {% if readiness >= 25 %}linear-gradient(135deg, #0ea5e9, #3b82f6){% else %}#1e293b{% endif %}; border: 1px solid {% if readiness >= 25 %}#0ea5e9{% else %}rgba(255,255,255,0.1){% endif %};">
+                        <i class="bi bi-mic fs-4 text-white"></i>
                     </div>
-                    <div class="fw-bold small {% if readiness >= 25 %}text-info{% else %}text-muted{% endif %}">AI Interview</div>
+                    <div class="fw-bold small {% if readiness >= 25 %}text-info-neon{% else %}text-muted{% endif %}">AI Interview</div>
                 </div>
                 
                 <!-- Career Ready -->
                 <div class="journey-node {% if readiness >= 75 %}completed{% else %}pending{% endif %}">
-                    <div class="journey-icon rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2 shadow-sm">
-                        <i class="bi bi-award fs-4"></i>
+                    <div class="journey-icon rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2 shadow-sm" style="background: {% if readiness >= 75 %}#10b981{% else %}#1e293b{% endif %}; border: 1px solid {% if readiness >= 75 %}#10b981{% else %}rgba(255,255,255,0.1){% endif %};">
+                        <i class="bi bi-award fs-4 text-white"></i>
                     </div>
-                    <div class="fw-bold small {% if readiness >= 75 %}text-success{% else %}text-muted{% endif %}">Career Ready</div>
+                    <div class="fw-bold small {% if readiness >= 75 %}text-success-neon{% else %}text-muted{% endif %}">Career Ready</div>
                 </div>
 
             </div>
@@ -217,54 +241,55 @@
 
     <div class="row g-4 mb-5">
         <!-- ═══════════════════════════════════════════════════════════════════
-             SECTION 3A: AI Career Insight & Skill-Gap Visualization
+             SECTION 3A: AI Career Insight
              ═══════════════════════════════════════════════════════════════════ -->
         <div class="col-lg-8 stagger-4">
-            <div class="card shadow-sm border-0 rounded-4 h-100 p-4 card-hover-elevate">
-                <div class="d-flex align-items-center gap-2 mb-4 border-bottom pb-3">
-                    <i class="bi bi-lightning-charge-fill text-primary fs-5"></i>
-                    <h2 class="h5 fw-bold mb-0">✦ AI Career Insight</h2>
+            <div class="solid-card h-100 p-4">
+                <div class="d-flex align-items-center gap-2 mb-4">
+                    <i class="bi bi-lightning-charge-fill text-info-neon fs-5"></i>
+                    <i class="bi bi-stars text-white-50"></i>
+                    <h2 class="h5 fw-bold mb-0 text-white">AI Career Insight</h2>
                 </div>
                 
                 {% if active_roadmap and (strong_areas or gaps_identified) %}
                     <div class="mb-4">
-                        <p class="text-white fw-medium fs-6 mb-2">
-                            Your strongest areas are <strong class="text-success">{{ strong_areas[:2] | join(' and ') if strong_areas else 'general fundamentals' }}</strong>.
+                        <p class="text-white fw-bold fs-6 mb-2">
+                            Your strongest areas are <span class="text-success-neon">{{ strong_areas[:3] | join(', ') if strong_areas else 'general fundamentals' }}</span>.
                         </p>
-                        <p class="text-white fw-medium fs-6 mb-3">
-                            Your biggest current gap is <strong class="text-danger">{{ gaps_identified[0] if gaps_identified else 'advanced topics' }}</strong>.
+                        <p class="text-white fw-bold fs-6 mb-4">
+                            Your biggest current gap is <span class="text-warning-neon">{{ gaps_identified[0] if gaps_identified else 'advanced topics' }}</span>.
                         </p>
                         
-                        <div class="bg-primary-subtle border border-primary border-opacity-10 rounded-3 p-3 position-relative overflow-hidden">
-                            <div class="position-absolute top-0 end-0 opacity-10 m-2">
-                                <i class="bi bi-robot fs-1"></i>
+                        <div class="rounded-3 p-3 position-relative overflow-hidden mb-4" style="background: rgba(14, 165, 233, 0.05); border: 1px solid rgba(14, 165, 233, 0.2);">
+                            <div class="position-absolute top-0 end-0 opacity-25 m-3">
+                                <i class="bi bi-robot fs-2 text-info"></i>
                             </div>
-                            <p class="mb-1 fw-bold text-primary small text-uppercase tracking-wider">Recommended Next Steps</p>
-                            <ul class="list-unstyled mb-0 text-white small position-relative z-1">
+                            <p class="mb-2 fw-bold text-info small text-uppercase tracking-wider">Recommended Next Steps</p>
+                            <ul class="list-unstyled mb-0 text-white small position-relative z-1" style="line-height: 1.8;">
                                 {% if gaps_identified %}
-                                <li class="mb-1"><i class="bi bi-arrow-right-short text-primary fs-6 align-middle"></i> Focus on learning <strong>{{ gaps_identified[0] }}</strong>.</li>
+                                <li><i class="bi bi-chevron-right text-info me-2 fs-6"></i> Focus on learning <strong>{{ gaps_identified[0] }}</strong>.</li>
                                 {% endif %}
-                                <li class="mb-1"><i class="bi bi-arrow-right-short text-primary fs-6 align-middle"></i> Complete your next roadmap milestone.</li>
-                                <li><i class="bi bi-arrow-right-short text-primary fs-6 align-middle"></i> Practice AI mock interviews for {{ active_roadmap.target_role }}.</li>
+                                <li><i class="bi bi-chevron-right text-info me-2 fs-6"></i> Complete your next roadmap milestone.</li>
+                                <li><i class="bi bi-chevron-right text-info me-2 fs-6"></i> Practice AI mock interviews for {{ active_roadmap.target_role }}.</li>
                             </ul>
                         </div>
                     </div>
                     
                     <h3 class="h6 fw-bold text-muted mb-3 mt-4">Skill Analysis</h3>
                     
-                    <div class="row g-4">
+                    <div class="row g-5">
+                        <!-- Strong Skills Column -->
                         <div class="col-md-6">
-                            <div class="fw-bold text-success small mb-3"><i class="bi bi-shield-check me-1"></i> Strong Skills</div>
+                            <div class="fw-bold text-success-neon small mb-3"><i class="bi bi-shield-check me-1"></i> Strong Skills</div>
                             {% if strong_areas %}
-                                {% for area in strong_areas[:4] %}
+                                {% for area in strong_areas[:2] %}
                                     <div class="mb-3">
-                                        <div class="d-flex justify-content-between small fw-medium mb-1">
+                                        <div class="d-flex justify-content-between small fw-bold text-white mb-2">
                                             <span>{{ area }}</span>
-                                            <span class="text-success">Verified</span>
+                                            <span class="text-success-neon">Verified</span>
                                         </div>
-                                        <div class="skill-bar-container">
-                                            <!-- Delay animation to trigger via JS class or just CSS -->
-                                            <div class="skill-bar bg-success" style="width: 85%;"></div>
+                                        <div class="skill-bar-container" style="background: rgba(255,255,255,0.05); height: 6px;">
+                                            <div class="skill-bar bg-success-neon" style="width: 85%;"></div>
                                         </div>
                                     </div>
                                 {% endfor %}
@@ -273,17 +298,18 @@
                             {% endif %}
                         </div>
                         
+                        <!-- Skill Gaps Column -->
                         <div class="col-md-6">
-                            <div class="fw-bold text-danger small mb-3" style="color: #d97706 !important;"><i class="bi bi-exclamation-triangle me-1"></i> Skill Gaps</div>
+                            <div class="fw-bold text-warning-neon small mb-3"><i class="bi bi-exclamation-triangle me-1"></i> Skill Gaps</div>
                             {% if gaps_identified %}
-                                {% for gap in gaps_identified[:4] %}
+                                {% for gap in gaps_identified[:3] %}
                                     <div class="mb-3">
-                                        <div class="d-flex justify-content-between small fw-medium mb-1">
+                                        <div class="d-flex justify-content-between small fw-bold text-white mb-2">
                                             <span>{{ gap }}</span>
-                                            <span class="text-warning" style="color: #d97706 !important;">Needs Work</span>
+                                            <span class="text-warning-neon">Needs Work</span>
                                         </div>
-                                        <div class="skill-bar-container">
-                                            <div class="skill-bar bg-warning" style="width: 30%;"></div>
+                                        <div class="skill-bar-container" style="background: rgba(255,255,255,0.05); height: 6px;">
+                                            <div class="skill-bar bg-warning-neon" style="width: 30%;"></div>
                                         </div>
                                     </div>
                                 {% endfor %}
@@ -296,7 +322,7 @@
                     <div class="empty-state h-100 d-flex flex-column justify-content-center align-items-center">
                         <i class="bi bi-robot empty-state-icon animate-float"></i>
                         <p class="text-muted mt-2 mb-3 text-center">Generate your roadmap to unlock AI-powered career insights and skill-gap analysis.</p>
-                        <a href="{{ url_for('roadmap.index') }}" class="btn btn-primary rounded-pill px-4 shadow-sm hover-elevate">
+                        <a href="{{ url_for('roadmap.index') }}" class="btn btn-neon rounded-pill px-4">
                             Generate AI Insight
                         </a>
                     </div>
@@ -308,31 +334,36 @@
              SECTION 3B: Active Roadmap Timeline
              ═══════════════════════════════════════════════════════════════════ -->
         <div class="col-lg-4 stagger-5">
-            <div class="card shadow-sm border-0 rounded-4 h-100 p-4 card-hover-elevate d-flex flex-column">
-                <div class="d-flex align-items-center gap-2 mb-4 border-bottom pb-3">
-                    <i class="bi bi-map text-primary fs-5"></i>
-                    <h2 class="h5 fw-bold mb-0">Active Roadmap</h2>
+            <div class="solid-card h-100 p-4 d-flex flex-column">
+                <div class="d-flex align-items-center gap-2 mb-4">
+                    <i class="bi bi-map text-white fs-5"></i>
+                    <h2 class="h5 fw-bold mb-0 text-white">Active Roadmap</h2>
                 </div>
 
                 {% if active_roadmap %}
                     <div class="mb-4 d-flex justify-content-between align-items-center">
-                        <span class="fw-bold text-white small text-truncate pe-2" title="{{ active_roadmap.target_role }}">{{ active_roadmap.title }}</span>
-                        <span class="badge bg-primary-subtle text-primary rounded-pill">{{ milestones_pct }}% Done</span>
+                        <span class="fw-bold text-white small text-truncate pe-2" title="{{ active_roadmap.title }}">{{ active_roadmap.title }}</span>
+                        <span class="badge rounded-pill fw-bold" style="background: rgba(14, 165, 233, 0.15); color: #38bdf8;">{{ milestones_pct }}% Done</span>
                     </div>
                     
-                    <div class="timeline flex-grow-1 overflow-hidden position-relative ms-2">
+                    <div class="timeline flex-grow-1 position-relative ms-2 mt-2" style="border-left: 2px solid rgba(255,255,255,0.05);">
                         {% set ns = namespace(found_current=false, count=0) %}
                         {% for phase in active_roadmap.phases %}
                             {% for m in phase.milestones %}
                                 {% if ns.count < 5 %}
-                                    <div class="timeline-item {% if m.status == 'completed' %}completed{% elif m.status == 'in_progress' or (m.status == 'not_started' and not ns.found_current) %}in-progress{% endif %} mb-4 pb-1">
+                                    <div class="timeline-item mb-4 position-relative" style="padding-left: 25px;">
                                         {% if m.status == 'completed' %}
-                                            <div class="fw-semibold text-muted small text-truncate" style="text-decoration: line-through;"><i class="bi bi-check-circle-fill text-success me-1 animate-pop-in"></i> {{ m.title }}</div>
+                                            <div class="position-absolute" style="left: -9px; top: 0px; background: #0f172a; border-radius: 50%; padding: 2px;">
+                                                <i class="bi bi-check-circle-fill text-success-neon fs-5"></i>
+                                            </div>
+                                            <div class="fw-semibold text-muted small text-truncate" style="text-decoration: line-through; padding-top: 2px;">{{ m.title }}</div>
                                         {% elif m.status == 'in_progress' or (m.status == 'not_started' and not ns.found_current) %}
                                             {% set ns.found_current = true %}
-                                            <div class="fw-bold text-primary small text-truncate ai-glow rounded px-2 py-1 bg-primary-subtle ms-n2" style="width: fit-content; max-width: 100%;">{{ m.title }}</div>
+                                            <div class="position-absolute rounded-circle" style="left: -5px; top: 5px; width: 10px; height: 10px; background: #00f0ff; box-shadow: 0 0 10px #00f0ff;"></div>
+                                            <div class="fw-bold text-info-neon small text-truncate rounded px-3 py-1 ms-n1" style="background: rgba(14, 165, 233, 0.15); width: fit-content; max-width: 100%; border: 1px solid rgba(14, 165, 233, 0.2);">{{ m.title }}</div>
                                         {% else %}
-                                            <div class="fw-medium text-secondary small text-truncate"><i class="bi bi-circle text-muted me-1"></i> {{ m.title }}</div>
+                                            <div class="position-absolute rounded-circle" style="left: -5px; top: 5px; width: 10px; height: 10px; border: 2px solid rgba(255,255,255,0.2); background: #0f172a;"></div>
+                                            <div class="fw-medium text-secondary small text-truncate" style="padding-top: 1px;">{{ m.title }}</div>
                                         {% endif %}
                                     </div>
                                     {% set ns.count = ns.count + 1 %}
@@ -341,12 +372,12 @@
                         {% endfor %}
                         
                         {% if total_milestones > 5 %}
-                            <div class="text-muted small fst-italic ms-1 mt-2">+ {{ total_milestones - 5 }} more milestones</div>
+                            <div class="text-muted small fst-italic ms-3 mt-3">+ {{ total_milestones - 5 }} more milestones</div>
                         {% endif %}
                     </div>
                     
-                    <a href="{{ url_for('roadmap.view', roadmap_id=active_roadmap.id) }}" class="btn btn-outline-primary btn-sm rounded-3 mt-4 w-100 hover-elevate">
-                        View Full Roadmap <i class="bi bi-arrow-right ms-1"></i>
+                    <a href="{{ url_for('roadmap.view', roadmap_id=active_roadmap.id) }}" class="btn btn-outline-secondary w-100 mt-4 rounded-3 text-white fw-bold hover-elevate" style="border-color: rgba(255,255,255,0.1); background: transparent;">
+                        View Full Roadmap <i class="bi bi-arrow-right ms-2"></i>
                     </a>
                 {% else %}
                     <div class="empty-state mt-auto mb-auto border-0">
@@ -364,42 +395,42 @@
     <div class="row g-4 mb-4 stagger-5">
         <!-- Quick Actions -->
         <div class="col-lg-6">
-            <div class="card shadow-sm border-0 rounded-4 p-4 h-100 card-hover-elevate">
+            <div class="solid-card p-4 h-100">
                 <div class="d-flex align-items-center gap-2 mb-4">
-                    <i class="bi bi-lightning text-warning fs-5"></i>
-                    <h2 class="h5 fw-bold mb-0">Quick Actions</h2>
+                    <i class="bi bi-lightning-fill text-warning-neon fs-5"></i>
+                    <h2 class="h5 fw-bold mb-0 text-white">Quick Actions</h2>
                 </div>
                 <div class="row g-3">
                     <div class="col-sm-6">
-                        <a href="{{ url_for('roadmap.index') }}" class="btn btn-light border w-100 p-3 rounded-4 text-start hover-elevate d-flex align-items-center gap-3">
-                            <div class="bg-primary-subtle text-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
-                                <i class="bi bi-map fs-5"></i>
+                        <a href="{{ url_for('roadmap.index') }}" class="btn w-100 p-3 rounded-4 text-start hover-elevate d-flex align-items-center gap-3" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);">
+                            <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; background: rgba(14, 165, 233, 0.1); border: 1px solid rgba(14, 165, 233, 0.2);">
+                                <i class="bi bi-map fs-5 text-info"></i>
                             </div>
-                            <div class="fw-semibold text-white small">Generate Roadmap</div>
+                            <div class="fw-bold text-white small">Generate Roadmap</div>
                         </a>
                     </div>
                     <div class="col-sm-6">
-                        <a href="{{ url_for('progress.index') }}" class="btn btn-light border w-100 p-3 rounded-4 text-start hover-elevate d-flex align-items-center gap-3">
-                            <div class="bg-success-subtle text-success rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
-                                <i class="bi bi-journal-check fs-5"></i>
+                        <a href="{{ url_for('progress.index') }}" class="btn w-100 p-3 rounded-4 text-start hover-elevate d-flex align-items-center gap-3" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);">
+                            <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2);">
+                                <i class="bi bi-journal-check fs-5 text-success"></i>
                             </div>
-                            <div class="fw-semibold text-white small">Track Progress</div>
+                            <div class="fw-bold text-white small">Track Progress</div>
                         </a>
                     </div>
                     <div class="col-sm-6">
-                        <a href="{{ url_for('interview.index') }}" class="btn btn-light border w-100 p-3 rounded-4 text-start hover-elevate d-flex align-items-center gap-3">
-                            <div class="bg-info-subtle text-info rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
-                                <i class="bi bi-mic fs-5"></i>
+                        <a href="{{ url_for('interview.index') }}" class="btn w-100 p-3 rounded-4 text-start hover-elevate d-flex align-items-center gap-3" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);">
+                            <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.2);">
+                                <i class="bi bi-mic fs-5 text-info"></i>
                             </div>
-                            <div class="fw-semibold text-white small">Practice Interview</div>
+                            <div class="fw-bold text-white small">Practice Interview</div>
                         </a>
                     </div>
                     <div class="col-sm-6">
-                        <a href="{{ url_for('profile.view') }}" class="btn btn-light border w-100 p-3 rounded-4 text-start hover-elevate d-flex align-items-center gap-3">
-                            <div class="bg-secondary-subtle text-secondary rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
-                                <i class="bi bi-person fs-5"></i>
+                        <a href="{{ url_for('profile.view') }}" class="btn w-100 p-3 rounded-4 text-start hover-elevate d-flex align-items-center gap-3" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);">
+                            <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; background: rgba(156, 163, 175, 0.1); border: 1px solid rgba(156, 163, 175, 0.2);">
+                                <i class="bi bi-person fs-5 text-secondary"></i>
                             </div>
-                            <div class="fw-semibold text-white small">Edit Profile</div>
+                            <div class="fw-bold text-white small">Edit Profile</div>
                         </a>
                     </div>
                 </div>
@@ -408,40 +439,32 @@
         
         <!-- Recent Activity -->
         <div class="col-lg-6">
-            <div class="card shadow-sm border-0 rounded-4 p-4 h-100 card-hover-elevate">
+            <div class="solid-card p-4 h-100">
                 <div class="d-flex align-items-center justify-content-between mb-4">
                     <div class="d-flex align-items-center gap-2">
-                        <i class="bi bi-activity text-primary fs-5"></i>
-                        <h2 class="h5 fw-bold mb-0">Recent Activity</h2>
+                        <i class="bi bi-activity text-info-neon fs-5"></i>
+                        <h2 class="h5 fw-bold mb-0 text-white">Recent Activity</h2>
                     </div>
                     {% if recent_activities %}
-                    <a href="{{ url_for('progress.index') }}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">View All</a>
+                    <a href="{{ url_for('progress.index') }}" class="btn btn-outline-secondary btn-sm rounded-pill px-3 text-white" style="border-color: rgba(255,255,255,0.2);">View All</a>
                     {% endif %}
                 </div>
                 
                 {% if recent_activities %}
-                    <div class="list-group list-group-flush mt-n2">
+                    <div class="list-group list-group-flush mt-n2 gap-2">
                         {% for activity in recent_activities[:4] %}
-                        <div class="list-group-item border-0 px-0 py-2 d-flex align-items-center gap-3">
-                            <div class="d-flex align-items-center justify-content-center rounded-circle flex-shrink-0
-                                {% if activity.type == 'milestone_completed' %}bg-primary-subtle text-primary
-                                {% elif activity.type == 'project_completed' %}bg-success-subtle text-success
-                                {% elif activity.type == 'course_completed' %}bg-warning-subtle text-warning
-                                {% else %}bg-info-subtle text-info
-                                {% endif %}" style="width: 36px; height: 36px;">
-                                {% if activity.type == 'milestone_completed' %}<i class="bi bi-check2-circle"></i>
-                                {% elif activity.type == 'project_completed' %}<i class="bi bi-code-square"></i>
-                                {% elif activity.type == 'course_completed' %}<i class="bi bi-book"></i>
-                                {% else %}<i class="bi bi-star"></i>{% endif %}
+                        <div class="list-group-item px-3 py-2 d-flex align-items-center gap-3 rounded-3" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05);">
+                            <div class="d-flex align-items-center justify-content-center rounded-circle flex-shrink-0" style="width: 32px; height: 32px; background: rgba(14, 165, 233, 0.1); border: 1px solid rgba(14, 165, 233, 0.2);">
+                                <i class="bi bi-check2 text-info"></i>
                             </div>
                             <div class="flex-grow-1 min-width-0">
-                                <div class="fw-semibold text-white text-truncate small">{{ activity.title }}</div>
-                                <div class="text-muted" style="font-size: 0.75rem;">{{ activity.type | replace('_', ' ') | title }}</div>
+                                <div class="fw-bold text-white text-truncate small">Completed: {{ activity.title }}</div>
+                                <div class="text-muted" style="font-size: 0.70rem;">{{ activity.type | replace('_', ' ') | title }}</div>
                             </div>
                             {% if activity.readiness_after and activity.readiness_before %}
                                 {% set delta = activity.readiness_after - activity.readiness_before %}
                                 {% if delta > 0 %}
-                                    <span class="badge bg-success-subtle text-success rounded-pill fw-bold">+{{ delta }}%</span>
+                                    <span class="badge rounded-pill fw-bold" style="background: #064e3b; color: #34d399;">+{{ delta }}%</span>
                                 {% endif %}
                             {% endif %}
                         </div>
@@ -449,7 +472,7 @@
                     </div>
                 {% else %}
                     <div class="empty-state mt-auto mb-auto border-0">
-                        <i class="bi bi-activity empty-state-icon mb-2" style="font-size: 2rem;"></i>
+                        <i class="bi bi-activity empty-state-icon mb-2 text-muted" style="font-size: 2rem;"></i>
                         <p class="text-muted mt-2 mb-0 small text-center">Your career activity will appear here as you complete milestones.</p>
                     </div>
                 {% endif %}
@@ -475,4 +498,8 @@
         }, 300);
     });
 </script>
+
+<!-- Load Three.js and Dashboard Robot Logic -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="{{ url_for('static', filename='js/dashboard_robot.js') }}?v=2"></script>
 {% endblock %}
