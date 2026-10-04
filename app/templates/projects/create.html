@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}Create Project{% endblock %}
+
+{% block content %}
+<div class="container-fluid max-w-4xl mx-auto">
+    <div class="d-flex align-items-center mb-4">
+        <a href="{{ url_for('projects.index') }}" class="btn btn-link text-secondary p-0 me-3">
+            <i class="bi bi-arrow-left fs-4"></i>
+        </a>
+        <div>
+            <h1 class="h3 fw-bold text-white mb-0">Create Custom Project</h1>
+            <p class="text-secondary mb-0">Add a project you want to build to track your progress.</p>
+        </div>
+    </div>
+
+    <div class="card premium-card">
+        <div class="card-body p-4">
+            <form action="{{ url_for('projects.create') }}" method="POST">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                
+                <div class="mb-4">
+                    <label class="form-label text-white fw-medium">Project Name</label>
+                    <input type="text" class="form-control bg-dark border-secondary text-white" name="title" required placeholder="e.g. AI Resume Analyzer">
+                </div>
+                
+                <div class="mb-4">
+                    <label class="form-label text-white fw-medium">Description</label>
+                    <textarea class="form-control bg-dark border-secondary text-white" name="description" rows="3" required placeholder="What is this project about?"></textarea>
+                </div>
+                
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <label class="form-label text-white fw-medium">Difficulty</label>
+                        <select class="form-select bg-dark border-secondary text-white" name="difficulty" required>
+                            <option value="Beginner">Beginner</option>
+                            <option value="Intermediate">Intermediate</option>
+                            <option value="Advanced">Advanced</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-white fw-medium">Estimated Time (Hours)</label>
+                        <input type="number" class="form-control bg-dark border-secondary text-white" name="estimated_time" value="20" required>
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="form-label text-white fw-medium">Technologies (comma separated)</label>
+                    <input type="text" class="form-control bg-dark border-secondary text-white" name="technologies" placeholder="e.g. Python, Flask, React">
+                </div>
+                
+                <div class="mb-5">
+                    <label class="form-label text-white fw-medium">Skills to Practice (comma separated)</label>
+                    <input type="text" class="form-control bg-dark border-secondary text-white" name="skills" placeholder="e.g. API Design, Database Design">
+                </div>
+                
+                <div class="d-flex justify-content-end gap-2">
+                    <a href="{{ url_for('projects.index') }}" class="btn btn-outline-secondary rounded-pill px-4">Cancel</a>
+                    <button type="submit" class="btn btn-primary rounded-pill px-4">Create Project</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+.premium-card {
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+}
+.form-control:focus, .form-select:focus {
+    background-color: #1e293b;
+    border-color: #3b82f6;
+    color: white;
+    box-shadow: 0 0 0 0.25rem rgba(59, 130, 246, 0.25);
+}
+</style>
+{% endblock %}

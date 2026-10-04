@@ -1,0 +1,316 @@
+{% extends "base.html" %}
+{% block title %}Projects{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h2 fw-bold text-white mb-1">Projects</h1>
+            <p class="text-secondary mb-0">Build real-world projects that turn your skills into career-ready experience.</p>
+        </div>
+        <a href="{{ url_for('projects.create') }}" class="btn btn-primary rounded-pill px-4">
+            <i class="bi bi-plus-lg me-2"></i>Create Project
+        </a>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row g-4 mb-5">
+        <div class="col-sm-6 col-lg-3">
+            <div class="card premium-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h6 class="text-secondary mb-0">Active Projects</h6>
+                        <div class="icon-box rounded-circle bg-primary-subtle text-primary p-2">
+                            <i class="bi bi-play-circle"></i>
+                        </div>
+                    </div>
+                    <h3 class="fw-bold text-white mb-0">{{ active_projects|length }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="card premium-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h6 class="text-secondary mb-0">Completed</h6>
+                        <div class="icon-box rounded-circle bg-success-subtle text-success p-2">
+                            <i class="bi bi-check-circle"></i>
+                        </div>
+                    </div>
+                    <h3 class="fw-bold text-white mb-0">{{ completed_projects|length }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="card premium-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h6 class="text-secondary mb-0">Avg Progress</h6>
+                        <div class="icon-box rounded-circle bg-info-subtle text-info p-2">
+                            <i class="bi bi-graph-up"></i>
+                        </div>
+                    </div>
+                    <h3 class="fw-bold text-white mb-0">{{ avg_progress }}%</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="card premium-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h6 class="text-secondary mb-0">Skills Practiced</h6>
+                        <div class="icon-box rounded-circle bg-warning-subtle text-warning p-2">
+                            <i class="bi bi-lightning"></i>
+                        </div>
+                    </div>
+                    <h3 class="fw-bold text-white mb-0">{{ skills_practiced }}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Nav Tabs -->
+    <ul class="nav nav-pills custom-tabs mb-4 gap-2" id="projectTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active rounded-pill px-4" id="my-projects-tab" data-bs-toggle="tab" data-bs-target="#my-projects" type="button" role="tab">My Projects</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link rounded-pill px-4" id="recommended-tab" data-bs-toggle="tab" data-bs-target="#recommended" type="button" role="tab" onclick="loadRecommendations()">AI Recommended</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link rounded-pill px-4" id="portfolio-tab" data-bs-toggle="tab" data-bs-target="#portfolio" type="button" role="tab">Portfolio</button>
+        </li>
+    </ul>
+
+    <!-- Tab Content -->
+    <div class="tab-content" id="projectTabsContent">
+        <!-- My Projects -->
+        <div class="tab-pane fade show active" id="my-projects" role="tabpanel">
+            {% if projects|selectattr('status', 'ne', 'Completed')|list %}
+            <div class="row g-4">
+                {% for p in projects %}
+                {% if p.status != 'Completed' %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="card premium-card h-100 d-flex flex-column">
+                        <div class="card-body d-flex flex-column">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <span class="badge {% if p.status == 'In Progress' %}bg-primary{% elif p.status == 'Paused' %}bg-warning text-dark{% else %}bg-secondary{% endif %} rounded-pill">{{ p.status }}</span>
+                                <span class="badge bg-dark border border-secondary text-light rounded-pill">{{ p.difficulty }}</span>
+                            </div>
+                            <h5 class="card-title text-white fw-bold mt-2">{{ p.title }}</h5>
+                            <p class="card-text text-secondary small flex-grow-1">{{ p.description[:100] }}...</p>
+                            
+                            {% if p.status == 'In Progress' %}
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between small text-secondary mb-1">
+                                    <span>Progress</span>
+                                    <span>{{ p.progress_percentage }}%</span>
+                                </div>
+                                <div class="progress" style="height: 6px; background-color: rgba(255,255,255,0.1);">
+                                    <div class="progress-bar bg-primary" role="progressbar" style="width: {{ p.progress_percentage }}%"></div>
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            <div class="mb-3 d-flex flex-wrap gap-1">
+                                {% for tech in p.technologies[:3] %}
+                                <span class="badge bg-light text-dark rounded-pill" style="font-size: 0.7rem;">{{ tech }}</span>
+                                {% endfor %}
+                                {% if p.technologies|length > 3 %}
+                                <span class="badge bg-dark border border-secondary rounded-pill" style="font-size: 0.7rem;">+{{ p.technologies|length - 3 }}</span>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="d-flex gap-2 mt-auto">
+                                <a href="{{ url_for('projects.view', project_id=p.id) }}" class="btn btn-outline-light btn-sm flex-grow-1 rounded-pill">View Details</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <div class="text-secondary mb-3">
+                    <i class="bi bi-folder2-open" style="font-size: 3rem;"></i>
+                </div>
+                <h5 class="text-white">No active projects yet</h5>
+                <p class="text-secondary">Start a recommended project or create your own.</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- AI Recommended -->
+        <div class="tab-pane fade" id="recommended" role="tabpanel">
+            <div id="recs-loading" class="text-center py-5 d-none">
+                <div class="spinner-border text-primary mb-3" role="status"></div>
+                <h5 class="text-white">Analyzing your profile...</h5>
+                <p class="text-secondary">AI is generating personalized project recommendations.</p>
+            </div>
+            
+            <div id="recs-container" class="row g-4">
+                <!-- Populated via JS -->
+                <div class="text-center py-5 text-secondary">
+                    <button class="btn btn-primary rounded-pill px-4" onclick="loadRecommendations(true)">
+                        <i class="bi bi-magic me-2"></i>Generate Recommendations
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Portfolio -->
+        <div class="tab-pane fade" id="portfolio" role="tabpanel">
+            {% if completed_projects %}
+            <div class="row g-4">
+                {% for p in completed_projects %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="card premium-card h-100 border-success" style="border-width: 1px;">
+                        <div class="card-body d-flex flex-column">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <span class="badge bg-success rounded-pill"><i class="bi bi-check-circle me-1"></i>Completed</span>
+                                {% if p.github_url %}<a href="{{ p.github_url }}" target="_blank" class="text-white"><i class="bi bi-github"></i></a>{% endif %}
+                            </div>
+                            <h5 class="card-title text-white fw-bold mt-2">{{ p.title }}</h5>
+                            <p class="card-text text-secondary small flex-grow-1">{{ p.description[:100] }}...</p>
+                            
+                            <div class="mb-3 d-flex flex-wrap gap-1">
+                                {% for skill in p.skills[:4] %}
+                                <span class="badge bg-primary-subtle text-primary rounded-pill" style="font-size: 0.7rem;">{{ skill }}</span>
+                                {% endfor %}
+                            </div>
+                            
+                            <div class="d-flex gap-2 mt-auto">
+                                <a href="{{ url_for('projects.view', project_id=p.id) }}" class="btn btn-outline-success btn-sm flex-grow-1 rounded-pill">View Project</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <div class="text-secondary mb-3">
+                    <i class="bi bi-trophy" style="font-size: 3rem;"></i>
+                </div>
+                <h5 class="text-white">Your portfolio is empty</h5>
+                <p class="text-secondary">Complete projects to build your career portfolio.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let recsLoaded = false;
+function loadRecommendations(force = false) {
+    if (recsLoaded && !force) return;
+    
+    document.getElementById('recs-container').classList.add('d-none');
+    document.getElementById('recs-loading').classList.remove('d-none');
+    
+    fetch('{{ url_for("projects.recommendations") }}', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token() }}',
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(r => r.json())
+    .then(data => {
+        document.getElementById('recs-loading').classList.add('d-none');
+        const container = document.getElementById('recs-container');
+        container.classList.remove('d-none');
+        container.innerHTML = '';
+        
+        if (data.error) {
+            container.innerHTML = `<div class="alert alert-danger">${data.error}</div>`;
+            return;
+        }
+        
+        data.recommendations.forEach(rec => {
+            const techs = rec.technologies.map(t => `<span class="badge bg-light text-dark rounded-pill me-1 mb-1" style="font-size: 0.7rem;">${t}</span>`).join('');
+            
+            const html = `
+            <div class="col-md-12">
+                <div class="card premium-card border-info" style="border-width: 1px;">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="d-flex align-items-center gap-2 mb-2">
+                                    <h5 class="text-white fw-bold mb-0">${rec.title}</h5>
+                                    <span class="badge bg-dark border border-secondary text-light rounded-pill">${rec.difficulty}</span>
+                                    <span class="badge bg-info-subtle text-info rounded-pill"><i class="bi bi-clock me-1"></i>${rec.estimated_time}</span>
+                                </div>
+                                <p class="text-secondary">${rec.description}</p>
+                                
+                                <div class="mb-3">
+                                    <h6 class="text-white fs-6 mb-2"><i class="bi bi-lightning text-warning me-2"></i>Why this project?</h6>
+                                    <p class="text-secondary small mb-0">${rec.justification}</p>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    ${techs}
+                                </div>
+                            </div>
+                            <div class="col-md-4 d-flex flex-column justify-content-center border-start border-secondary ps-4">
+                                <form action="{{ url_for('projects.create') }}" method="POST">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <input type="hidden" name="title" value="${rec.title}">
+                                    <input type="hidden" name="description" value="${rec.description}">
+                                    <input type="hidden" name="difficulty" value="${rec.difficulty}">
+                                    <input type="hidden" name="estimated_time" value="${parseInt(rec.estimated_time) || 20}">
+                                    <input type="hidden" name="technologies" value="${rec.technologies.join(',')}">
+                                    <input type="hidden" name="skills" value="${rec.skills.join(',')}">
+                                    <input type="hidden" name="is_ai_recommended" value="true">
+                                    <input type="hidden" name="justification" value="${rec.justification}">
+                                    
+                                    <button type="submit" class="btn btn-primary rounded-pill w-100 mb-2">
+                                        Start This Project
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+            container.innerHTML += html;
+        });
+        
+        recsLoaded = true;
+    })
+    .catch(err => {
+        document.getElementById('recs-loading').classList.add('d-none');
+        document.getElementById('recs-container').classList.remove('d-none');
+        document.getElementById('recs-container').innerHTML = `<div class="alert alert-danger">Error fetching recommendations.</div>`;
+    });
+}
+</script>
+<style>
+.custom-tabs .nav-link {
+    color: #94a3b8;
+    background: rgba(255,255,255,0.05);
+}
+.custom-tabs .nav-link:hover {
+    color: #fff;
+    background: rgba(255,255,255,0.1);
+}
+.custom-tabs .nav-link.active {
+    background: #2563eb;
+    color: #fff;
+}
+.premium-card {
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.premium-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+}
+</style>
+{% endblock %}

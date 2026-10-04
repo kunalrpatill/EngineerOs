@@ -353,3 +353,47 @@ class MockAIService:
                 "feedback": "This is a solid start, but adding specific metrics or examples would make it much stronger." if len(ans) > 10 else "Your answer is too short. Try the STAR method."
             })
         return results
+
+    def generate_project_recommendations(self, profile_data):
+        target_role = profile_data.get('target_role', 'Software Engineer')
+        return [
+            {
+                "title": f"AI Resume Analyzer for {target_role}",
+                "description": "A full-stack application that analyzes resumes using AI.",
+                "difficulty": "Intermediate",
+                "estimated_time": "2-3 weeks",
+                "technologies": ["Python", "Flask", "OpenAI"],
+                "skills": ["Python", "Backend", "AI Integration"],
+                "justification": "This project builds your AI and backend skills which are crucial for your target role."
+            },
+            {
+                "title": "Expense Tracker",
+                "description": "A robust financial tracking tool with data visualization.",
+                "difficulty": "Beginner",
+                "estimated_time": "1 week",
+                "technologies": ["JavaScript", "HTML", "CSS"],
+                "skills": ["Frontend", "UI/UX", "Data Visualization"],
+                "justification": "A great starting point for frontend fundamentals."
+            }
+        ]
+
+    def generate_project_roadmap(self, project_data, profile_data):
+        return [
+            {
+                "stage": "Planning",
+                "tasks": [
+                    {"title": "Requirements Gathering", "description": "Define the scope", "required_skills": ["Product Management"], "estimated_hours": 2},
+                    {"title": "System Design", "description": "Design the architecture", "required_skills": ["System Design"], "estimated_hours": 4}
+                ]
+            },
+            {
+                "stage": "Development",
+                "tasks": [
+                    {"title": "Backend Setup", "description": "Initialize Flask app", "required_skills": ["Python", "Flask"], "estimated_hours": 4},
+                    {"title": "Frontend Setup", "description": "Create UI", "required_skills": ["HTML", "CSS"], "estimated_hours": 6}
+                ]
+            }
+        ]
+
+    def project_assistant(self, question, project_context):
+        return {"response": f"This is a simulated AI response to your question: '{question}'. For a real answer, please configure the Gemini API key."}

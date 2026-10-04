@@ -1,0 +1,322 @@
+{% extends "base.html" %}
+{% block title %}{{ project.title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="d-flex align-items-center mb-4">
+        <a href="{{ url_for('projects.index') }}" class="btn btn-link text-secondary p-0 me-3">
+            <i class="bi bi-arrow-left fs-4"></i>
+        </a>
+        <div class="flex-grow-1">
+            <div class="d-flex align-items-center gap-2 mb-1">
+                <h1 class="h3 fw-bold text-white mb-0">{{ project.title }}</h1>
+                <span class="badge {% if project.status == 'In Progress' %}bg-primary{% elif project.status == 'Completed' %}bg-success{% else %}bg-secondary{% endif %} rounded-pill">{{ project.status }}</span>
+            </div>
+            <p class="text-secondary mb-0">{{ project.difficulty }} &bull; ~{{ project.estimated_hours }} hours</p>
+        </div>
+        <div class="d-flex gap-2">
+            {% if project.status == 'Not Started' %}
+            <button class="btn btn-primary rounded-pill px-4" onclick="generateRoadmap()">
+                <i class="bi bi-magic me-2"></i>Generate Roadmap
+            </button>
+            {% endif %}
+            <button class="btn btn-outline-danger rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                <i class="bi bi-trash"></i>
+            </button>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Main Content -->
+        <div class="col-lg-8">
+            <!-- Progress Section (if started) -->
+            {% if project.status != 'Not Started' %}
+            <div class="card premium-card mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h5 class="text-white fw-bold mb-0">Project Progress</h5>
+                        <span class="text-primary fw-bold" id="progressText">{{ project.progress_percentage }}%</span>
+                    </div>
+                    <div class="progress" style="height: 10px; background-color: rgba(255,255,255,0.1);">
+                        <div class="progress-bar bg-primary" id="progressBar" role="progressbar" style="width: {{ project.progress_percentage }}%"></div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Project Details -->
+            <div class="card premium-card mb-4">
+                <div class="card-body p-4">
+                    <h5 class="text-white fw-bold mb-3">Project Description</h5>
+                    <p class="text-secondary">{{ project.description }}</p>
+
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <h6 class="text-white mb-2">Technologies</h6>
+                            <div class="d-flex flex-wrap gap-1">
+                                {% for tech in project.technologies %}
+                                <span class="badge bg-light text-dark rounded-pill">{{ tech }}</span>
+                                {% else %}
+                                <span class="text-muted small">None specified</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="col-md-6 mt-3 mt-md-0">
+                            <h6 class="text-white mb-2">Skills You'll Practice</h6>
+                            <div class="d-flex flex-wrap gap-1">
+                                {% for skill in project.skills %}
+                                <span class="badge bg-primary-subtle text-primary rounded-pill">{{ skill }}</span>
+                                {% else %}
+                                <span class="text-muted small">None specified</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Roadmap -->
+            {% if project.tasks %}
+            <div class="card premium-card mb-4">
+                <div class="card-body p-4">
+                    <h5 class="text-white fw-bold mb-4">Project Roadmap</h5>
+                    
+                    <div class="timeline">
+                        {% set current_stage = None %}
+                        {% for task in project.tasks|sort(attribute='order_index') %}
+                            
+                            {% if task.stage != current_stage %}
+                            <div class="timeline-stage text-info fw-bold mb-3 mt-4 text-uppercase" style="font-size: 0.85rem; letter-spacing: 1px;">
+                                <i class="bi bi-diagram-3 me-2"></i>{{ task.stage }}
+                            </div>
+                            {% set current_stage = task.stage %}
+                            {% endif %}
+                            
+                            <div class="d-flex mb-3 task-item p-3 rounded" style="background: rgba(255,255,255,0.03);">
+                                <div class="form-check me-3">
+                                    <input class="form-check-input task-checkbox" type="checkbox" value="{{ task.id }}" 
+                                           id="task_{{ task.id }}" onchange="toggleTask({{ task.id }}, this.checked)"
+                                           {% if task.status == 'completed' %}checked{% endif %}>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <label class="form-check-label text-white fw-medium mb-1 d-block" for="task_{{ task.id }}"
+                                           style="{% if task.status == 'completed' %}text-decoration: line-through; opacity: 0.6;{% endif %}">
+                                        {{ task.title }}
+                                    </label>
+                                    <p class="text-secondary small mb-2">{{ task.description }}</p>
+                                    <div class="d-flex gap-2">
+                                        {% for rs in task.required_skills %}
+                                        <span class="badge bg-dark border border-secondary text-secondary" style="font-size: 0.65rem;">{{ rs }}</span>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <div class="text-secondary small">
+                                    <i class="bi bi-clock me-1"></i>~{{ task.estimated_hours }}h
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Portfolio Links -->
+            <div class="card premium-card mb-4">
+                <div class="card-body">
+                    <h6 class="text-white fw-bold mb-3">Portfolio Links</h6>
+                    <form action="{{ url_for('projects.edit', project_id=project.id) }}" method="POST">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <div class="mb-3">
+                            <label class="form-label text-secondary small">GitHub URL</label>
+                            <input type="url" class="form-control form-control-sm bg-dark border-secondary text-white" name="github_url" value="{{ project.github_url or '' }}">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-secondary small">Live Demo URL</label>
+                            <input type="url" class="form-control form-control-sm bg-dark border-secondary text-white" name="live_demo_url" value="{{ project.live_demo_url or '' }}">
+                        </div>
+                        <button class="btn btn-outline-primary btn-sm w-100 rounded-pill">Save Links</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- AI Assistant -->
+            <div class="card premium-card mb-4 d-flex flex-column" style="height: 500px;">
+                <div class="card-header border-bottom border-secondary bg-transparent p-3">
+                    <h6 class="text-white fw-bold mb-0"><i class="bi bi-robot text-info me-2"></i>Project AI Assistant</h6>
+                </div>
+                <div class="card-body overflow-auto flex-grow-1" id="chatHistory" style="background: rgba(0,0,0,0.2);">
+                    <div class="mb-3">
+                        <div class="bg-primary-subtle text-primary p-2 rounded small d-inline-block">
+                            Hi! I'm your project assistant. Ask me anything about how to implement this project, design the database, or fix errors.
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent border-top border-secondary p-3">
+                    <div class="input-group">
+                        <input type="text" class="form-control bg-dark border-secondary text-white" id="chatInput" placeholder="Ask a question..." onkeypress="if(event.key === 'Enter') sendQuestion()">
+                        <button class="btn btn-primary" onclick="sendQuestion()"><i class="bi bi-send"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark text-white" style="border: 1px solid rgba(255,255,255,0.1);">
+            <div class="modal-header border-bottom border-secondary">
+                <h5 class="modal-title">Delete Project</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete <strong>{{ project.title }}</strong>? This action cannot be undone.
+            </div>
+            <div class="modal-footer border-top border-secondary">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form action="{{ url_for('projects.delete', project_id=project.id) }}" method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<!-- Marked.js for markdown rendering -->
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script>
+function generateRoadmap() {
+    const btn = event.currentTarget;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Generating...';
+    btn.disabled = true;
+    
+    fetch('{{ url_for("projects.generate_roadmap", project_id=project.id) }}', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token() }}',
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            window.location.reload();
+        } else {
+            alert('Error generating roadmap');
+            btn.innerHTML = '<i class="bi bi-magic me-2"></i>Generate Roadmap';
+            btn.disabled = false;
+        }
+    });
+}
+
+function toggleTask(taskId, isCompleted) {
+    fetch(`/projects/{{ project.id }}/task/${taskId}/toggle`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token() }}',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ completed: isCompleted })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            document.getElementById('progressBar').style.width = data.progress + '%';
+            document.getElementById('progressText').innerText = data.progress + '%';
+            
+            const label = document.querySelector(`label[for="task_${taskId}"]`);
+            if (isCompleted) {
+                label.style.textDecoration = 'line-through';
+                label.style.opacity = '0.6';
+            } else {
+                label.style.textDecoration = 'none';
+                label.style.opacity = '1';
+            }
+        }
+    });
+}
+
+function sendQuestion() {
+    const input = document.getElementById('chatInput');
+    const question = input.value.trim();
+    if (!question) return;
+    
+    input.value = '';
+    const chat = document.getElementById('chatHistory');
+    
+    // Add user message
+    chat.innerHTML += `
+        <div class="mb-3 text-end">
+            <div class="bg-secondary text-white p-2 rounded small d-inline-block text-start">
+                ${question}
+            </div>
+        </div>
+    `;
+    chat.scrollTop = chat.scrollHeight;
+    
+    // Add loading
+    const loadingId = 'loading-' + Date.now();
+    chat.innerHTML += `
+        <div class="mb-3" id="${loadingId}">
+            <div class="bg-primary-subtle text-primary p-2 rounded small d-inline-block">
+                <span class="spinner-border spinner-border-sm"></span> Thinking...
+            </div>
+        </div>
+    `;
+    chat.scrollTop = chat.scrollHeight;
+    
+    fetch('{{ url_for("projects.assistant", project_id=project.id) }}', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token() }}',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ question: question })
+    })
+    .then(r => r.json())
+    .then(data => {
+        document.getElementById(loadingId).remove();
+        const htmlContent = marked.parse(data.response);
+        chat.innerHTML += `
+            <div class="mb-3">
+                <div class="bg-primary-subtle text-primary p-2 rounded small d-inline-block text-start markdown-content">
+                    ${htmlContent}
+                </div>
+            </div>
+        `;
+        chat.scrollTop = chat.scrollHeight;
+    });
+}
+</script>
+<style>
+.premium-card {
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+}
+.markdown-content p:last-child {
+    margin-bottom: 0;
+}
+.markdown-content pre {
+    background: #1e293b;
+    padding: 10px;
+    border-radius: 6px;
+    overflow-x: auto;
+}
+.markdown-content code {
+    background: #1e293b;
+    padding: 2px 4px;
+    border-radius: 4px;
+}
+</style>
+{% endblock %}
