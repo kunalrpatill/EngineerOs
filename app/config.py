@@ -17,18 +17,30 @@ class Config:
     
     # Construct the SQLAlchemy database URI for MySQL using PyMySQL
     # Can also be overridden directly via DATABASE_URL if set
-    SQLALCHEMY_DATABASE_URI = os.environ.get(
-        'DATABASE_URL',
-        f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+    
+    # Database URL from Render environment variables
+    _database_url = os.environ.get('DATABASE_URL')
+
+    if _database_url:
+        _database_url = _database_url.replace('?ssl-mode=REQUIRED', '')
+        _database_url = _database_url.replace('&ssl-mode=REQUIRED', '')
+
+    SQLALCHEMY_DATABASE_URI = (
+        _database_url
+        or f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
     )
+
     
     # Disable tracking modifications to save memory and improve performance
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+
     SQLALCHEMY_ENGINE_OPTIONS = {
-    "connect_args": {
-        "ssl": {"check_hostname": True}
+        "connect_args": {
+            "ssl": {},
+            "ssl_verify_cert": True,
+            "ssl_verify_identity": True
+        }
     }
-}
     
     # Optional Gemini AI API Key, empty string by default
     GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY', '')
