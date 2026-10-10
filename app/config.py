@@ -35,18 +35,18 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 
+
     SQLALCHEMY_ENGINE_OPTIONS = {
         "connect_args": {
-            "ssl": {
-                "ca": os.path.join(
-                    os.path.dirname(os.path.dirname(__file__)),
-                    "ca.pem"
-                )
-            },
+            "ssl_ca": os.path.join(
+                os.path.dirname(os.path.dirname(__file__)),
+                "ca.pem"
+            ),
             "ssl_verify_cert": True,
             "ssl_verify_identity": True
         }
     }
+
 
     
     # Optional Gemini AI API Key, empty string by default
