@@ -24,6 +24,11 @@ class Config:
     
     # Disable tracking modifications to save memory and improve performance
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SQLALCHEMY_ENGINE_OPTIONS = {
+    "connect_args": {
+        "ssl": {"check_hostname": True}
+    }
+}
     
     # Optional Gemini AI API Key, empty string by default
     GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY', '')
