@@ -183,5 +183,68 @@ class Phase6TestCase(unittest.TestCase):
             self.assertEqual(resp.status_code, 200)
             self.assertIn(b'AI Evaluation', resp.data)
 
+    def test_mock_ai_evaluates_different_quality_answers(self):
+        """Test that MockAIService genuinely analyzes answers with dynamic scoring and feedback."""
+        from app.services.mock_ai_service import MockAIService
+        service = MockAIService()
+
+        questions = [
+            {"id": 1, "question": "Can you describe a challenging technical problem you solved?"},
+            {"id": 2, "question": "What are your career goals?"}
+        ]
+
+        strong_ans = (
+            "In my semester project, I built a high-throughput REST API using FastAPI and PostgreSQL. "
+            "Latency was spiking to 450ms during load testing due to unindexed database queries. "
+            "I analyzed query execution plans, added composite B-Tree indexes, and introduced a Redis "
+            "caching layer. This dropped P99 latency to 35ms and allowed the service to handle 5x more requests."
+        )
+        weak_ans = "i will study hard and work at google."
+
+        evaluations = service.evaluate_interview_answers(
+            questions,
+            {"1": strong_ans, "2": weak_ans},
+            target_role="Backend Developer"
+        )
+
+        self.assertEqual(len(evaluations), 2)
+        q1_eval = evaluations[0]
+        q2_eval = evaluations[1]
+
+        # Strong answer should score significantly higher than weak answer
+        self.assertGreater(q1_eval['score'], q2_eval['score'])
+        self.assertGreaterEqual(q1_eval['score'], 8)
+        self.assertLessEqual(q2_eval['score'], 5)
+
+        # Technical concepts should be identified in strengths
+        self.assertTrue(any("Fastapi" in s or "Postgresql" in s or "Redis" in s or "Api" in s for s in q1_eval['strengths']))
+
+        # Feedback should be dynamic and role-aware
+        self.assertIn("Backend Developer", q1_eval['feedback'])
+        self.assertIn("Backend Developer", q2_eval['feedback'])
+
+    def test_gemini_extract_json_resilient_parsing(self):
+        """Test that GeminiService._extract_json handles lists, objects, and markdown fences."""
+        from app.services.gemini_service import GeminiService
+        service = GeminiService(api_key="test-key")
+
+        # 1. Markdown code fenced array
+        fenced_arr = "```json\n[{\"id\": 1, \"score\": 8}]\n```"
+        parsed = service._extract_json(fenced_arr)
+        self.assertIsInstance(parsed, list)
+        self.assertEqual(parsed[0]['score'], 8)
+
+        # 2. Raw array with surrounding text
+        prose_arr = "Here is your evaluation:\n[{\"id\": 1, \"score\": 9}, {\"id\": 2, \"score\": 7}]\nHope this helps!"
+        parsed2 = service._extract_json(prose_arr)
+        self.assertIsInstance(parsed2, list)
+        self.assertEqual(len(parsed2), 2)
+
+        # 3. Standard JSON object
+        obj_text = '{"title": "SE Track", "overall_readiness": 85}'
+        parsed3 = service._extract_json(obj_text)
+        self.assertIsInstance(parsed3, dict)
+        self.assertEqual(parsed3['overall_readiness'], 85)
+
 if __name__ == '__main__':
     unittest.main()

@@ -36,16 +36,17 @@ class Config:
 
 
 
-    SQLALCHEMY_ENGINE_OPTIONS = {
-        "connect_args": {
-            "ssl_ca": os.path.join(
-                os.path.dirname(os.path.dirname(__file__)),
-                "ca.pem"
-            ),
-            "ssl_verify_cert": True,
-            "ssl_verify_identity": True
+    _ca_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "ca.pem")
+    if SQLALCHEMY_DATABASE_URI and SQLALCHEMY_DATABASE_URI.startswith('mysql') and os.path.exists(_ca_path):
+        SQLALCHEMY_ENGINE_OPTIONS = {
+            "connect_args": {
+                "ssl_ca": _ca_path,
+                "ssl_verify_cert": True,
+                "ssl_verify_identity": True
+            }
         }
-    }
+    else:
+        SQLALCHEMY_ENGINE_OPTIONS = {}
 
 
     

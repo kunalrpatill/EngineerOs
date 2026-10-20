@@ -106,12 +106,14 @@ def submit():
         flash("Please provide an answer for all questions.", "warning")
         return redirect(url_for('interview.session_view'))
         
+    profile = Profile.query.filter_by(user_id=current_user.id).first()
+    target_role = profile.target_role if profile and profile.target_role else 'Software Engineer'
+
+    ai_service = get_ai_service()
+    feedback = ai_service.evaluate_interview_answers(questions, answers, target_role=target_role)
+
     # Clear session to prevent resubmission / save space
     session.pop('interview_questions', None)
     session.modified = True
-    
-    ai_service = get_ai_service()
-    feedback = ai_service.evaluate_interview_answers(questions, answers)
-    
-    profile = Profile.query.filter_by(user_id=current_user.id).first()
+
     return render_template('interview/feedback.html', feedback=feedback, profile=profile)

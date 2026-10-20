@@ -8,6 +8,7 @@ API key is configured in .env.
 The mock data is dynamic — it reads the student's actual target role
 and existing skills to produce contextually relevant responses.
 """
+import re
 
 
 # ─── Skill databases keyed by target role ──────────────────────────────
@@ -317,41 +318,264 @@ class MockAIService:
 
     def generate_interview_questions(self, profile_data, gaps):
         """
-        Generate mock interview questions.
+        Generate mock interview questions based on target role and identified skill gaps.
         """
         target_role = profile_data.get('target_role', 'Software Engineer')
+        required_skills = self._get_required_skills(target_role)
+        primary_skill = required_skills[0] if required_skills else 'Software Engineering'
+
+        # Q2 depends on whether gaps are available
+        if gaps:
+            gap_text = ', '.join(gaps[:2])
+            q2_text = f"How do you plan to bridge your identified skill gaps in {gap_text}?"
+        else:
+            secondary_skill = required_skills[1] if len(required_skills) > 1 else 'System Design'
+            q2_text = f"How do you stay up-to-date with emerging tools and best practices in {secondary_skill}?"
+
         return [
             {
                 "id": 1,
-                "question": f"Can you describe a challenging problem you solved related to {target_role}?"
+                "question": f"Can you describe a challenging technical problem or project you tackled involving {primary_skill} for a {target_role} role?"
             },
             {
                 "id": 2,
-                "question": f"How do you plan to bridge your skill gaps in: {', '.join(gaps[:2])}?"
+                "question": q2_text
             },
             {
                 "id": 3,
-                "question": "Where do you see yourself in 3 years in your engineering career?"
+                "question": "Tell me about a time you had to diagnose a difficult bug or handle a high-priority deadline. Walk through your problem-solving process."
             }
         ]
 
-    def evaluate_interview_answers(self, questions, answers):
+    def evaluate_interview_answers(self, questions, answers, target_role=None):
         """
-        Evaluate answers and provide mock feedback.
+        Intelligently analyze student interview answers and provide dynamic, structured feedback.
+        Evaluates depth, technical vocabulary, structure (STAR method), quantifiable results,
+        and relevance to the student's target role.
         """
+        target_role = target_role or 'Software Engineer'
+        role_skills = [s.lower() for s in self._get_required_skills(target_role)]
+
+        tech_keywords_map = {
+            'backend': [
+                'api', 'rest', 'graphql', 'database', 'sql', 'nosql', 'postgres', 'postgresql',
+                'mysql', 'mongodb', 'redis', 'cache', 'caching', 'index', 'indexing', 'query',
+                'microservices', 'monolith', 'server', 'async', 'concurrency', 'threading',
+                'latency', 'throughput', 'load balancer', 'queue', 'kafka', 'rabbitmq', 'scalable',
+                'scalability', 'sharding', 'orm', 'middleware', 'endpoint'
+            ],
+            'frontend': [
+                'react', 'vue', 'angular', 'javascript', 'typescript', 'html', 'css', 'dom',
+                'state management', 'redux', 'hook', 'component', 'responsive', 'ui', 'ux',
+                'accessibility', 'webpack', 'vite', 'tailwind', 'bootstrap', 'render', 'browser'
+            ],
+            'aiml': [
+                'model', 'training', 'dataset', 'overfitting', 'underfitting', 'loss', 'accuracy',
+                'precision', 'recall', 'f1', 'feature', 'gradient', 'neural network', 'pytorch',
+                'tensorflow', 'scikit-learn', 'pandas', 'numpy', 'nlp', 'transformer', 'pipeline',
+                'regression', 'classification', 'clustering', 'cross-validation'
+            ],
+            'devops': [
+                'docker', 'container', 'kubernetes', 'k8s', 'ci/cd', 'pipeline', 'jenkins',
+                'github actions', 'terraform', 'aws', 'azure', 'gcp', 'cloud', 'linux',
+                'monitoring', 'prometheus', 'grafana', 'deploy', 'deployment', 'nginx', 'ssl'
+            ],
+            'fundamentals': [
+                'algorithm', 'data structure', 'array', 'linked list', 'tree', 'graph',
+                'hash map', 'hash table', 'stack', 'queue', 'heap', 'sorting', 'binary search',
+                'time complexity', 'space complexity', 'big o', 'o(n)', 'o(1)', 'o(log n)',
+                'recursion', 'dynamic programming', 'pointer', 'memory'
+            ],
+            'practices': [
+                'git', 'branch', 'pull request', 'unit test', 'integration test', 'test driven',
+                'tdd', 'mock', 'clean code', 'solid', 'refactor', 'oop', 'design pattern',
+                'debugging', 'profiling', 'security', 'authentication', 'authorization', 'jwt',
+                'edge case', 'error handling', 'exception', 'logging'
+            ]
+        }
+
+        star_patterns = {
+            'situation': [
+                r'\bsituation\b', r'\bproblem\s+was\b', r'\bproject\s+was\b', r'\bchallenge\s+was\b',
+                r'\bwhen\s+i\s+was\b', r'\bneeded\s+to\b', r'\bworking\s+on\b',
+                r'\bfaced\s+(?:an?\s+)?(?:issue|obstacle|bug|challenge)\b', r'\bin\s+my\s+(?:previous|semester|last)\b'
+            ],
+            'task': [
+                r'\bmy\s+task\b', r'\bmy\s+role\b', r'\bresponsible\s+for\b', r'\bobjective\s+was\b',
+                r'\bgoal\s+was\b', r'\bhad\s+to\s+(?:deliver|solve|build|implement)\b', r'\brequirement\b'
+            ],
+            'action': [
+                r'\bi\s+(?:implemented|built|designed|developed|refactored|investigated|optimized|used|created|resolved|wrote|analyzed|chose|selected|migrated)\b'
+            ],
+            'result': [
+                r'\b(?:as\s+a\s+)?result\b', r'\boutcome\b', r'\bachieved\b', r'\bsuccessfully\b',
+                r'\bdecreased\s+by\b', r'\bincreased\s+by\b', r'\breduced\s+by\b', r'\bimproved\s+by\b',
+                r'\bdropped\s+by\b', r'\bin\s+the\s+end\b', r'\bdelivered\b', r'\blearned\b'
+            ]
+        }
+
+        metric_patterns = [
+            r'\b\d+(?:\.\d+)?%',
+            r'\b\d+(?:\.\d+)?\s*(?:ms|seconds|minutes|hrs|hours|days|weeks)\b',
+            r'\b\d+(?:\.\d+)?x\b',
+            r'\b\d+(?:,\d+)?\s*(?:users|requests|qps|queries|rps|records|rows|mb|gb|tb)\b',
+            r'\b(?:reduced|improved|increased|dropped|boosted|cut)\s+(?:by\s+)?\d+'
+        ]
+
         results = []
         for q in questions:
-            qid = str(q.get('id'))
-            ans = answers.get(qid, '')
+            qid = str(q.get('id', '1'))
+            ans = answers.get(qid, '').strip()
+            q_text = q.get('question', '')
+
+            words = re.findall(r'\b[a-zA-Z0-9_-]+\b', ans.lower())
+            word_count = len(words)
+            unique_words = len(set(words))
+            ans_lower = ans.lower()
+
+            # Detect technical keywords
+            detected_tech = []
+            for cat, kw_list in tech_keywords_map.items():
+                for kw in kw_list:
+                    if re.search(r'\b' + re.escape(kw) + r'\b', ans_lower):
+                        title_kw = kw.title()
+                        if title_kw not in detected_tech:
+                            detected_tech.append(title_kw)
+            for skill in role_skills:
+                if re.search(r'\b' + re.escape(skill) + r'\b', ans_lower):
+                    title_skill = skill.title()
+                    if title_skill not in detected_tech:
+                        detected_tech.append(title_skill)
+
+            # Detect STAR components
+            star_found = {}
+            for phase, patterns in star_patterns.items():
+                star_found[phase] = any(re.search(pat, ans_lower) for pat in patterns)
+            star_count = sum(1 for v in star_found.values() if v)
+
+            # Detect metrics
+            detected_metrics = []
+            for pat in metric_patterns:
+                found = re.findall(pat, ans_lower)
+                for f in found:
+                    if f not in detected_metrics:
+                        detected_metrics.append(f)
+
+            # Detect quality / best practice signals
+            mentions_testing = any(re.search(r'\b' + re.escape(t) + r'\b', ans_lower) for t in ['test', 'tests', 'testing', 'unit test', 'integration test', 'qa', 'validate'])
+            mentions_edge_cases = any(re.search(r'\b' + re.escape(t) + r'\b', ans_lower) for t in ['edge case', 'edge cases', 'error handling', 'exception', 'failure', 'fallback'])
+            mentions_tradeoffs = any(re.search(r'\b' + re.escape(t) + r'\b', ans_lower) for t in ['trade-off', 'tradeoff', 'tradeoffs', 'alternative', 'instead of', 'pros and cons', 'considered'])
+
+            # Compute Score (1 to 10)
+            if word_count < 10:
+                score = 2
+            elif word_count < 25:
+                score = 4
+            elif word_count < 60:
+                score = 6
+            elif word_count < 120:
+                score = 7
+            else:
+                score = 8
+
+            # Modifiers based on content
+            if len(detected_tech) >= 4:
+                score += 1
+            elif len(detected_tech) >= 2:
+                score += 0.5
+            elif len(detected_tech) == 0 and word_count >= 25:
+                score -= 1
+
+            if star_count >= 3:
+                score += 1
+            elif star_count >= 2:
+                score += 0.5
+
+            if len(detected_metrics) >= 1:
+                score += 1
+
+            if mentions_testing or mentions_edge_cases:
+                score += 0.5
+
+            if mentions_tradeoffs:
+                score += 0.5
+
+            # Penalize excessive repetition / spam
+            if word_count >= 20 and (unique_words / max(word_count, 1)) < 0.40:
+                score -= 3
+
+            score = int(round(max(1, min(10, score))))
+
+            # Strengths
+            strengths = []
+            if detected_tech:
+                top_tech = detected_tech[:3]
+                strengths.append(f"Demonstrated solid technical depth referencing domain concepts: {', '.join(top_tech)}.")
+            if star_count >= 3 or (star_found['action'] and star_found['result']):
+                strengths.append("Structured narrative effectively using the STAR method (clear context, action, and outcome).")
+            if detected_metrics:
+                strengths.append(f"Backed up accomplishments with quantitative metrics ({', '.join(detected_metrics[:2])}).")
+            if mentions_testing or mentions_edge_cases:
+                strengths.append("Demonstrated engineering rigor by addressing testing, validation, or edge cases.")
+            if mentions_tradeoffs:
+                strengths.append("Articulated technical reasoning and trade-offs behind your chosen solution.")
+            if word_count >= 70 and not strengths:
+                strengths.append("Provided a detailed and articulate explanation with clear contextual background.")
+            if not strengths:
+                strengths.append("Addressed the prompt directly with a clear and concise response.")
+            if len(strengths) < 2:
+                strengths.append("Good baseline communication of problem-solving intent.")
+
+            # Improvements
+            improvements = []
+            if not detected_metrics:
+                improvements.append("Quantify your impact: include measurable figures (e.g., latency reduction, throughput, user count).")
+            if not star_found['result']:
+                improvements.append("Highlight the 'Result' phase: clearly state what measurable outcome or organizational value was delivered.")
+            if len(detected_tech) < 3:
+                improvements.append(f"Incorporate more domain-specific technologies and architectural patterns relevant to {target_role}.")
+            if not (mentions_testing or mentions_edge_cases):
+                improvements.append("Address reliability: explain how you tested your solution and handled edge cases or failures.")
+            if not mentions_tradeoffs:
+                improvements.append("Discuss alternative approaches: explain why you chose this design over other potential solutions.")
+            if word_count < 40:
+                improvements.append("Expand on your individual contribution: walk through your personal decisions and the specific technical hurdles overcome.")
+            if word_count > 250:
+                improvements.append("Keep the response concise: focus on high-impact architectural choices rather than granular implementation steps.")
+            if not improvements:
+                improvements.append("Consider practicing live delivery to keep this strong response concise and impactful.")
+            improvements = improvements[:3]
+
+            # Overall Feedback
+            if score >= 8:
+                feedback_text = (
+                    f"Excellent answer for a {target_role} role! You conveyed genuine technical expertise, "
+                    f"clear structure, and actionable problem solving. Focusing on the minor improvement points "
+                    f"above will make your delivery stellar in top-tier interviews."
+                )
+            elif score >= 5:
+                feedback_text = (
+                    f"Solid foundational response for a {target_role} position. You explained the overarching idea well, "
+                    f"but technical interviewers will look for deeper implementation details, quantifiable outcomes, "
+                    f"and a tighter STAR framework structure."
+                )
+            else:
+                feedback_text = (
+                    f"This response needs more depth and technical rigor for a {target_role} interview. "
+                    f"Avoid high-level summaries: detail the exact problem, the technologies utilized, your specific actions, "
+                    f"and the concrete results achieved using the STAR method."
+                )
+
             results.append({
                 "id": qid,
-                "question": q.get('question', ''),
+                "question": q_text,
                 "answer": ans,
-                "score": 7 if len(ans) > 10 else 3,
-                "strengths": ["Attempted the question", "Clear formatting"],
-                "improvements": ["Could be more detailed", "Provide concrete examples"],
-                "feedback": "This is a solid start, but adding specific metrics or examples would make it much stronger." if len(ans) > 10 else "Your answer is too short. Try the STAR method."
+                "score": score,
+                "strengths": strengths,
+                "improvements": improvements,
+                "feedback": feedback_text
             })
+
         return results
 
     def generate_project_recommendations(self, profile_data):

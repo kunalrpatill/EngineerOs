@@ -71,15 +71,36 @@ class GeminiService:
 
     def _extract_json(self, text):
         """
-        Extract a JSON object from the model's text response.
-        Handles markdown code fences and leading/trailing text.
+        Extract a JSON object or array from the model's text response.
+        Handles markdown code fences, leading/trailing prose, and both dicts & lists.
         """
-        # Try to extract JSON from markdown code fences first
-        json_match = re.search(r'```(?:json)?\s*\n?(.*?)\n?```', text, re.DOTALL)
-        if json_match:
-            text = json_match.group(1).strip()
+        if not text:
+            return None
 
-        # Try to find a JSON object by matching braces
+        # 1. Try to extract JSON from markdown code fences first
+        code_blocks = re.findall(r'```(?:json)?\s*\n?(.*?)\n?```', text, re.DOTALL)
+        for block in code_blocks:
+            block = block.strip()
+            try:
+                return json.loads(block)
+            except json.JSONDecodeError:
+                pass
+
+        # 2. Try parsing the trimmed text directly
+        try:
+            return json.loads(text.strip())
+        except json.JSONDecodeError:
+            pass
+
+        # 3. Look for outermost array [ { ... } ]
+        array_match = re.search(r'\[\s*\{.*\}\s*\]', text, re.DOTALL)
+        if array_match:
+            try:
+                return json.loads(array_match.group(0))
+            except json.JSONDecodeError:
+                pass
+
+        # 4. Look for outermost object { ... }
         brace_match = re.search(r'\{.*\}', text, re.DOTALL)
         if brace_match:
             try:
@@ -87,11 +108,7 @@ class GeminiService:
             except json.JSONDecodeError:
                 pass
 
-        # Last resort: try parsing the entire text
-        try:
-            return json.loads(text)
-        except json.JSONDecodeError:
-            return None
+        return None
 
     def _get_mock_fallback(self):
         """Return a MockAIService instance for fallback."""
@@ -288,8 +305,11 @@ Respond ONLY with a valid JSON array of objects (no markdown, no explanation) in
             response = self.model.generate_content(prompt)
             result = self._extract_json(response.text)
 
+            # Support dict wrapper like {"questions": [...]}
+            if isinstance(result, dict) and 'questions' in result and isinstance(result['questions'], list):
+                result = result['questions']
+
             if result and isinstance(result, list) and len(result) > 0:
-                # Validate structure
                 validated = []
                 for idx, q in enumerate(result):
                     if isinstance(q, dict) and 'question' in q:
@@ -307,64 +327,125 @@ Respond ONLY with a valid JSON array of objects (no markdown, no explanation) in
             print(f"[GeminiService] API error during generate_interview_questions: {e}")
             return self._get_mock_fallback().generate_interview_questions(profile_data, gaps)
 
-    def evaluate_interview_answers(self, questions, answers):
+    def evaluate_interview_answers(self, questions, answers, target_role=None):
         """
         Evaluate student interview answers and provide structured feedback.
         """
+        target_role = target_role or 'Software Engineer'
+
         # Format the Q&A for the prompt
         qa_pairs = []
-        for q in questions:
-            qid = str(q.get('id'))
+        for idx, q in enumerate(questions):
+            qid = str(q.get('id', idx + 1))
             qa_pairs.append({
                 "id": qid,
                 "question": q.get('question', ''),
                 "answer": answers.get(qid, '')
             })
 
-        prompt = f"""You are an expert technical interviewer evaluating a candidate's answers.
+        prompt = f"""You are an expert technical interviewer evaluating a candidate for the role of '{target_role}'.
 
-Here are the questions and the candidate's answers:
+Candidate's Interview Submissions:
 {json.dumps(qa_pairs, indent=2)}
 
-Evaluate each answer. Provide a score out of 10, list strengths, list areas for improvement, and give a brief overall feedback paragraph.
+TASK:
+Evaluate each answer thoroughly based on technical correctness, clarity, depth, structure (such as the STAR method), and relevance to the '{target_role}' role.
 
-Respond ONLY with a valid JSON array (no markdown, no explanation) in exactly this format:
+Respond ONLY with a valid JSON array in exactly this schema:
 [
-    {{
-        "id": "1",
-        "question": "Question text",
-        "answer": "Candidate's answer",
-        "score": <integer 0-10>,
-        "strengths": ["Strength 1", ...],
-        "improvements": ["Improvement 1", ...],
-        "feedback": "Overall feedback text"
-    }},
-    ...
+  {{
+    "id": "1",
+    "score": <integer from 1 to 10>,
+    "strengths": [
+      "<specific strength citing details from their answer>",
+      "<another specific strength>"
+    ],
+    "improvements": [
+      "<specific, actionable area for improvement>",
+      "<another specific improvement>"
+    ],
+    "feedback": "<2-3 sentence personalized evaluation addressing the candidate directly>"
+  }}
 ]
-"""
+
+RULES:
+- Provide genuine, critical feedback.
+- Scores must be integers between 1 and 10.
+- Ensure 'strengths' and 'improvements' have 2 to 4 bullet points each.
+- Reference actual details from the candidate's answer.
+- Do NOT include any markdown or text outside the JSON array."""
+
         try:
             response = self.model.generate_content(prompt)
             result = self._extract_json(response.text)
 
+            # Support dict wrappers like {"evaluations": [...]} or {"feedback": [...]}
+            if isinstance(result, dict):
+                for key in ['evaluations', 'feedback', 'results', 'questions']:
+                    if key in result and isinstance(result[key], list):
+                        result = result[key]
+                        break
+                else:
+                    if 'id' in result or 'score' in result:
+                        result = [result]
+
             if result and isinstance(result, list) and len(result) > 0:
-                # Ensure structure
-                for r in result:
-                    if 'score' not in r or not isinstance(r['score'], int):
-                        r['score'] = 5
-                    if 'strengths' not in r or not isinstance(r['strengths'], list):
-                        r['strengths'] = []
-                    if 'improvements' not in r or not isinstance(r['improvements'], list):
-                        r['improvements'] = []
-                    if 'feedback' not in r:
-                        r['feedback'] = ""
-                return result
+                results_by_id = {}
+                for idx, r in enumerate(result):
+                    if isinstance(r, dict):
+                        r_id = str(r.get('id', idx + 1))
+                        results_by_id[r_id] = r
+                        results_by_id[f"idx_{idx}"] = r
+
+                final_feedback = []
+                for idx, q in enumerate(questions):
+                    qid = str(q.get('id', idx + 1))
+                    user_ans = answers.get(qid, '')
+                    q_text = q.get('question', '')
+
+                    eval_item = results_by_id.get(qid) or results_by_id.get(str(idx + 1)) or results_by_id.get(f"idx_{idx}") or {}
+
+                    raw_score = eval_item.get('score', 6)
+                    try:
+                        score = int(raw_score)
+                        if score > 10 and score <= 100:
+                            score = round(score / 10)
+                        score = max(1, min(10, score))
+                    except (ValueError, TypeError):
+                        score = 6
+
+                    strengths = eval_item.get('strengths') or eval_item.get('strong_points') or []
+                    if not isinstance(strengths, list):
+                        strengths = [str(strengths)] if strengths else []
+                    if not strengths:
+                        strengths = ["Answered the prompt directly"]
+
+                    improvements = eval_item.get('improvements') or eval_item.get('areas_for_improvement') or []
+                    if not isinstance(improvements, list):
+                        improvements = [str(improvements)] if improvements else []
+                    if not improvements:
+                        improvements = ["Could include more specific metrics or concrete implementation details"]
+
+                    feedback_text = eval_item.get('feedback') or eval_item.get('overall_feedback') or eval_item.get('summary') or "Good effort. Review the suggested improvements to refine your response."
+
+                    final_feedback.append({
+                        "id": qid,
+                        "question": q_text,
+                        "answer": user_ans,
+                        "score": score,
+                        "strengths": [str(s) for s in strengths],
+                        "improvements": [str(i) for i in improvements],
+                        "feedback": str(feedback_text)
+                    })
+
+                return final_feedback
 
             print(f"[GeminiService] Could not parse interview evaluation. Falling back to mock.")
-            return self._get_mock_fallback().evaluate_interview_answers(questions, answers)
+            return self._get_mock_fallback().evaluate_interview_answers(questions, answers, target_role=target_role)
 
         except Exception as e:
             print(f"[GeminiService] API error during evaluate_interview_answers: {e}")
-            return self._get_mock_fallback().evaluate_interview_answers(questions, answers)
+            return self._get_mock_fallback().evaluate_interview_answers(questions, answers, target_role=target_role)
 
     def generate_project_recommendations(self, profile_data):
         target_role = profile_data.get('target_role', 'Software Engineer')
